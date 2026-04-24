@@ -13,26 +13,24 @@ return new class extends Migration
     {
         Schema::create('warga', function (Blueprint $table) {
             $table->id();
-            $table->string('nik')->unique();
             $table->string('nama_lengkap');
-            $table->string('no_kk');
+            $table->char('nik', 16)->unique();
+            $table->char('no_kk', 16);
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
-            $table->text('alamat');
-            $table->string('rt');
-            $table->string('rw');
-            $table->string('desa');
-            $table->string('kecamatan');
-            $table->string('kabupaten');
+            $table->text('alamat_lengkap');
+            $table->string('rt', 3);
+            $table->string('rw', 3);
+            $table->string('kelurahan')->default('Sambong');
+            $table->string('kecamatan')->default('Batang');
+            $table->string('kabupaten')->default('Batang');
             $table->string('agama');
-            $table->string('jenis_kelamin');
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->string('status_perkawinan');
             $table->string('pekerjaan');
-            $table->string('foto_ktp')->nullable();
-            $table->string('foto_kk');
-            $table->enum('status_akun', ['aktif','nonaktif'])->default('aktif');
+            $table->boolean('status_akun')->default(true);
             $table->timestamps();
-});
+});        
     }
 
     /**
