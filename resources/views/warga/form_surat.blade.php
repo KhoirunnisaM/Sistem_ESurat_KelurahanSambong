@@ -2,11 +2,23 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="card border-0 shadow-sm p-4">
+    <div class="card border-0 shadow-sm p-4" style="border-radius: 15px;">
         <h3 class="fw-bold mb-4">Form Pengajuan: {{ $nama_surat }}</h3>
+
+        @if ($errors->any())
+            <div class="alert alert-danger border-0 shadow-sm">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <form action="{{ route('surat.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+            
+            <input type="hidden" name="tipe_slug" value="{{ $tipe }}">
             <input type="hidden" name="jenis_surat_nama" value="{{ $nama_surat }}">
 
             <h5 class="text-success fw-bold border-bottom pb-2 mb-3">1. Data Identitas (Otomatis)</h5>
@@ -25,7 +37,7 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label small fw-bold">Tempat, Tanggal Lahir</label>
-                    <input type="text" class="form-control bg-light" value="{{ session('tempat_lahir') }}, {{ \Carbon\Carbon::parse(session('tanggal_lahir'))->format('d-m-Y') }}" readonly>
+                    <input type="text" class="form-control bg-light" value="{{ session('tempat_lahir') }}, {{ session('tanggal_lahir') ? \Carbon\Carbon::parse(session('tanggal_lahir'))->format('d-m-Y') : '-' }}" readonly>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label small fw-bold">Jenis Kelamin</label>
@@ -39,7 +51,6 @@
                     <label class="form-label small fw-bold">Pekerjaan</label>
                     <input type="text" class="form-control bg-light" value="{{ session('pekerjaan') }}" readonly>
                 </div>
-
                 <div class="col-md-12">
                     <label class="form-label small fw-bold">Alamat</label>
                     <input type="text" class="form-control bg-light" value="{{ session('alamat_lengkap') }}" readonly>
@@ -62,17 +73,39 @@
                 </div>
             </div>
 
+            @if($tipe == 'domisili-usaha')
+            <h5 class="text-primary fw-bold border-bottom pb-2 mb-3">Data Lembaga / Usaha</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Nama Lembaga</label>
+                    <input type="text" name="nama_lembaga" class="form-control" placeholder="Masukkan nama lembaga" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Penanggung Jawab</label>
+                    <input type="text" name="penanggung_jawab" class="form-control" placeholder="Nama penanggung jawab" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Jabatan</label>
+                    <input type="text" name="jabatan" class="form-control" placeholder="Contoh: Direktur/Ketua" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Alamat Lembaga</label>
+                    <input type="text" name="alamat_lembaga" class="form-control" placeholder="Alamat lengkap lembaga" required>
+                </div>
+            </div>
+            @endif
+
             <h5 class="text-success fw-bold border-bottom pb-2 mb-3">2. Detail Pengajuan</h5>
             <div class="mb-3">
                 <label class="form-label fw-bold">Keperluan <span class="text-danger">*</span></label>
-                <textarea name="keperluan" class="form-control" rows="2" placeholder="Contoh: Persyaratan melamar pekerjaan" required></textarea>
+                <textarea name="keperluan" class="form-control" rows="2" placeholder="Contoh: Persyaratan melamar pekerjaan" required>{{ old('keperluan') }}</textarea>
             </div>
             <div class="mb-4">
                 <label class="form-label fw-bold">Keterangan</label>
-                <textarea name="keterangan" class="form-control" rows="2" placeholder="Isi sesuai dengan keterangan dari surat pengantar RT" required></textarea>
+                <textarea name="keterangan" class="form-control" rows="2" placeholder="Isi sesuai dengan keterangan dari surat pengantar RT" required>{{ old('keterangan') }}</textarea>
             </div>
 
-            <h5 class="text-success fw-bold border-bottom pb-2 mb-3">3. Upload Dokumen</h5>
+            <h5 class="text-success fw-bold border-bottom pb-2 mb-3">3. Upload Dokumen (Max 2MB)</h5>
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label class="form-label fw-bold small">Scan Pengantar RT (JPG/PNG)</label>
@@ -85,8 +118,8 @@
             </div>
 
             <div class="mt-4">
-                <button type="submit" class="btn btn-success px-5 py-2 fw-bold">KIRIM PENGAJUAN</button>
-                <a href="{{ route('warga.dashboard') }}" class="btn btn-light px-4 py-2">Batal</a>
+                <button type="submit" class="btn btn-success px-5 py-2 fw-bold shadow-sm">KIRIM PENGAJUAN</button>
+                <a href="{{ route('warga.dashboard') }}" class="btn btn-light px-4 py-2 border ms-2">Batal</a>
             </div>
         </form>
     </div>

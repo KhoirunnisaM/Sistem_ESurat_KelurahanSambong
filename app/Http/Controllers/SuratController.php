@@ -8,17 +8,21 @@ use Illuminate\Support\Str;
 
 class SuratController extends Controller
 {
+    private function getListSurat() {
+        return [
+            'skck' => 'Pengantar SKCK',
+            'pengantar-umum' => 'Pengantar Umum',
+            'keterangan-umum' => 'Keterangan Umum',
+            'keterangan-usaha' => 'Keterangan Usaha',
+            'keterangan-tidak-mampu' => 'Keterangan Tidak Mampu',
+            'domisili-usaha' => 'Domisili Usaha',
+            'domisili-tempat-tinggal' => 'Domisili Tempat Tinggal',
+        ];
+    }
+
     public function create($tipe)
     {
-        $list_surat = [
-            'skck' => 'Surat Pengantar SKCK',
-            'pengantar-umum' => 'Surat Pengantar Umum',
-            'keterangan-umum' => 'Surat Keterangan Umum',
-            'keterangan-usaha' => 'Surat Keterangan Usaha',
-            'keterangan-tidak-mampu' => 'Surat Keterangan Tidak Mampu (SKTM)',
-            'domisili-usaha' => 'Surat Keterangan Domisili Usaha',
-            'domisili-tempat-tinggal' => 'Surat Keterangan Domisili Tempat Tinggal',
-        ];
+        $list_surat = $this->getListSurat();
 
         if (!isset($list_surat[$tipe])) {
             return redirect()->route('warga.dashboard')->with('error', 'Jenis surat tidak valid.');
@@ -31,10 +35,14 @@ class SuratController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'tipe_slug' => 'required',
             'keperluan' => 'required',
             'scan_pengantar_rt' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'scan_ktp_kk' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        $list_surat = $this->getListSurat();
+        $nama_surat_asli = $list_surat[$request->tipe_slug] ?? 'Surat Umum';
 
         // Upload File
         $file_rt = $request->file('scan_pengantar_rt')->store('uploads/surat/rt', 'public');
@@ -43,17 +51,16 @@ class SuratController extends Controller
         // Simpan ke Database
         Surat::create([
             'citizen_id' => session('warga_id'),
-            'jenis_surat' => $request->jenis_surat_nama,
+            'jenis_surat' => $nama_surat_asli,
             'keperluan' => $request->keperluan,
             'keterangan' => $request->keterangan,
             
-            // Form Khusus Domisili Usaha
+            // Form Khusus
             'nama_lembaga' => $request->nama_lembaga,
             'penanggung_jawab' => $request->penanggung_jawab,
             'jabatan_penanggung_jawab' => $request->jabatan,
             'alamat_lembaga' => $request->alamat_lembaga,
 
-            // File
             'scan_pengantar_rt' => $file_rt,
             'scan_ktp_kk' => $file_ktp_kk,
             'status' => 'Diajukan',

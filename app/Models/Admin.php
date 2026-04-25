@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable; // Supaya bisa login
+use Illuminate\Foundation\Auth\User as Authenticatable; // Penting untuk Login
+use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
-    protected $table = 'admin';
+    use Notifiable;
+
+    protected $table = 'admin'; // Sesuaikan dengan nama tabel di DB Anda
     protected $guarded = [];
+    protected $hidden = ['password'];
 }
