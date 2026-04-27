@@ -11,6 +11,21 @@
     </button>
 </div>
 
+{{-- ALERT PESAN --}}
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
         <form action="{{ route('admin.pegawai.index') }}" method="GET" class="row g-3">
@@ -36,7 +51,7 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-                    <tr class="text-muted small uppercase">
+                    <tr class="text-muted small">
                         <th class="ps-4">No</th>
                         <th>Nama Lengkap</th>
                         <th>Identitas (NIP/NIPPPK)</th>
@@ -68,9 +83,9 @@
                                 <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="modal" data-bs-target="#modalEdit{{ $p->id }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <form action="{{ route('admin.pegawai.destroy', $p->id) }}" method="POST">
+                                <form action="{{ route('admin.pegawai.destroy', $p->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Hapus data ini?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Hapus data ini? Jika pegawai ini sudah pernah menandatangani surat, data tidak bisa dihapus demi keamanan riwayat.')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -83,34 +98,36 @@
                         <div class="modal-dialog">
                             <form action="{{ route('admin.pegawai.update', $p->id) }}" method="POST" class="modal-content">
                                 @csrf @method('PUT')
-                                <div class="modal-header"><h5>Edit Data</h5></div>
+                                <div class="modal-header"><h5>Edit Data</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label class="form-label">Nama Lengkap</label>
+                                        <label class="form-label small fw-bold">Nama Lengkap</label>
                                         <input type="text" name="nama_lengkap" class="form-control" value="{{ $p->nama_lengkap }}" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Kategori</label>
+                                        <label class="form-label small fw-bold">Kategori</label>
                                         <select name="kategori" class="form-select" required>
                                             <option value="Pegawai" {{ $p->kategori == 'Pegawai' ? 'selected' : '' }}>Pegawai</option>
                                             <option value="Staff" {{ $p->kategori == 'Staff' ? 'selected' : '' }}>Staff</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">NIP (Kosongkan jika Staff)</label>
-                                        <input type="text" name="nip" class="form-control" value="{{ $p->nip }}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label small fw-bold">NIP</label>
+                                            <input type="text" name="nip" class="form-control" value="{{ $p->nip }}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label small fw-bold">NIPPPK</label>
+                                            <input type="text" name="nipppk" class="form-control" value="{{ $p->nipppk }}">
+                                        </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">NIPPPK (Kosongkan jika Pegawai)</label>
-                                        <input type="text" name="nipppk" class="form-control" value="{{ $p->nipppk }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Jabatan</label>
+                                        <label class="form-label small fw-bold">Jabatan</label>
                                         <input type="text" name="jabatan" class="form-control" value="{{ $p->jabatan }}" required>
                                     </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-dark px-4 rounded-pill">Update</button>
+                                <div class="modal-footer border-0">
+                                    <button type="submit" class="btn btn-dark px-4 rounded-pill">Update Data</button>
                                 </div>
                             </form>
                         </div>
@@ -127,7 +144,7 @@
     </div>
 </div>
 
-{{-- MODAL TAMBAH --}}
+{{-- MODAL TAMBAH (Sama seperti sebelumnya) --}}
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog">
         <form action="{{ route('admin.pegawai.store') }}" method="POST" class="modal-content shadow">
@@ -146,21 +163,21 @@
                 </div>
                 <div class="mb-3">
                     <label class="small fw-bold">Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" class="form-control bg-light border-0" placeholder="Masukkan nama tanpa gelar" required>
+                    <input type="text" name="nama_lengkap" class="form-control bg-light border-0" required>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="small fw-bold">NIP</label>
-                        <input type="text" name="nip" class="form-control bg-light border-0" placeholder="Khusus PNS">
+                        <input type="text" name="nip" class="form-control bg-light border-0">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="small fw-bold">NIPPPK</label>
-                        <input type="text" name="nipppk" class="form-control bg-light border-0" placeholder="Khusus Staff">
+                        <input type="text" name="nipppk" class="form-control bg-light border-0">
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="small fw-bold">Jabatan</label>
-                    <input type="text" name="jabatan" class="form-control bg-light border-0" placeholder="Contoh: Lurah, Kasi, Staff IT" required>
+                    <input type="text" name="jabatan" class="form-control bg-light border-0" required>
                 </div>
             </div>
             <div class="modal-footer border-0">

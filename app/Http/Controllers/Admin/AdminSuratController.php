@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Surat;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf; 
 
 class AdminSuratController extends Controller
 {
@@ -103,7 +104,7 @@ public function dashboard()
             'officer_id' => $request->officer_id,
         ]);
 
-        return redirect()->route('admin.surat.index')->with('success', 'Surat berhasil divalidasi!');
+       return redirect()->back()->with('success', 'Surat berhasil divalidasi!');
     }
 
     /**
@@ -125,6 +126,16 @@ public function dashboard()
         return redirect()->route('admin.surat.index')->with('error', 'Pengajuan surat telah ditolak.');
     }
 
+
+public function cetak($id)
+{
+    // Ambil data surat, warga, dan pegawai yang TTD
+    $surat = Surat::with(['warga', 'pegawai'])->findOrFail($id);
+
+    return view('admin.surat.print_layout', compact('surat'));
+}
+
+
     /**
      * Menandai surat telah selesai (Siap diambil/didownload)
      */
@@ -135,4 +146,6 @@ public function dashboard()
 
         return redirect()->back()->with('success', 'Status surat diperbarui menjadi Selesai.');
     }
+
+    
 }

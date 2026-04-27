@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class PegawaiController extends Controller
 {
@@ -12,7 +13,6 @@ class PegawaiController extends Controller
     {
         $query = Pegawai::query();
 
-        // Fitur Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -22,7 +22,6 @@ class PegawaiController extends Controller
             });
         }
 
-        // Fitur Filter Kategori
         if ($request->filled('kategori')) {
             $query->where('kategori', $request->kategori);
         }
@@ -33,26 +32,46 @@ class PegawaiController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'kategori' => 'required|in:Pegawai,Staff',
             'nama_lengkap' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
+            'nip' => 'nullable|string|max:50',
+            'nipppk' => 'nullable|string|max:50',
         ]);
 
-        Pegawai::create($request->all());
+        Pegawai::create($validated);
         return back()->with('success', 'Data berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
         $pegawai = Pegawai::findOrFail($id);
-        $pegawai->update($request->all());
+        
+        $validated = $request->validate([
+            'kategori' => 'required|in:Pegawai,Staff',
+            'nama_lengkap' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'nip' => 'nullable|string|max:50',
+            'nipppk' => 'nullable|string|max:50',
+        ]);
+
+        $pegawai->update($validated);
         return back()->with('success', 'Data berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        Pegawai::destroy($id);
-        return back()->with('success', 'Data berhasil dihapus.');
+        try {
+            $pegawai = Pegawai::findOrFail($id);
+            $pegawai->delete();
+            return back()->with('success', 'Data berhasil dihapus.');
+        } catch (QueryException $e) {
+            // Jika error 23000 (Integrity constraint violation)
+            if ($e->getCode() == "23000") {
+                return back()->with('error', 'Gagal menghapus! Pegawai ini masih terhubung dengan data Surat. Hapus atau ubah data surat terkait terlebih dahulu.');
+            }
+            return back()->with('error', 'Terjadi kesalahan sistem.');
+        }
     }
 }

@@ -90,7 +90,10 @@ Route::prefix('admin')->group(function () {
         Route::delete('/warga/{id}', [AdminWargaController::class, 'destroy'])->name('admin.warga.destroy');
         
         // 5. Fitur Cetak (Akan kita buat selanjutnya)
-        // Route::get('/surat/cetak/{id}', [AdminSuratController::class, 'cetak'])->name('admin.surat.cetak');
+        // Gunakan AdminSuratController sesuai nama class di file Controller Anda
+        Route::post('admin/surat/{id}/proses', [AdminSuratController::class, 'proses'])->name('admin.surat.proses');
+        Route::post('admin/surat/{id}/selesai', [AdminSuratController::class, 'selesai'])->name('admin.surat.updateStatus');
+        Route::get('/surat/cetak/{id}', [AdminSuratController::class, 'cetak'])->name('admin.surat.cetak');
     });
     
 });
