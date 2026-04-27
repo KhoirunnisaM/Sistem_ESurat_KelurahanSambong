@@ -45,20 +45,11 @@ class PegawaiController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $pegawai = Pegawai::findOrFail($id);
-        
-        $validated = $request->validate([
-            'kategori' => 'required|in:Pegawai,Staff',
-            'nama_lengkap' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
-            'nip' => 'nullable|string|max:50',
-            'nipppk' => 'nullable|string|max:50',
-        ]);
-
-        $pegawai->update($validated);
-        return back()->with('success', 'Data berhasil diperbarui.');
-    }
+{
+    $pegawai = Pegawai::findOrFail($id);
+    $pegawai->update($request->all()); // Ini akan mengambil semua data dari form modal
+    return back()->with('success', 'Data berhasil diperbarui.');
+}
 
     public function destroy($id)
     {

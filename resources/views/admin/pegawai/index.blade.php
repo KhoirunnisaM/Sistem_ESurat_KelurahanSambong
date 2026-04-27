@@ -19,13 +19,6 @@
     </div>
 @endif
 
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
         <form action="{{ route('admin.pegawai.index') }}" method="GET" class="row g-3">
@@ -85,53 +78,13 @@
                                 </button>
                                 <form action="{{ route('admin.pegawai.destroy', $p->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Hapus data ini? Jika pegawai ini sudah pernah menandatangani surat, data tidak bisa dihapus demi keamanan riwayat.')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Hapus data ini?')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
                             </div>
                         </td>
                     </tr>
-
-                    {{-- MODAL EDIT --}}
-                    <div class="modal fade" id="modalEdit{{ $p->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <form action="{{ route('admin.pegawai.update', $p->id) }}" method="POST" class="modal-content">
-                                @csrf @method('PUT')
-                                <div class="modal-header"><h5>Edit Data</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold">Nama Lengkap</label>
-                                        <input type="text" name="nama_lengkap" class="form-control" value="{{ $p->nama_lengkap }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold">Kategori</label>
-                                        <select name="kategori" class="form-select" required>
-                                            <option value="Pegawai" {{ $p->kategori == 'Pegawai' ? 'selected' : '' }}>Pegawai</option>
-                                            <option value="Staff" {{ $p->kategori == 'Staff' ? 'selected' : '' }}>Staff</option>
-                                        </select>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label small fw-bold">NIP</label>
-                                            <input type="text" name="nip" class="form-control" value="{{ $p->nip }}">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label small fw-bold">NIPPPK</label>
-                                            <input type="text" name="nipppk" class="form-control" value="{{ $p->nipppk }}">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold">Jabatan</label>
-                                        <input type="text" name="jabatan" class="form-control" value="{{ $p->jabatan }}" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer border-0">
-                                    <button type="submit" class="btn btn-dark px-4 rounded-pill">Update Data</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                     @empty
                     <tr><td colspan="6" class="text-center py-5 text-muted small">Data tidak ditemukan.</td></tr>
                     @endforelse
@@ -144,44 +97,92 @@
     </div>
 </div>
 
-{{-- MODAL TAMBAH (Sama seperti sebelumnya) --}}
-<div class="modal fade" id="modalTambah" tabindex="-1">
-    <div class="modal-dialog">
-        <form action="{{ route('admin.pegawai.store') }}" method="POST" class="modal-content shadow">
+{{-- MODAL AREA - Diletakkan di luar tabel agar tidak berantakan --}}
+
+@foreach($pegawais as $p)
+<div class="modal fade" id="modalEdit{{ $p->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('admin.pegawai.update', $p->id) }}" method="POST" class="modal-content shadow border-0">
+            @csrf @method('PUT')
+            <div class="modal-header border-0">
+                <h5 class="fw-bold">Edit Data Personel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="small fw-bold">Nama Lengkap</label>
+                    <input type="text" name="nama_lengkap" class="form-control" value="{{ $p->nama_lengkap }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold">Kategori</label>
+                    <select name="kategori" class="form-select" required>
+                        <option value="Pegawai" {{ $p->kategori == 'Pegawai' ? 'selected' : '' }}>Pegawai (PNS)</option>
+                        <option value="Staff" {{ $p->kategori == 'Staff' ? 'selected' : '' }}>Staff (PPPK/Lainnya)</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="small fw-bold">NIP</label>
+                        <input type="text" name="nip" class="form-control" value="{{ $p->nip }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="small fw-bold">NIPPPK</label>
+                        <input type="text" name="nipppk" class="form-control" value="{{ $p->nipppk }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold">Jabatan</label>
+                    <input type="text" name="jabatan" class="form-control" value="{{ $p->jabatan }}" required>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-dark rounded-pill px-4">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
+
+{{-- MODAL TAMBAH --}}
+<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('admin.pegawai.store') }}" method="POST" class="modal-content shadow border-0">
             @csrf
             <div class="modal-header border-0">
-                <h5 class="fw-bold">Tambah Personel</h5>
+                <h5 class="fw-bold">Tambah Personel Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="small fw-bold">Kategori</label>
-                    <select name="kategori" class="form-select bg-light border-0" required>
+                    <select name="kategori" class="form-select bg-light" required>
                         <option value="Pegawai">Pegawai (PNS)</option>
                         <option value="Staff">Staff (PPPK/Lainnya)</option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label class="small fw-bold">Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" class="form-control bg-light border-0" required>
+                    <input type="text" name="nama_lengkap" class="form-control bg-light" placeholder="Nama tanpa gelar" required>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="small fw-bold">NIP</label>
-                        <input type="text" name="nip" class="form-control bg-light border-0">
+                        <input type="text" name="nip" class="form-control bg-light">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="small fw-bold">NIPPPK</label>
-                        <input type="text" name="nipppk" class="form-control bg-light border-0">
+                        <input type="text" name="nipppk" class="form-control bg-light">
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="small fw-bold">Jabatan</label>
-                    <input type="text" name="jabatan" class="form-control bg-light border-0" required>
+                    <input type="text" name="jabatan" class="form-control bg-light" placeholder="Contoh: Sekretaris" required>
                 </div>
             </div>
             <div class="modal-footer border-0">
-                <button type="submit" class="btn btn-success px-4 rounded-pill">Simpan Data</button>
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-success rounded-pill px-4">Simpan Data</button>
             </div>
         </form>
     </div>

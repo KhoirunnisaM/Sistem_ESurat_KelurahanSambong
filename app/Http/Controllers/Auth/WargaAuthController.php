@@ -15,7 +15,7 @@ class WargaAuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|numeric|digits:16|unique:warga,nik',
             'no_kk' => 'required|numeric|digits:16',
@@ -35,9 +35,12 @@ class WargaAuthController extends Controller
             'required' => 'Kolom :attribute wajib diisi.'
         ]);
 
-        Warga::create($request->all());
+        // Secara otomatis set status_akun menjadi 1 (aktif) saat daftar
+        $validatedData['status_akun'] = 1;
 
-        return redirect()->route('login.warga')->with('success', 'Pendaftaran berhasil! Silakan login.');
+        Warga::create($validatedData);
+
+        return redirect()->route('login.warga')->with('success', 'Pendaftaran berhasil! Akun Anda sudah aktif, silakan login.');
     }
 
     public function showLogin()
@@ -45,43 +48,47 @@ class WargaAuthController extends Controller
         return view('auth.login_warga');
     }
 
-   public function login(Request $request)
-{
-    $request->validate([
-        'nik' => 'required|numeric|digits:16',
-        'tanggal_lahir' => 'required|date',
-    ]);
-
-    $warga = Warga::where('nik', $request->nik)
-                  ->where('tanggal_lahir', $request->tanggal_lahir)
-                  ->first();
-
-    if ($warga) {
-        // SIMPAN SEMUA DATA KE SESSION
-        session([
-            'warga_logged_in' => true,
-            'warga_id'        => $warga->id,
-            'nama_lengkap'    => $warga->nama_lengkap, // Gunakan nama_lengkap
-            'nik'             => $warga->nik,
-            'no_kk'           => $warga->no_kk,
-            'tempat_lahir'    => $warga->tempat_lahir,
-            'tanggal_lahir'   => $warga->tanggal_lahir,
-            'alamat_lengkap'  => $warga->alamat_lengkap, 
-            'rt'              => $warga->rt,
-            'rw'              => $warga->rw,
-            'agama'           => $warga->agama,
-            'pekerjaan'       => $warga->pekerjaan,
-            'jenis_kelamin'   => $warga->jenis_kelamin,
-            'kelurahan'       => $warga->kelurahan ?? 'Sambong',
-            'kecamatan'       => $warga->kecamatan ?? 'Batang',
-            'kabupaten'       => $warga->kabupaten ?? 'Batang'
+    public function login(Request $request)
+    {
+        $request->validate([
+            'nik' => 'required|numeric|digits:16',
+            'tanggal_lahir' => 'required|date',
         ]);
-        
-        return redirect()->route('warga.dashboard');
-    }
 
-    return back()->with('error', 'NIK atau Tanggal Lahir salah.');
-}
+        $warga = Warga::where('nik', $request->nik)
+                      ->where('tanggal_lahir', $request->tanggal_lahir)
+                      ->first();
+
+        if ($warga) {
+            // Validasi apakah akun aktif (status_akun = 1)
+            if (!$warga->status_akun) {
+                return back()->with('error', 'Akun Anda dinonaktifkan oleh Admin. Silakan hubungi kantor kelurahan.');
+            }
+
+            session([
+                'warga_logged_in' => true,
+                'warga_id'        => $warga->id,
+                'nama_lengkap'    => $warga->nama_lengkap,
+                'nik'             => $warga->nik,
+                'no_kk'           => $warga->no_kk,
+                'tempat_lahir'    => $warga->tempat_lahir,
+                'tanggal_lahir'   => $warga->tanggal_lahir,
+                'alamat_lengkap'  => $warga->alamat_lengkap, 
+                'rt'              => $warga->rt,
+                'rw'              => $warga->rw,
+                'agama'           => $warga->agama,
+                'pekerjaan'       => $warga->pekerjaan,
+                'jenis_kelamin'   => $warga->jenis_kelamin,
+                'kelurahan'       => $warga->kelurahan ?? 'Sambong',
+                'kecamatan'       => $warga->kecamatan ?? 'Batang',
+                'kabupaten'       => $warga->kabupaten ?? 'Batang'
+            ]);
+            
+            return redirect()->route('warga.dashboard');
+        }
+
+        return back()->with('error', 'NIK atau Tanggal Lahir salah.');
+    }
 
     public function logout()
     {

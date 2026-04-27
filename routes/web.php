@@ -86,9 +86,13 @@ Route::prefix('admin')->group(function () {
         // 4. Manajemen Warga (Data Master Warga)
         Route::get('/warga', [AdminWargaController::class, 'index'])->name('admin.warga.index');
         Route::get('/warga/{id}', [AdminWargaController::class, 'show'])->name('admin.warga.show');
-        Route::put('/warga/{id}', [AdminWargaController::class, 'update'])->name('admin.warga.update'); // Tambahkan ini untuk edit
-        Route::delete('/warga/{id}', [AdminWargaController::class, 'destroy'])->name('admin.warga.destroy');
-        
+        //Route::put('/warga/{id}', [AdminWargaController::class, 'update'])->name('admin.warga.update'); // Tambahkan ini untuk edit
+        //Route::delete('/warga/{id}', [AdminWargaController::class, 'destroy'])->name('admin.warga.destroy');
+        // 4. Manajemen Warga (Hanya Lihat dan Aktivasi)
+        // Rute khusus untuk mengubah status Aktif/Nonaktif
+        Route::post('/warga/toggle-status/{id}', [AdminWargaController::class, 'toggleStatus'])->name('admin.warga.toggle-status');
+
+
         // 5. Fitur Cetak (Akan kita buat selanjutnya)
         // Gunakan AdminSuratController sesuai nama class di file Controller Anda
         Route::post('admin/surat/{id}/proses', [AdminSuratController::class, 'proses'])->name('admin.surat.proses');
