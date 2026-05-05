@@ -17,38 +17,52 @@ Route::get('/', function () {
 //WARGA
 
 // --- AUTHENTICATION WARGA ---
-Route::get('/register', [WargaAuthController::class, 'showRegister'])->name('register.warga');
-Route::post('/register', [WargaAuthController::class, 'register'])->name('register.warga.store');
-Route::get('/login', [WargaAuthController::class, 'showLogin'])->name('login.warga');
-Route::post('/login', [WargaAuthController::class, 'login'])->name('login.warga.submit');
-Route::post('/logout', [WargaAuthController::class, 'logout'])->name('logout.warga');
+Route::middleware(['guest'])->group(function () {
+    Route::get('/register', [WargaAuthController::class, 'showRegister'])->name('register.warga');
+    Route::post('/register', [WargaAuthController::class, 'register'])->name('register.warga.store');
+    Route::get('/login', [WargaAuthController::class, 'showLogin'])->name('login.warga');
+    Route::post('/login', [WargaAuthController::class, 'login'])->name('login.warga.submit');
+    // Tambahkan di dalam group middleware warga_auth
+    Route::get('/api/stats-realtime', [WargaController::class, 'getStatsRealtime'])->name('warga.stats.realtime');
+});
 
-// --- GROUP ROUTE WARGA (Proteksi Middleware) ---
+// --- AUTHENTICATED ROUTES (Sudah Login) ---
 Route::middleware(['warga_auth'])->group(function () {
     
-    // DASHBOARD 
-    Route::get('/dashboard', [WargaController::class, 'index'])->name('warga.dashboard');
-    Route::get('/profil', function () {
-        return view('warga.profil'); 
-        })->name('warga.profil');
+    // Logika Logout
+    Route::post('/logout', [WargaAuthController::class, 'logout'])->name('logout.warga');
 
-// Route Detail, Batal, Edit
-// Route untuk Detail Surat (AJAX)
-// Route Batalkan Surat
-    Route::post('/warga/surat/batal/{id}', [WargaController::class, 'batalkan'])->name('warga.surat.batal');
-// Placeholder Edit (sesuaikan dengan controller edit Anda nantinya)
-//Route::get('/warga/surat/edit/{id}', [WargaController::class, 'edit'])->name('warga.surat.edit');
-//Route::put('/warga/surat/update/{id}', [WargaController::class, 'update'])->name('warga.surat.update'); 
-//Route::get('/warga/surat/detail/{id}', [WargaController::class, 'showDetail']);
+    // 1. Dashboard Utama
+    Route::get('/dashboard', [WargaController::class, 'dashboard'])->name('warga.dashboard');
 
-Route::get('/warga/surat/detail/{id}', [WargaController::class, 'showDetail'])->name('warga.surat.detail');
-Route::get('/warga/surat/edit/{id}', [WargaController::class, 'edit'])->name('warga.surat.edit');
-Route::put('/warga/surat/update/{id}', [WargaController::class, 'update'])->name('warga.surat.update');
+    // 2. Halaman Ajukan Surat (Pilihan Jenis Surat)
+    Route::get('/ajukan-surat', [WargaController::class, 'ajukanSurat'])->name('warga.ajukan');
 
-    // --- PROSES PENGAJUAN SURAT ---
-    Route::get('/buat-surat/{tipe}', [SuratController::class, 'create'])->name('surat.buat');
+    // 3. Halaman Riwayat Surat (Daftar Semua Surat)
+    Route::get('/riwayat-surat', [WargaController::class, 'riwayatSurat'])->name('warga.riwayat');
+
+    // 4. Halaman Profil Lengkap
+    Route::get('/profil-saya', [WargaController::class, 'profil'])->name('warga.profil');
+    Route::put('/profile/update', [WargaController::class, 'updateProfile'])->name('warga.profile.update');
+
+    // --- MANAJEMEN SURAT (DETAIL, EDIT, BATAL) ---
+    Route::prefix('warga/surat')->name('warga.surat.')->group(function() {
+        Route::get('/detail/{id}', [WargaController::class, 'showDetail'])->name('detail');
+        Route::get('/edit/{id}', [WargaController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [WargaController::class, 'update'])->name('update');
+        Route::post('/batal/{id}', [WargaController::class, 'batalkan'])->name('batal');
+    });
+
+    // --- PROSES FORM INPUT SURAT (LOGIC DARI SURATCONTROLLER) ---
+    Route::get('/form-surat/{tipe}', [SuratController::class, 'create'])->name('surat.buat');
     Route::post('/simpan-surat', [SuratController::class, 'store'])->name('surat.store');
 });
+
+// Redirect root ke dashboard jika sudah login, atau ke login jika belum
+Route::get('/', function () {
+    return session()->has('warga_logged_in') ? redirect()->route('warga.dashboard') : redirect()->route('login.warga');
+});
+
 
 
 //ADMIN

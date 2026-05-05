@@ -119,7 +119,7 @@
 
             <div class="mt-4">
                 <button type="submit" class="btn btn-success px-5 py-2 fw-bold shadow-sm">KIRIM PENGAJUAN</button>
-                <a href="{{ route('warga.dashboard') }}" class="btn btn-light px-4 py-2 border ms-2">Batal</a>
+                <a href="{{ route('warga.ajukan') }}" class="btn btn-light px-4 py-2 border ms-2">Batal</a>
             </div>
         </form>
     </div>

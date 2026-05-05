@@ -1,81 +1,87 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    :root { --primary-green: #198754; --secondary-green: #20c997; }
-    .card-main { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-    .btn-create {
-        background: linear-gradient(45deg, var(--primary-green), var(--secondary-green));
-        border: none; color: white; padding: 10px 25px; border-radius: 10px; font-weight: 600;
-    }
-    .status-badge { padding: 6px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; display: inline-block; min-width: 80px; text-align: center; }
-    .bg-proses { background-color: #0dcaf0; color: #fff; }
-    .bg-diajukan { background-color: #ffc107; color: #000; }
-    .bg-selesai { background-color: #198754; color: #fff; }
-    .bg-batal { background-color: #6c757d; color: #fff; }
-</style>
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold">Halo, {{ session('nama_lengkap') }}!</h2>
+        <p class="text-muted">
+            NIK: {{ session('nik') }} | Alamat: {{ session('alamat_lengkap') }}, RT {{ session('rt') }}/RW {{ session('rw') }}, Kel. {{ session('kelurahan') }}
+        </p>
+    </div>
 
-<div class="container py-5">
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm mb-4 alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <div class="card card-main bg-white">
-        <div class="card-body p-4">
-            <div class="d-md-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 class="fw-bold mb-1">Daftar Pengajuan Surat</h4>
-                    <p class="text-muted small mb-0">Klik detail untuk melihat rincian atau mengubah data.</p>
-                </div>
-                <button class="btn btn-create shadow-sm mt-3 mt-md-0" data-bs-toggle="modal" data-bs-target="#pilihSuratModal">
-                    <i class="bi bi-plus-circle me-2"></i> BUAT SURAT BARU
-                </button>
+    <!-- Statistik KPI -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3">
+                <small class="text-muted d-block mb-2"><i class="bi bi-clock"></i> Diajukan</small>
+                <!-- Tambah ID stat-diajukan -->
+                <h2 class="fw-bold mb-0" id="stat-diajukan">{{ $stats['diajukan'] }}</h2>
             </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #0dcaf0 !important;">
+                <small class="text-muted d-block mb-2"><i class="bi bi-arrow-repeat"></i> Diproses</small>
+                <!-- Tambah ID stat-diproses -->
+                <h2 class="fw-bold mb-0" id="stat-diproses">{{ $stats['diproses'] }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #198754 !important;">
+                <small class="text-muted d-block mb-2"><i class="bi bi-check-circle"></i> Selesai</small>
+                <!-- Tambah ID stat-selesai -->
+                <h2 class="fw-bold mb-0" id="stat-selesai">{{ $stats['selesai'] }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #dc3545 !important;">
+                <small class="text-muted d-block mb-2"><i class="bi bi-x-circle"></i> Ditolak/Dibatalkan</small>
+                <!-- Tambah ID stat-ditolak -->
+                <h2 class="fw-bold mb-0" id="stat-ditolak">{{ $stats['ditolak'] }}</h2>
+            </div>
+        </div>
+    </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="px-4">No. Pengajuan</th>
-                            <th>Jenis Surat</th>
-                            <th>Tanggal</th>
-                            <th>Status</th>
-                            <th class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($riwayat_surat as $surat)
-                        <tr>
-                            <td class="px-4 text-muted small fw-bold">#{{ str_pad($surat->id, 5, '0', STR_PAD_LEFT) }}</td>
-                            <td class="fw-bold">{{ $surat->jenis_surat }}</td>
-                            <td>{{ $surat->created_at->format('d/m/Y') }}</td>
-                            <td>
-                                @php
-                                    $statusClass = [
-                                        'Diajukan' => 'diajukan',
-                                        'Proses' => 'proses',
-                                        'Selesai' => 'selesai',
-                                        'Batal' => 'batal'
-                                    ][$surat->status] ?? 'diajukan';
-                                @endphp
-                                <span class="status-badge bg-{{ $statusClass }}">{{ $surat->status }}</span>
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ route('warga.surat.detail', $surat->id) }}" class="btn btn-sm btn-outline-primary px-3 rounded-pill">
-                                    <i class="bi bi-search me-1"></i> Detail
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada pengajuan surat.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Pengajuan Terbaru</h5>
+                    <a href="{{ route('warga.riwayat') }}" class="btn btn-sm btn-link text-decoration-none">Lihat Semua</a>
+                </div>
+                <!-- Tambah ID list-terbaru di sini -->
+                <div class="list-group list-group-flush" id="list-terbaru">
+                    @include('warga.partials.list_terbaru', ['terbaru' => $terbaru])
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 bg-success text-white">
+                <h5 class="fw-bold">Butuh Surat?</h5>
+                <p class="small">Ajukan surat keterangan atau pengantar secara online tanpa antri.</p>
+                <a href="{{ route('warga.ajukan') }}" class="btn btn-light btn-sm fw-bold">BUAT SURAT</a>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function updateStats() {
+        fetch("{{ route('warga.stats.realtime') }}")
+            .then(response => response.json())
+            .then(data => {
+                // Update Angka KPI (Pastikan key JSON sama dengan ID HTML)
+                document.getElementById('stat-diajukan').innerText = data.stats.diajukan;
+                document.getElementById('stat-diproses').innerText = data.stats.diproses;
+                document.getElementById('stat-selesai').innerText = data.stats.selesai;
+                document.getElementById('stat-ditolak').innerText = data.stats.ditolak;
+
+                // Update List Terbaru
+                document.getElementById('list-terbaru').innerHTML = data.html;
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Refresh setiap 3 detik
+    setInterval(updateStats, 3000);
+</script>
 @endsection

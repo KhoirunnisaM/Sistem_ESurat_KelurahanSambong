@@ -8,6 +8,7 @@ class Surat extends Model
 {
     protected $table = 'surat';
     protected $guarded = [];
+    
 
     // Surat ini milik satu warga
     public function warga()
