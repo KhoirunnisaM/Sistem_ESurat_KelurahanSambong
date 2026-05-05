@@ -37,7 +37,7 @@ return new class extends Migration
     $table->foreignId('officer_id')->nullable()->constrained('pegawai');
 
     // Status
-    $table->enum('status', ['Diajukan', 'Diproses', 'Ditolak', 'Selesai'])->default('Diajukan');
+    $table->enum('status', ['Diajukan', 'Diproses', 'Ditolak', 'Selesai', 'Dibatalkan'])->default('Diajukan');
     $table->text('alasan_ditolak')->nullable();
     $table->timestamps();
 });

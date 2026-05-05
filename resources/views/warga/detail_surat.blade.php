@@ -11,7 +11,7 @@
                     <p class="text-muted small mb-0">ID Pengajuan: <span class="fw-bold text-primary">{{ $no_surat_format }}</span></p>
                 </div>
                 <div class="d-flex gap-2">
-                   <a href="{{ url()->previous() }}" class="btn btn-white bg-white border shadow-sm rounded-pill px-4">
+                   <a href="{{ session('url_asal_surat', route('warga.riwayat')) }}" class="btn btn-white bg-white border shadow-sm rounded-pill px-4">
     <i class="bi bi-arrow-left me-2"></i>Kembali
 </a>
                 </div>

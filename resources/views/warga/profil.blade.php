@@ -35,9 +35,12 @@
                             <h6 class="fw-bold text-primary text-uppercase small mb-4">Informasi Pribadi</h6>
                             <div class="vstack gap-3">
                                 <div>
-                                    <label class="text-muted small d-block">Tempat, Tanggal Lahir</label>
-                                    <span class="fw-semibold">{{ session('tempat_lahir') }}, {{ date('d-m-Y', strtotime(session('tanggal_lahir'))) }}</span>
-                                </div>
+    <label class="text-muted small d-block">Tempat, Tanggal Lahir</label>
+    <span class="fw-semibold">
+        {{ session('tempat_lahir') }}, 
+        {{ \Carbon\Carbon::parse(session('tanggal_lahir'))->translatedFormat('d F Y') }}
+    </span>
+</div>
                                 <div>
                                     <label class="text-muted small d-block">Agama</label>
                                     <span class="fw-semibold">{{ session('agama') }}</span>

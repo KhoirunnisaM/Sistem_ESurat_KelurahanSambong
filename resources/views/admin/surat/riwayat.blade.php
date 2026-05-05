@@ -3,7 +3,7 @@
 @section('admin_content')
 <div class="mb-4">
     <h4 class="fw-bold text-dark">Riwayat Pengajuan Surat</h4>
-    <p class="text-muted small">Arsip permohonan dengan status <b>SELESAI</b> dan <b>DITOLAK</b>.</p>
+    <p class="text-muted small">Arsip permohonan dengan status <b>SELESAI</b>, <b>DITOLAK</b>, dan <b>DIBATALKAN</b>.</p>
 </div>
 
 <div class="card card-custom bg-white border-0 shadow-sm">
@@ -31,6 +31,7 @@
                         <th>Pemohon</th>
                         <th>Layanan & Detail</th>
                         <th>Waktu Pengajuan</th>
+                        <th>Waktu Selesai/Batal</th>
                         <th>Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -48,14 +49,12 @@
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             
-                            {{-- Jika Selesai tampilkan Nomor Surat --}}
                             @if($s->status == 'Selesai' && $s->nomor_surat)
                                 <div class="mt-1">
                                     <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
                                         <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
                                     </span>
                                 </div>
-                            {{-- Jika Ditolak tampilkan Alasan Penolakan dari kolom alasan_ditolak --}}
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
                                     <div class="p-2 bg-light-danger rounded border-start border-3 border-danger" style="max-width: 250px;">
@@ -65,6 +64,10 @@
                                         </small>
                                     </div>
                                 </div>
+                            @elseif($s->status == 'Dibatalkan')
+                                <div class="mt-1">
+                                    <small class="text-muted italic" style="font-size: 0.7rem;">* Dibatalkan oleh warga</small>
+                                </div>
                             @endif
                         </td>
                         <td>
@@ -72,10 +75,16 @@
                             <small class="text-muted">{{ $s->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
+                            {{-- Waktu Selesai/Batal/Tolak diambil dari updated_at --}}
+                            <div class="fw-bold text-primary small">{{ $s->updated_at->format('d/m/Y') }}</div>
+                            <small class="text-muted">{{ $s->updated_at->format('H:i') }} WIB</small>
+                        </td>
+                        <td>
                             @php
                                 $statusClass = [
-                                    'Selesai' => 'bg-light-success text-success border-success',
-                                    'Ditolak'  => 'bg-light-danger text-danger border-danger'
+                                    'Selesai'    => 'bg-light-success text-success border-success',
+                                    'Ditolak'    => 'bg-light-danger text-danger border-danger',
+                                    'Dibatalkan' => 'bg-light-secondary text-secondary border-secondary'
                                 ];
                             @endphp
                             <span class="badge {{ $statusClass[$s->status] ?? 'bg-light text-secondary' }} px-2 py-1" style="font-size: 0.65rem;">
@@ -90,7 +99,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted small">Belum ada riwayat data.</td>
+                        <td colspan="7" class="text-center py-5 text-muted small">Belum ada riwayat data.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -107,8 +116,10 @@
 <style>
     .bg-light-success { background-color: #e8f5e9 !important; border: 1px solid #198754; }
     .bg-light-danger { background-color: #ffebee !important; border: 1px solid #dc3545; }
+    .bg-light-secondary { background-color: #f8f9fa !important; border: 1px solid #6c757d; }
     .table-custom thead th { padding: 15px 10px; background-color: #f8f9fa; }
     .table-custom tbody td { padding: 15px 10px; }
     .badge { border-width: 1px; border-style: solid; font-weight: 600; letter-spacing: 0.3px; }
+    .italic { font-style: italic; }
 </style>
 @endsection

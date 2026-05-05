@@ -26,7 +26,7 @@ class PegawaiController extends Controller
             $query->where('kategori', $request->kategori);
         }
 
-        $pegawais = $query->latest()->paginate(10);
+        $pegawais = $query->oldest()->paginate(10);
         return view('admin.pegawai.index', compact('pegawais'));
     }
 

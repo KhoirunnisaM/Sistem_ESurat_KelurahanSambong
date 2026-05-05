@@ -30,14 +30,17 @@
                Selesai
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'ditolak']) }}" 
-               class="btn {{ request('status') == 'ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn {{ request('status') == 'ditolak' || request('status') == 'dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               Ditolak
+            </a>
+             <a href="{{ route('warga.riwayat', ['status' => 'dibatalkan']) }}" 
+               class="btn {{ request('status') == 'dibatalkan' || request('status') == 'dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
                Dibatalkan
             </a>
         </div>
 
         <!-- Filter Tanggal & Jenis Surat -->
         <form action="{{ route('warga.riwayat') }}" method="GET" class="row g-2 mb-4">
-            {{-- Tetapkan status saat ini agar filter tidak hilang jika hanya ingin filter tanggal/cari --}}
             <input type="hidden" name="status" value="{{ request('status') }}">
             
             <div class="col-md-3">
@@ -58,7 +61,6 @@
                         <i class="bi bi-filter"></i> Filter
                     </button>
                     
-                    {{-- Tombol Clear Filter --}}
                     @if(request('status') || request('tanggal') || request('cari'))
                         <a href="{{ route('warga.riwayat') }}" class="btn btn-outline-danger w-100 fw-bold">
                             <i class="bi bi-x-circle"></i> Bersihkan
@@ -82,10 +84,19 @@
                 <tbody>
                     @forelse($riwayat as $r)
                     <tr>
-                        <td class="small text-muted">{{ $r->created_at->format('d/m/Y') }}</td>
+                        <td class="small text-muted">{{ $r->created_at->format('d/m/Y, H:i') }}</td>
                         <td>
                             <div class="fw-bold text-dark">{{ $r->jenis_surat }}</div>
-                            <small class="text-muted d-md-none">{{ $r->created_at->format('d/m/Y') }}</small>
+                            <small class="text-muted d-md-none">{{ $r->created_at->format('d/m/Y, H:i') }}</small>
+                            
+                            {{-- Tampilkan Alasan jika Ditolak oleh Admin --}}
+                            @if($r->status == 'Ditolak' && $r->alasan_ditolak)
+                                <div class="mt-1">
+                                    <small class="text-danger d-block italic" style="font-size: 0.75rem;">
+                                        <strong>Alasan Ditolak:</strong> {{ $r->alasan_ditolak }}
+                                    </small>
+                                </div>
+                            @endif
                         </td>
                         <td>
                             @php
@@ -93,12 +104,21 @@
                                 $label = $r->status;
                                 $color = 'bg-light text-dark';
                                 
-                                if($statusDb == 'diajukan') { $color = 'bg-warning-subtle text-warning border-warning'; }
-                                elseif($statusDb == 'diproses') { $color = 'bg-info-subtle text-info border-info'; }
-                                elseif($statusDb == 'selesai') { $color = 'bg-success-subtle text-success border-success'; }
-                                elseif($statusDb == 'ditolak') { $color = 'bg-danger-subtle text-danger border-danger'; $label = 'Dibatalkan'; }
+                                if($statusDb == 'diajukan') { 
+                                    $color = 'bg-warning-subtle text-warning border-warning'; 
+                                } elseif($statusDb == 'diproses') { 
+                                    $color = 'bg-info-subtle text-info border-info'; 
+                                } elseif($statusDb == 'selesai') { 
+                                    $color = 'bg-success-subtle text-success border-success'; 
+                                } elseif($statusDb == 'ditolak') { 
+                                    $color = 'bg-danger-subtle text-danger border-danger'; 
+                                    $label = 'Ditolak'; 
+                                } elseif($statusDb == 'dibatalkan') { 
+                                    $color = 'bg-secondary-subtle text-secondary border-secondary'; 
+                                    $label = 'Dibatalkan'; 
+                                }
                             @endphp
-                            <span class="badge border {{ $color }} rounded-pill px-3 shadow-sm">{{ $label }}</span>
+                            <span class="badge border {{ $color }} rounded-pill px-3 shadow-sm">{{ strtoupper($label) }}</span>
                         </td>
                         <td class="text-end">
                             <a href="{{ route('warga.surat.detail', $r->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm">
@@ -128,5 +148,15 @@
         background-color: #f8f9fa;
         border-color: #dee2e6;
     }
+
+    .italic {
+        font-style: italic;
+    }
+
+    .bg-warning-subtle { background-color: #fff3cd !important; }
+    .bg-info-subtle { background-color: #cff4fc !important; }
+    .bg-success-subtle { background-color: #d1e7dd !important; }
+    .bg-danger-subtle { background-color: #f8d7da !important; }
+    .bg-secondary-subtle { background-color: #e2e3e5 !important; }
 </style>
 @endsection

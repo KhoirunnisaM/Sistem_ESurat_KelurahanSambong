@@ -16,20 +16,21 @@ class AdminSuratController extends Controller
      */
 
     public function dashboard()
-    {
-        // Mengambil statistik untuk kotak dashboard
-        $stats = [
-            'diajukan' => Surat::where('status', 'Diajukan')->count(),
-            'diproses' => Surat::where('status', 'Diproses')->count(),
-            'ditolak'  => Surat::where('status', 'Ditolak')->count(),
-            'selesai'  => Surat::where('status', 'Selesai')->count(),
-        ];
+{
+    // Mengambil statistik untuk kotak dashboard
+    $stats = [
+        'diajukan' => Surat::where('status', 'Diajukan')->count(),
+        'diproses' => Surat::where('status', 'Diproses')->count(),
+        // Menggunakan whereIn untuk mengambil beberapa status sekaligus
+        'ditolak'  => Surat::whereIn('status', ['Ditolak', 'Dibatalkan'])->count(),
+        'selesai'  => Surat::where('status', 'Selesai')->count(),
+    ];
 
-        // Mengambil 5 surat terbaru untuk tabel dashboard
-        $surat_terbaru = Surat::with('warga')->latest()->take(5)->get();
+    // Mengambil 5 surat terbaru untuk tabel dashboard
+    $surat_terbaru = Surat::with('warga')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('stats', 'surat_terbaru'));
-    }
+    return view('admin.dashboard', compact('stats', 'surat_terbaru'));
+}
 
     public function index(Request $request)
 {
@@ -129,21 +130,19 @@ public function suratMasuk(Request $request)
 
 public function riwayatSurat(Request $request)
 {
-    // Mengambil status 'Selesai' dan 'Ditolak' dari semua hari
-    $query = Surat::with('warga')
-        ->whereIn('status', ['Selesai', 'Ditolak']);
+    $search = $request->get('search');
 
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->whereHas('warga', function($q) use ($search) {
-            $q->where('nama_lengkap', 'LIKE', "%$search%")
-              ->orWhere('nik', 'LIKE', "%$search%");
-        });
-    }
+    $data = Surat::with('warga')
+        ->whereIn('status', ['Selesai', 'Ditolak', 'Dibatalkan'])
+        ->when($search, function ($query) use ($search) {
+            $query->whereHas('warga', function ($q) use ($search) {
+                $q->where('nama_lengkap', 'LIKE', "%$search%")
+                  ->orWhere('nik', 'LIKE', "%$search%");
+            });
+        })
+        ->orderBy('updated_at', 'desc') // Mengurutkan berdasarkan waktu perubahan status terbaru
+        ->paginate(20);
 
-    $data = $query->latest()->paginate(20);
-    
-    // Kita arahkan ke file khusus riwayat
     return view('admin.surat.riwayat', compact('data'));
 }
 
@@ -208,7 +207,7 @@ public function riwayatSurat(Request $request)
             'status' => 'Selesai'
         ]);
 
-        return redirect()->route('admin.surat.riwayat')->with('success', 'Surat berhasil diselesaikan dan diarsipkan.');
+        return redirect()->back()->with('success', 'Surat berhasil diselesaikan dan diarsipkan.');
     }
 
     public function cetak($id)

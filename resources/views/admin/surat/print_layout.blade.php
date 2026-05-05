@@ -110,7 +110,7 @@
                         <td>b. Tempat/Tgl Lahir</td>
                         <td>:</td>
                         {{-- PERBAIKAN FORMAT TANGGAL TANPA JAM --}}
-                        <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d-m-Y') }}</td>
+                        <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d - m - Y') }}</td>
                     </tr>
                     <tr><td>c. Agama</td><td>:</td><td>{{ $surat->warga->agama }}</td></tr>
                     <tr><td>d. Pekerjaan</td><td>:</td><td>{{ ucwords(strtolower($surat->warga->pekerjaan)) }}</td></tr>

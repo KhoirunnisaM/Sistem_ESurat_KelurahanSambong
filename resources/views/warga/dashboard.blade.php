@@ -14,28 +14,24 @@
         <div class="col-md-3">
             <div class="card border-0 shadow-sm p-3">
                 <small class="text-muted d-block mb-2"><i class="bi bi-clock"></i> Diajukan</small>
-                <!-- Tambah ID stat-diajukan -->
                 <h2 class="fw-bold mb-0" id="stat-diajukan">{{ $stats['diajukan'] }}</h2>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #0dcaf0 !important;">
                 <small class="text-muted d-block mb-2"><i class="bi bi-arrow-repeat"></i> Diproses</small>
-                <!-- Tambah ID stat-diproses -->
                 <h2 class="fw-bold mb-0" id="stat-diproses">{{ $stats['diproses'] }}</h2>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #198754 !important;">
                 <small class="text-muted d-block mb-2"><i class="bi bi-check-circle"></i> Selesai</small>
-                <!-- Tambah ID stat-selesai -->
                 <h2 class="fw-bold mb-0" id="stat-selesai">{{ $stats['selesai'] }}</h2>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #dc3545 !important;">
                 <small class="text-muted d-block mb-2"><i class="bi bi-x-circle"></i> Ditolak/Dibatalkan</small>
-                <!-- Tambah ID stat-ditolak -->
                 <h2 class="fw-bold mb-0" id="stat-ditolak">{{ $stats['ditolak'] }}</h2>
             </div>
         </div>
@@ -48,7 +44,6 @@
                     <h5 class="fw-bold mb-0">Pengajuan Terbaru</h5>
                     <a href="{{ route('warga.riwayat') }}" class="btn btn-sm btn-link text-decoration-none">Lihat Semua</a>
                 </div>
-                <!-- Tambah ID list-terbaru di sini -->
                 <div class="list-group list-group-flush" id="list-terbaru">
                     @include('warga.partials.list_terbaru', ['terbaru' => $terbaru])
                 </div>
@@ -69,19 +64,16 @@
         fetch("{{ route('warga.stats.realtime') }}")
             .then(response => response.json())
             .then(data => {
-                // Update Angka KPI (Pastikan key JSON sama dengan ID HTML)
                 document.getElementById('stat-diajukan').innerText = data.stats.diajukan;
                 document.getElementById('stat-diproses').innerText = data.stats.diproses;
                 document.getElementById('stat-selesai').innerText = data.stats.selesai;
                 document.getElementById('stat-ditolak').innerText = data.stats.ditolak;
 
-                // Update List Terbaru
                 document.getElementById('list-terbaru').innerHTML = data.html;
             })
             .catch(error => console.error('Error fetching data:', error));
     }
 
-    // Refresh setiap 3 detik
     setInterval(updateStats, 3000);
 </script>
 @endsection

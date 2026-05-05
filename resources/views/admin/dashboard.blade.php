@@ -35,7 +35,7 @@
     <div class="col-6 col-md-3">
         <div class="card card-custom stat-card bg-white h-100 p-3 shadow-sm border-0">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <div class="h6 text-muted mb-0 small">Ditolak</div>
+                <div class="h6 text-muted mb-0 small">Ditolak/dibatalkan</div>
                 <div class="icon-shape bg-light-danger text-danger rounded-pill px-2 py-1 small">
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
