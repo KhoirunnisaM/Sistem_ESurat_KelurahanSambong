@@ -87,8 +87,11 @@ Route::prefix('admin')->group(function () {
         // 2. Manajemen Surat (Index, Detail, Proses, Tolak)
         Route::get('/surat', [AdminSuratController::class, 'index'])->name('admin.surat.index');
         Route::get('/surat/{id}', [AdminSuratController::class, 'show'])->name('admin.surat.show');
+        Route::get('/surat-hari-ini', [AdminSuratController::class, 'suratHariIni'])->name('admin.surat.hari-ini');
         Route::post('/surat/proses/{id}', [AdminSuratController::class, 'proses'])->name('admin.surat.proses');
         Route::post('/surat/tolak/{id}', [AdminSuratController::class, 'tolak'])->name('admin.surat.tolak');
+        Route::get('/admin/surat-masuk', [AdminSuratController::class, 'suratMasuk'])->name('admin.surat.masuk');
+        Route::get('/admin/riwayat-surat', [AdminSuratController::class, 'riwayatSurat'])->name('admin.surat.riwayat');
         
         // 3. Manajemen Pegawai (Data Master Pejabat)
         Route::get('/pegawai', [PegawaiController::class, 'index'])->name('admin.pegawai.index');
@@ -110,8 +113,9 @@ Route::prefix('admin')->group(function () {
         // 5. Fitur Cetak (Akan kita buat selanjutnya)
         // Gunakan AdminSuratController sesuai nama class di file Controller Anda
         Route::post('admin/surat/{id}/proses', [AdminSuratController::class, 'proses'])->name('admin.surat.proses');
-        Route::post('admin/surat/{id}/selesai', [AdminSuratController::class, 'selesai'])->name('admin.surat.updateStatus');
+        Route::post('admin/surat/{id}/selesai', [AdminSuratController::class, 'selesai'])->name('admin.surat.selesai');
         Route::get('/surat/cetak/{id}', [AdminSuratController::class, 'cetak'])->name('admin.surat.cetak');
+        Route::post('/admin/surat/{id}/update-cetak', [SuratController::class, 'updateCetak'])->name('admin.surat.update-cetak');
     });
     
 });

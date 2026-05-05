@@ -109,11 +109,11 @@
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
 
-            <a href="{{ route('admin.surat.index', ['filter' => 'masuk']) }}" class="list-group-item list-group-item-action {{ request('filter') == 'masuk' ? 'active' : '' }}">
+            <a href="{{ route('admin.surat.masuk', ['filter' => 'masuk']) }}" class="list-group-item list-group-item-action {{ request('filter') == 'masuk' ? 'active' : '' }}">
                 <i class="bi bi-envelope-exclamation"></i> Surat Masuk
             </a>
 
-            <a href="{{ route('admin.surat.index', ['filter' => 'riwayat']) }}" class="list-group-item list-group-item-action {{ request('filter') == 'riwayat' ? 'active' : '' }}">
+            <a href="{{ route('admin.surat.riwayat', ['filter' => 'riwayat']) }}" class="list-group-item list-group-item-action {{ request('filter') == 'riwayat' ? 'active' : '' }}">
                 <i class="bi bi-clock-history"></i> Riwayat Surat
             </a>
             

@@ -2,7 +2,7 @@
 
 @section('admin_content')
 
-{{-- 1. TAMPILAN RINGKASAN AKTIVITAS (Hanya muncul jika bukan halaman filter/riwayat) --}}
+{{-- 1. TAMPILAN RINGKASAN AKTIVITAS (Sesuai kode awal Anda) --}}
 @if(!request('filter'))
 <div class="mb-4">
     <h4 class="fw-bold text-dark">Ringkasan Aktivitas</h4>
@@ -57,7 +57,7 @@
 </div>
 @endif
 
-{{-- 2. BAGIAN TABEL DATA --}}
+{{-- 2. BAGIAN TABEL DATA (Sudah diselaraskan dengan halaman detail harian) --}}
 <div class="card card-custom bg-white border-0 shadow-sm">
     <div class="card-body p-4">
         <div class="d-md-flex justify-content-between align-items-center mb-4">
@@ -65,16 +65,20 @@
                 <h5 class="fw-bold mb-1">
                     @if(request('filter') == 'masuk') Daftar Surat Masuk 
                     @elseif(request('filter') == 'riwayat') Daftar Riwayat Surat 
-                    @else Permintaan Surat (7 Teratas) 
+                    @else Surat Masuk Hari Ini
                     @endif
                 </h5>
-                <p class="text-muted small mb-0">Urutan berdasarkan waktu pengajuan terdahulu.</p>
+                <p class="text-muted small mb-0">
+                    @if(!request('filter') && !request('search'))
+                        Menampilkan permohonan yang diajukan khusus hari ini.
+                    @else
+                        Urutan berdasarkan waktu pengajuan terdahulu.
+                    @endif
+                </p>
             </div>
             
             <div class="mt-3 mt-md-0 d-flex gap-2">
-                {{-- Form Pencarian & Filter Status --}}
                 <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2">
-                    {{-- Dropdown Filter Status (Hanya muncul di halaman daftar) --}}
                     @if(request('filter'))
                         <input type="hidden" name="filter" value="{{ request('filter') }}">
                         <select name="status" class="form-select form-select-sm border-0 bg-light rounded-pill px-3" onchange="this.form.submit()">
@@ -107,19 +111,14 @@
                     <tr class="text-muted small text-uppercase" style="font-size: 0.7rem;">
                         <th class="ps-4">No</th>
                         <th>Pemohon</th>
-                        <th>Jenis Surat</th>
+                        <th>Layanan & Detail</th>
                         <th>Waktu Pengajuan</th>
                         <th>Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @php 
-                        // Limit 7 jika di dashboard utama (tanpa filter/search)
-                        $displayData = (!request('filter') && !request('search')) ? $surat_terbaru->take(7) : $surat_terbaru;
-                    @endphp
-
-                    @forelse($displayData as $index => $s)
+                    @forelse($surat_terbaru as $index => $s)
                     <tr>
                         <td class="ps-4 fw-medium text-muted">
                             @if(method_exists($surat_terbaru, 'firstItem'))
@@ -134,6 +133,21 @@
                         </td>
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
+                            
+                            {{-- PENYELARASAN: Tampilkan Nomor Surat atau Alasan Penolakan --}}
+                            @if(in_array($s->status, ['Diproses', 'Selesai']) && $s->nomor_surat)
+                                <div class="mt-1">
+                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-primary"></i> {{ $s->nomor_surat }}
+                                    </span>
+                                </div>
+                            @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
+                                <div class="mt-1">
+                                    <small class="text-danger d-block lh-sm" style="font-size: 0.7rem; max-width: 220px;">
+                                        <i class="bi bi-exclamation-circle-fill"></i> <b>Alasan:</b> {{ $s->alasan_ditolak }}
+                                    </small>
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <div class="fw-medium text-dark small">{{ $s->created_at->format('d/m/Y') }}</div>
@@ -161,18 +175,17 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted small">Data tidak tersedia.</td>
+                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada data surat yang tersedia.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
         
-        {{-- Footer Tabel: Lihat Semua (Dashboard) atau Pagination (Halaman Daftar) --}}
         <div class="mt-4 text-center">
             @if(!request('filter') && !request('search'))
-                <a href="{{ url()->current() }}?filter=masuk" class="btn btn-sm btn-outline-success rounded-pill px-4">
-                    Lihat Semua Surat <i class="bi bi-arrow-right ms-1"></i>
+                <a href="{{ route('admin.surat.hari-ini') }}" class="btn btn-sm btn-outline-success rounded-pill px-4">
+                    Lihat Selengkapnya <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             @else
                 <div class="d-flex justify-content-center">
@@ -194,5 +207,7 @@
     .bg-light-success { background-color: #e8f5e9 !important; border: 1px solid #198754; }
     .stat-card { border-radius: 12px; }
     .table-custom thead th { padding: 15px 10px; background-color: #f8f9fa; }
+    /* Menambahkan style badge agar konsisten */
+    .badge { border-width: 1px; border-style: solid; font-weight: 600; letter-spacing: 0.3px; }
 </style>
 @endsection

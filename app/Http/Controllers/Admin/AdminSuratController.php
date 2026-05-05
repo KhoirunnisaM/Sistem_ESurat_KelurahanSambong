@@ -7,6 +7,7 @@ use App\Models\Surat;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf; 
+use Carbon\Carbon; 
 
 class AdminSuratController extends Controller
 {
@@ -31,41 +32,48 @@ class AdminSuratController extends Controller
     }
 
     public function index(Request $request)
-    {
-        $query = Surat::with('warga');
+{
+    $query = Surat::with('warga');
 
-        // 1. Filter Status
-        if ($request->filter == 'masuk') {
-            $query->whereIn('status', ['Diajukan', 'Diproses']);
-        } elseif ($request->filter == 'riwayat') {
-            $query->whereIn('status', ['Ditolak', 'Selesai']);
-        }
-
-        // 2. Filter Pencarian
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('jenis_surat', 'LIKE', "%$search%")
-                  ->orWhereHas('warga', function($w) use ($search) {
-                      $w->where('nama_lengkap', 'LIKE', "%$search%")
-                        ->orWhere('nik', 'LIKE', "%$search%");
-                  });
-            });
-        }
-
-        // 3. Urutan & Paginasi
-        $surat_terbaru = $query->oldest()->paginate(10);
-
-        // Statistik
-        $stats = [
-            'diajukan' => Surat::where('status', 'Diajukan')->count(),
-            'diproses' => Surat::where('status', 'Diproses')->count(),
-            'ditolak'  => Surat::where('status', 'Ditolak')->count(),
-            'selesai'  => Surat::where('status', 'Selesai')->count(),
-        ];
-
-        return view('admin.dashboard', compact('surat_terbaru', 'stats'));
+    // --- LOGIKA TAMBAHAN UNTUK DASHBOARD UTAMA (HARI INI) ---
+    // Jika tidak ada filter dan tidak ada search, tampilkan hanya yang masuk hari ini
+    if (!$request->filled('filter') && !$request->filled('search')) {
+        $query->whereDate('created_at', \Carbon\Carbon::today());
     }
+    // -------------------------------------------------------
+
+    // 1. Filter Status (Fungsi Asli Tetap Ada)
+    if ($request->filter == 'masuk') {
+        $query->whereIn('status', ['Diajukan', 'Diproses']);
+    } elseif ($request->filter == 'riwayat') {
+        $query->whereIn('status', ['Ditolak', 'Selesai']);
+    }
+
+    // 2. Filter Pencarian (Fungsi Asli Tetap Ada)
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('jenis_surat', 'LIKE', "%$search%")
+              ->orWhereHas('warga', function($w) use ($search) {
+                  $w->where('nama_lengkap', 'LIKE', "%$search%")
+                    ->orWhere('nik', 'LIKE', "%$search%");
+              });
+        });
+    }
+
+    // 3. Urutan & Paginasi
+    $surat_terbaru = $query->oldest()->paginate(10);
+
+    // Statistik
+    $stats = [
+        'diajukan' => Surat::where('status', 'Diajukan')->count(),
+        'diproses' => Surat::where('status', 'Diproses')->count(),
+        'ditolak'  => Surat::where('status', 'Ditolak')->count(),
+        'selesai'  => Surat::where('status', 'Selesai')->count(),
+    ];
+
+    return view('admin.dashboard', compact('surat_terbaru', 'stats'));
+}
 
     /**
      * Menampilkan detail surat dan form validasi
@@ -77,6 +85,68 @@ class AdminSuratController extends Controller
 
         return view('admin.surat.detail', compact('surat', 'pegawai'));
     }
+
+    public function suratHariIni(Request $request)
+{
+    $query = Surat::with('warga')->whereDate('created_at', \Carbon\Carbon::today());
+
+    // Fitur Pencarian tetap berfungsi di halaman ini
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('jenis_surat', 'LIKE', "%$search%")
+              ->orWhereHas('warga', function($w) use ($search) {
+                  $w->where('nama_lengkap', 'LIKE', "%$search%")
+                    ->orWhere('nik', 'LIKE', "%$search%");
+              });
+        });
+    }
+
+    $data = $query->latest()->paginate(20);
+
+    return view('admin.surat.surat_hari_ini', compact('data'));
+}
+
+public function suratMasuk(Request $request)
+{
+    // Mengambil status 'Diajukan' dan 'Diproses' dari semua hari
+    $query = Surat::with('warga')
+        ->whereIn('status', ['Diajukan', 'Diproses']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->whereHas('warga', function($q) use ($search) {
+            $q->where('nama_lengkap', 'LIKE', "%$search%")
+              ->orWhere('nik', 'LIKE', "%$search%");
+        });
+    }
+
+    $data = $query->latest()->paginate(20);
+    
+    // Kita arahkan ke file khusus surat masuk
+    return view('admin.surat.surat_masuk', compact('data'));
+}
+
+public function riwayatSurat(Request $request)
+{
+    // Mengambil status 'Selesai' dan 'Ditolak' dari semua hari
+    $query = Surat::with('warga')
+        ->whereIn('status', ['Selesai', 'Ditolak']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->whereHas('warga', function($q) use ($search) {
+            $q->where('nama_lengkap', 'LIKE', "%$search%")
+              ->orWhere('nik', 'LIKE', "%$search%");
+        });
+    }
+
+    $data = $query->latest()->paginate(20);
+    
+    // Kita arahkan ke file khusus riwayat
+    return view('admin.surat.riwayat', compact('data'));
+}
+
 
     /**
      * Memproses surat
@@ -107,20 +177,38 @@ class AdminSuratController extends Controller
     /**
      * Menolak pengajuan surat
      */
+    /**
+     * Menolak pengajuan surat dengan alasan
+     */
     public function tolak(Request $request, $id)
-    {
-        $request->validate([
-            'alasan_ditolak' => 'required|string|min:5',
-        ]);
+{
+    $request->validate([
+        'alasan_ditolak' => 'required|string|min:5',
+    ]);
 
+    $surat = Surat::findOrFail($id);
+    $surat->update([
+        'status' => 'Ditolak',
+        'alasan_ditolak' => $request->alasan_ditolak,
+        'nomor_surat' => null 
+    ]);
+
+    // Arahkan ke riwayat atau dashboard
+    return redirect()->back()->with('success', 'Surat telah ditolak.');
+}
+
+    /**
+     * Menandai surat telah selesai (pindah ke riwayat)
+     */
+    public function selesai($id)
+    {
         $surat = Surat::findOrFail($id);
         
         $surat->update([
-            'status' => 'Ditolak',
-            'alasan_ditolak' => $request->alasan_ditolak,
+            'status' => 'Selesai'
         ]);
 
-        return redirect()->route('admin.surat.index')->with('error', 'Pengajuan surat telah ditolak.');
+        return redirect()->route('admin.surat.riwayat')->with('success', 'Surat berhasil diselesaikan dan diarsipkan.');
     }
 
     public function cetak($id)
@@ -135,11 +223,10 @@ class AdminSuratController extends Controller
     /**
      * Menandai surat telah selesai
      */
-    public function selesai($id)
-    {
-        $surat = Surat::findOrFail($id);
-        $surat->update(['status' => 'Selesai']);
+    public function updateCetak($id) {
+    $surat = Surat::findOrFail($id);
+    $surat->update(['is_cetak' => true]); // Pastikan kolom is_cetak ada di database
+    return response()->json(['success' => true]);
+}
 
-        return redirect()->back()->with('success', 'Status surat diperbarui menjadi Selesai.');
-    }
 }
