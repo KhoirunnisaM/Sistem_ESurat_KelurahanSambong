@@ -48,14 +48,14 @@
                                     <label class="text-muted small d-block">Alamat Lengkap</label>
                                     <span class="fw-semibold small">
                                         {{ $warga['alamat_lengkap'] }}, RT.{{ $warga['rt'] }} RW.{{ $warga['rw'] }}, 
-                                        Kel. {{ $warga['kelurahan'] }}, Kec. {{ $warga['kecamatan'] }}, 
-                                        {{ $warga['kabupaten'] }}
+                                        Kel. {{ $warga['kelurahan'] ?? 'Sambong' }}, Kec. {{ $warga['kecamatan'] ?? 'Batang' }}, 
+                                        {{ $warga['kabupaten'] ?? 'Batang' }}, {{ $warga['provinsi'] ?? 'Jawa Tengah' }}
                                     </span>
                                 </div>
                             </div>
 
-                            {{-- KHUSUS SURAT DOMISILI USAHA --}}
-@if(Str::slug($surat->jenis_surat) == 'domisili-usaha' || $surat->jenis_surat == 'Domisili Usaha')
+                            {{-- KHUSUS SURAT DOMISILI USAHA (Berdasarkan jenis_surat_id 4) --}}
+@if($surat->jenis_surat_id == 6)
     <hr class="my-4 opacity-50">
     <h6 class="fw-bold mb-3"><i class="bi bi-shop me-2 text-primary"></i>Detail Usaha / Lembaga</h6>
     <div class="row g-3 p-3 border rounded-4 bg-light-subtle">
@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                <!-- Kolom Kanan: Status & Lampiran (Tetap Sama) -->
+                <!-- Kolom Kanan: Status & Lampiran -->
                 <div class="col-md-5">
                     <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
                         <div class="card-body p-4">

@@ -45,7 +45,7 @@
                             <div class="small text-muted">{{ $s->warga->nik }}</div>
                         </td>
                         <td>
-                            <div class="badge bg-light text-dark border fw-medium">{{ $s->jenis_surat }}</div>
+                            <div class="badge bg-light text-dark border fw-medium">{{ $s->jenisSurat->nama_jenis }}</div>
                             <div class="small text-muted mt-1">{{ $s->created_at->format('d/m/Y H:i') }}</div>
                         </td>
                         <td>

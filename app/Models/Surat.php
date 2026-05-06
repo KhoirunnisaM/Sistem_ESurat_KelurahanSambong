@@ -21,4 +21,9 @@ class Surat extends Model
     {
         return $this->belongsTo(Pegawai::class, 'officer_id');
     }
+
+    public function jenisSurat() {
+    return $this->belongsTo(JenisSurat::class, 'jenis_surat_id');
+}
+
 }

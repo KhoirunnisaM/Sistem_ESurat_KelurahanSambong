@@ -27,7 +27,7 @@ class AdminSuratController extends Controller
     ];
 
     // Mengambil 5 surat terbaru untuk tabel dashboard
-$surat_terbaru = Surat::with('warga')
+$surat_terbaru = Surat::with(['warga', 'jenisSurat'])
     ->whereDate('created_at', \Carbon\Carbon::today()) // Filter khusus hari ini
     ->orderBy('created_at', 'desc')
     ->take(7) // Limit untuk tampilan dashboard
@@ -38,7 +38,7 @@ $surat_terbaru = Surat::with('warga')
 
     public function index(Request $request)
 {
-    $query = Surat::with('warga');
+    $query = Surat::with(['warga', 'jenisSurat']);
 
     // --- LOGIKA TAMBAHAN UNTUK DASHBOARD UTAMA (HARI INI) ---
     // Jika tidak ada filter dan tidak ada search, tampilkan hanya yang masuk hari ini
@@ -59,13 +59,15 @@ if ($request->filled('status') && $request->status != 'semua') {
     $query->where('status', $request->status);
 }
 
-// Pencarian Tunggal (Jenis, Nomor, Tanggal, Nama, NIK)
+// Pencarian Tunggal (Jenis [via Relasi], Nomor, Tanggal, Nama, NIK)
 if ($request->filled('search')) {
     $search = $request->search;
     $query->where(function($q) use ($search) {
-        $q->where('jenis_surat', 'LIKE', "%$search%")
-          ->orWhere('nomor_surat', 'LIKE', "%$search%")
+        $q->where('nomor_surat', 'LIKE', "%$search%")
           ->orWhere('created_at', 'LIKE', "%$search%")
+          ->orWhereHas('jenisSurat', function($js) use ($search) {
+              $js->where('nama_jenis', 'LIKE', "%$search%");
+          })
           ->orWhereHas('warga', function($w) use ($search) {
               $w->where('nama_lengkap', 'LIKE', "%$search%")
                 ->orWhere('nik', 'LIKE', "%$search%");
@@ -92,7 +94,7 @@ if ($request->filled('search')) {
      */
     public function show($id)
     {
-        $surat = Surat::with('warga')->findOrFail($id);
+        $surat = Surat::with(['warga', 'jenisSurat'])->findOrFail($id);
         $pegawai = Pegawai::all(); 
 
         return view('admin.surat.detail', compact('surat', 'pegawai'));
@@ -100,7 +102,7 @@ if ($request->filled('search')) {
 
    public function suratHariIni(Request $request)
 {
-    $query = Surat::with('warga')->whereDate('created_at', \Carbon\Carbon::today());
+    $query = Surat::with(['warga', 'jenisSurat'])->whereDate('created_at', \Carbon\Carbon::today());
 
     // Filter Status (Kapsul)
     if ($request->filled('status') && $request->status != 'semua') {
@@ -116,8 +118,10 @@ if ($request->filled('search')) {
     if ($request->filled('search')) {
         $search = $request->search;
         $query->where(function($q) use ($search) {
-            $q->where('jenis_surat', 'LIKE', "%$search%")
-              ->orWhere('nomor_surat', 'LIKE', "%$search%")
+            $q->where('nomor_surat', 'LIKE', "%$search%")
+              ->orWhereHas('jenisSurat', function($js) use ($search) {
+                  $js->where('nama_jenis', 'LIKE', "%$search%");
+              })
               ->orWhereHas('warga', function($w) use ($search) {
                   $w->where('nama_lengkap', 'LIKE', "%$search%")
                     ->orWhere('nik', 'LIKE', "%$search%");
@@ -132,7 +136,7 @@ if ($request->filled('search')) {
 public function suratMasuk(Request $request)
 {
     // Mengambil status 'Diajukan' dan 'Diproses' dari semua hari
-    $query = Surat::with('warga')
+    $query = Surat::with(['warga', 'jenisSurat'])
         ->whereIn('status', ['Diajukan', 'Diproses']);
 
     // Filter Status (Kapsul: Semua, Diajukan, Diproses)
@@ -149,8 +153,10 @@ public function suratMasuk(Request $request)
     if ($request->filled('search')) {
         $search = $request->search;
         $query->where(function($q) use ($search) {
-            $q->where('jenis_surat', 'LIKE', "%$search%")
-                ->orWhere('nomor_surat', 'LIKE', "%$search%")
+            $q->where('nomor_surat', 'LIKE', "%$search%")
+                ->orWhereHas('jenisSurat', function($js) use ($search) {
+                    $js->where('nama_jenis', 'LIKE', "%$search%");
+                })
                 ->orWhereHas('warga', function($w) use ($search) {
                     $w->where('nama_lengkap', 'LIKE', "%$search%")
                         ->orWhere('nik', 'LIKE', "%$search%");
@@ -170,7 +176,7 @@ public function riwayatSurat(Request $request)
     $status = $request->get('status');
     $tanggal = $request->get('tanggal'); // Ambil input tanggal
 
-    $query = Surat::with('warga')
+    $query = Surat::with(['warga', 'jenisSurat'])
         ->whereIn('status', ['Selesai', 'Ditolak', 'Dibatalkan']);
 
     // Filter Status
@@ -186,8 +192,10 @@ public function riwayatSurat(Request $request)
     // Pencarian Tunggal
     if ($search) {
         $query->where(function($q) use ($search) {
-            $q->where('jenis_surat', 'LIKE', "%$search%")
-              ->orWhere('nomor_surat', 'LIKE', "%$search%")
+            $q->where('nomor_surat', 'LIKE', "%$search%")
+              ->orWhereHas('jenisSurat', function($js) use ($search) {
+                  $js->where('nama_jenis', 'LIKE', "%$search%");
+              })
               ->orWhereHas('warga', function($w) use ($search) {
                   $w->where('nama_lengkap', 'LIKE', "%$search%")
                     ->orWhere('nik', 'LIKE', "%$search%");
@@ -205,27 +213,42 @@ public function riwayatSurat(Request $request)
      * Memproses surat
      */
     public function proses(Request $request, $id)
-    {
-        $request->validate([
-            'nomor_surat' => 'required|string',
-            'tanggal_surat_ttd' => 'required|date',
-            'officer_id' => 'required|exists:pegawai,id',
-        ], [
-            'nomor_surat.required' => 'Nomor surat wajib diisi.',
-            'officer_id.required' => 'Pilih pejabat yang menandatangani.',
-        ]);
+{
+    $request->validate([
+        'nomor_surat' => 'required|string', // Ini menangkap angka manualnya (misal: 001)
+        'tanggal_surat_ttd' => 'required|date',
+        'officer_id' => 'required|exists:pegawai,id',
+    ], [
+        'nomor_surat.required' => 'Nomor surat wajib diisi.',
+        'officer_id.required' => 'Pilih pejabat yang menandatangani.',
+    ]);
 
-        $surat = Surat::findOrFail($id);
-        
-        $surat->update([
-            'status' => 'Diproses',
-            'nomor_surat' => $request->nomor_surat,
-            'tanggal_surat_ttd' => $request->tanggal_surat_ttd,
-            'officer_id' => $request->officer_id,
-        ]);
+    $surat = Surat::findOrFail($id);
 
-        return redirect()->back()->with('success', 'Surat berhasil divalidasi!');
-    }
+    // 1. Ambil bulan dan tahun dari tanggal_surat_ttd
+    $bulanAngka = date('n', strtotime($request->tanggal_surat_ttd));
+    $tahun = date('Y', strtotime($request->tanggal_surat_ttd));
+
+    // 2. Fungsi konversi angka bulan ke romawi
+    $romawi = [
+        1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
+        7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
+    ];
+    $bulanRomawi = $romawi[$bulanAngka];
+
+    // 3. Gabungkan format: NomorManual/BulanRomawi/Tahun
+    // Contoh: 001/V/2026 atau 119/I/2026
+    $nomorLengkap = $request->nomor_surat . ' / ' . $bulanRomawi . ' / ' . $tahun;
+
+    $surat->update([
+        'status' => 'Diproses',
+        'nomor_surat' => $nomorLengkap,
+        'tanggal_surat_ttd' => $request->tanggal_surat_ttd,
+        'officer_id' => $request->officer_id,
+    ]);
+
+    return redirect()->back()->with('success', 'Surat berhasil divalidasi dengan nomor: ' . $nomorLengkap);
+}
 
     /**
      * Menolak pengajuan surat
@@ -267,7 +290,7 @@ public function riwayatSurat(Request $request)
     public function cetak($id)
     {
         // Ambil data surat, warga, dan pegawai yang TTD
-        $surat = Surat::with(['warga', 'pegawai'])->findOrFail($id);
+        $surat = Surat::with(['warga', 'pegawai', 'jenisSurat'])->findOrFail($id);
 
         // Langsung return view agar menjadi halaman HTML yang memicu window.print()
         return view('admin.surat.print_layout', compact('surat'));

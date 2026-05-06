@@ -1,23 +1,4 @@
 @php
-    // Logika Judul Surat Custom
-    $jenisSuratRaw = strtoupper($surat->jenis_surat);
-    $judulSurat = $jenisSuratRaw; // Default jika tidak masuk kondisi di bawah
-
-    if ($jenisSuratRaw == 'SURAT KETERANGAN UMUM') {
-        $judulSurat = 'SURAT KETERANGAN';
-    } elseif ($jenisSuratRaw == 'SURAT KETERANGAN TIDAK MAMPU') {
-        $judulSurat = 'SURAT KETERANGAN TIDAK MAMPU';
-    } elseif ($jenisSuratRaw == 'SURAT KETERANGAN USAHA') {
-        $judulSurat = 'SURAT KETERANGAN USAHA';
-    } elseif ($jenisSuratRaw == 'PENGANTAR SKCK') {
-        $judulSurat = 'SURAT PENGANTAR CATATAN KEPOLISIAN';
-    } elseif ($jenisSuratRaw == 'PENGANTAR UMUM') {
-        $judulSurat = 'SURAT PENGANTAR';
-    } elseif ($jenisSuratRaw == 'KETERANGAN DOMISILI USAHA') {
-        $judulSurat = 'SURAT KETERANGAN DOMISILI USAHA';
-    } elseif ($jenisSuratRaw == 'DOM TEMPAT TINGGAL') {
-        $judulSurat = 'SURAT KETERANGAN DOMISILI TEMPAT TINGGAL';
-    }
 
     $jabatanAsli = $surat->pegawai->jabatan ?? 'LURAH';
     $namaPejabat = $surat->pegawai->nama_lengkap ?? '........................';
@@ -82,8 +63,10 @@
         </div>
 
         <div class="nomor-wrapper">
-            <p class="judul-surat">{{ $judulSurat }}</p>
-            <p class="nomor-surat">Nomor : {{ $surat->nomor_surat }}</p>
+<p class="judul-surat">
+            {{-- Mengambil langsung dari field judul_cetak --}}
+            {{ $surat->jenisSurat->judul_cetak ?? $surat->jenisSurat->nama_jenis }}
+        </p>            <p class="nomor-surat">Nomor : {{ $surat->nomor_surat }}</p>
         </div>
 
         <div class="isi">
@@ -95,7 +78,7 @@
 
             <p>Dengan ini menerangkan bahwa :</p>
             
-            @if(str_contains(strtoupper($surat->jenis_surat), 'DOMISILI USAHA'))
+            @if(str_contains(strtoupper($surat->jenisSurat->nama_jenis), 'DOMISILI USAHA'))
                 <table class="data-table">
                     <tr>
                         <td width="30%">a. Nama Lembaga</td>
@@ -121,18 +104,66 @@
                 <p style="margin-top: 10px;">Benar-benar berdomisili di {{ $alamatLembagaFix }}.</p>
             @else
                 <table class="data-table">
-                    <tr><td width="30%">a. Nama</td><td width="2%">:</td><td class="nama-pejabat-isi">{{ $surat->warga->nama_lengkap }}</td></tr>
-                    <tr>
-                        <td>b. Tempat/Tgl Lahir</td>
-                        <td>:</td>
-                        <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d - m - Y') }}</td>
-                    </tr>
-                    <tr><td>c. Agama</td><td>:</td><td>{{ $surat->warga->agama }}</td></tr>
-                    <tr><td>d. Pekerjaan</td><td>:</td><td>{{ ucwords(strtolower($surat->warga->pekerjaan)) }}</td></tr>
-                    <tr><td>e. Tempat Tinggal</td><td>:</td><td>{{ ucwords(strtolower($surat->warga->alamat_lengkap)) }} RT {{ $surat->warga->rt }} RW {{ $surat->warga->rw }} Kel. Sambong</td></tr>
-                    <tr><td>f. Keperluan</td><td>:</td><td>{{ formatKbbi($surat->keperluan) }}</td></tr>
-                    <tr><td>g. Keterangan</td><td>:</td><td>{{ formatKbbi($surat->keterangan ?? 'Bahwa yang bersangkutan benar-benar warga Kelurahan Sambong.') }}</td></tr>
-                </table>
+    {{-- Nama dengan format Bold dan Huruf Kapital --}}
+    <tr>
+        <td width="30%">a. N a m a</td>
+        <td width="2%">:</td>
+        <td style="font-weight: bold; text-transform: uppercase;">{{ $surat->warga->nama_lengkap }}</td>
+    </tr>
+
+    {{-- Tempat Tanggal Lahir --}}
+    <tr>
+        <td>b. Tempat lahir</td>
+        <td>:</td>
+        <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d - m - Y') }}</td>
+    </tr>
+
+    {{-- Agama dengan spasi antar karakter sesuai gambar --}}
+    <tr>
+        <td>c. A g a m a</td>
+        <td>:</td>
+        <td>{{ ucwords(strtolower($surat->warga->agama)) }}</td>
+    </tr>
+
+    {{-- Pekerjaan --}}
+    <tr>
+        <td>d. Pekerjaan</td>
+        <td>:</td>
+        <td>{{ ucwords(strtolower($surat->warga->pekerjaan)) }}</td>
+    </tr>
+
+    {{-- Alamat Lengkap sesuai format KTP (Multi-baris) --}}
+    <tr>
+        <td valign="top">e. Alamat di KTP</td>
+        <td valign="top">:</td>
+        <td>
+            {{ ucwords(strtolower($surat->warga->alamat_lengkap)) }} RT {{ $surat->warga->rt }} RW {{ $surat->warga->rw }}<br>
+            Kelurahan {{ ucwords(strtolower($surat->warga->kelurahan ?? 'Sambong')) }} Kecamatan {{ ucwords(strtolower($surat->warga->kecamatan ?? 'Batang')) }}<br>
+            Kabupaten {{ ucwords(strtolower($surat->warga->kabupaten ?? 'Batang')) }} Provinsi {{ ucwords(strtolower($surat->warga->provinsi ?? 'Jawa Tengah')) }}
+        </td>
+    </tr>
+
+    {{-- NIK / Surat Bukti Diri --}}
+    <tr>
+        <td>h. Surat Bukti diri</td>
+        <td>:</td>
+        <td>NIK. {{ $surat->warga->nik }}</td>
+    </tr>
+
+    {{-- Keperluan --}}
+    <tr>
+        <td>i. Keperluan</td>
+        <td>:</td>
+        <td>{{ formatKbbi($surat->keperluan) }}</td>
+    </tr>
+
+    {{-- Keterangan --}}
+    <tr>
+        <td valign="top">j. Keterangan</td>
+        <td valign="top">:</td>
+        <td>{{ formatKbbi($surat->keterangan ?? 'Bahwa orang tersebut adalah warga Kelurahan Sambong dan berkelakuan baik.') }}</td>
+    </tr>
+</table>
             @endif
 
             <p class="penutup">

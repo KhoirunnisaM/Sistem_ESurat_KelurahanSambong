@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up()
+{
+    Schema::table('surat', function (Blueprint $table) {
+        // Menambahkan kolom foreign key yang mengarah ke tabel jenis_surat
+        $table->foreignId('jenis_surat_id')->after('id')->nullable()->constrained('jenis_surat')->onDelete('set null');
+    });
+}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('surat', function (Blueprint $table) {
+            //
+        });
+    }
+};

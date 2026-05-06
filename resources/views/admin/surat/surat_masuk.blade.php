@@ -11,15 +11,15 @@
     @php $currentStatus = request('status', 'semua'); @endphp
     <a href="{{ route('admin.surat.masuk', ['status' => 'semua', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'semua' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Semua
+        Semua
     </a>
     <a href="{{ route('admin.surat.masuk', ['status' => 'Diajukan', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Diajukan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Diajukan
+        Diajukan
     </a>
     <a href="{{ route('admin.surat.masuk', ['status' => 'Diproses', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Diproses' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Diproses
+        Diproses
     </a>
 </div>
 
@@ -75,7 +75,7 @@
                             <small class="text-muted">NIK: {{ $s->warga->nik }}</small>
                         </td>
                         <td>
-                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
+                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenisSurat->nama_jenis }}</div>
                             @if($s->status !== 'Diajukan' && $s->nomor_surat)
                                 <div class="mt-0">
                                     <span class="text-dark border-0 p-0 small fw-normal" style="font-size: 0.7rem;">
@@ -104,7 +104,6 @@
                             </span>
                         </td>
                        <td class="text-center">
-                            {{-- Aksi disesuaikan menjadi "Detail" dengan style outline dark --}}
                             <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
                                 Detail
                             </a>

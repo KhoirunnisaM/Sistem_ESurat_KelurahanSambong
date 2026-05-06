@@ -14,27 +14,27 @@
     @php $currentStatus = request('status', 'semua'); @endphp
     <a href="{{ route('admin.surat.hari-ini', ['status' => 'semua', 'search' => request('search')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'semua' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
-       Semua
+        Semua
     </a>
     <a href="{{ route('admin.surat.hari-ini', ['status' => 'Diajukan', 'search' => request('search')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Diajukan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
-       Diajukan
+        Diajukan
     </a>
     <a href="{{ route('admin.surat.hari-ini', ['status' => 'Diproses', 'search' => request('search')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Diproses' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
-       Diproses
+        Diproses
     </a>
     <a href="{{ route('admin.surat.hari-ini', ['status' => 'Selesai', 'search' => request('search')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Selesai' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
-       Selesai
+        Selesai
     </a>
     <a href="{{ route('admin.surat.hari-ini', ['status' => 'Ditolak', 'search' => request('search')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
-       Ditolak
+        Ditolak
     </a>
     <a href="{{ route('admin.surat.hari-ini', ['status' => 'Dibatalkan', 'search' => request('search')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
-       Dibatalkan
+        Dibatalkan
     </a>
 </div>
 
@@ -87,7 +87,7 @@
                             <small class="text-muted">NIK: {{ $s->warga->nik ?? '-' }}</small>
                         </td>
                         <td>
-                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
+                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenisSurat->nama_jenis }}</div>
                             
                            @if(($s->status == 'Selesai' || $s->status == 'Diproses') && $s->nomor_surat)
                                 <div class="mt-0">
@@ -112,21 +112,20 @@
                             <small class="text-muted">{{ $s->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
-    @php
-        $statusClass = [
-            'Diajukan'   => 'bg-light-warning text-warning border-warning',
-            'Diproses'   => 'bg-light-primary text-primary border-primary',
-            'Ditolak'    => 'bg-light-danger text-danger border-danger',
-            'Selesai'    => 'bg-light-success text-success border-success',
-            'Dibatalkan' => 'bg-light-secondary text-secondary border-secondary'
-        ];
-    @endphp
-    <span class="badge {{ $statusClass[$s->status] ?? 'bg-light text-secondary border-secondary' }} px-2 py-1" style="font-size: 0.65rem;">
-        {{ strtoupper($s->status) }}
-    </span>
-</td>
+                            @php
+                                $statusClass = [
+                                    'Diajukan'   => 'bg-light-warning text-warning border-warning',
+                                    'Diproses'   => 'bg-light-primary text-primary border-primary',
+                                    'Ditolak'    => 'bg-light-danger text-danger border-danger',
+                                    'Selesai'    => 'bg-light-success text-success border-success',
+                                    'Dibatalkan' => 'bg-light-secondary text-secondary border-secondary'
+                                ];
+                            @endphp
+                            <span class="badge {{ $statusClass[$s->status] ?? 'bg-light text-secondary border-secondary' }} px-2 py-1" style="font-size: 0.65rem;">
+                                {{ strtoupper($s->status) }}
+                            </span>
+                        </td>
                         <td class="text-center">
-                            {{-- Aksi disesuaikan menjadi "Detail" dengan style outline dark --}}
                             <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
                                 Detail
                             </a>

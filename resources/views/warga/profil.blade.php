@@ -35,12 +35,12 @@
                             <h6 class="fw-bold text-primary text-uppercase small mb-4">Informasi Pribadi</h6>
                             <div class="vstack gap-3">
                                 <div>
-    <label class="text-muted small d-block">Tempat, Tanggal Lahir</label>
-    <span class="fw-semibold">
-        {{ session('tempat_lahir') }}, 
-        {{ \Carbon\Carbon::parse(session('tanggal_lahir'))->translatedFormat('d F Y') }}
-    </span>
-</div>
+                                    <label class="text-muted small d-block">Tempat, Tanggal Lahir</label>
+                                    <span class="fw-semibold">
+                                        {{ session('tempat_lahir') }}, 
+                                        {{ \Carbon\Carbon::parse(session('tanggal_lahir'))->translatedFormat('d F Y') }}
+                                    </span>
+                                </div>
                                 <div>
                                     <label class="text-muted small d-block">Agama</label>
                                     <span class="fw-semibold">{{ session('agama') }}</span>
@@ -57,7 +57,7 @@
                             <h6 class="fw-bold text-primary text-uppercase small mb-4">Alamat Domisili</h6>
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="text-muted small d-block"> Dukuh</label>
+                                    <label class="text-muted small d-block"> Dukuh / Alamat</label>
                                     <span class="fw-semibold">{{ session('alamat_lengkap') }}</span>
                                 </div>
                                 <div class="col-6">
@@ -176,7 +176,6 @@ document.getElementById('formUpdateProfile').addEventListener('submit', function
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Simpan!',
         cancelButtonText: 'Cek Kembali',
-        borderRadius: '15px'
     }).then((result) => {
         if (result.isConfirmed) {
             form.submit();
@@ -184,7 +183,6 @@ document.getElementById('formUpdateProfile').addEventListener('submit', function
     });
 });
 
-// Auto-show success alert jika session success ada (opsional)
 @if(session('success'))
     Swal.fire({
         icon: 'success',

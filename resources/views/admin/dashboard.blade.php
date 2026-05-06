@@ -120,7 +120,7 @@
                             <small class="text-muted">NIK: {{ $s->warga->nik ?? '-' }}</small>
                         </td>
                         <td>
-                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
+                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenisSurat->nama_jenis }}</div>
                             
                             @if(($s->status == 'Selesai' || $s->status == 'Diproses') && $s->nomor_surat)
                                 <div class="mt-0">
@@ -145,23 +145,22 @@
                             <small class="text-muted">{{ $s->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
-    @php
-        $statusColor = [
-            'Diajukan'   => 'text-warning',
-            'Diproses'   => 'text-primary',
-            'Ditolak'    => 'text-danger',
-            'Selesai'    => 'text-success',
-            'Dibatalkan' => 'text-secondary'
-        ];
-        $currentColor = $statusColor[$s->status] ?? 'text-muted';
-    @endphp
-    
-    <span class="{{ $currentColor }} fw-bold px-2 py-1" style="font-size: 0.65rem; ">
-        {{ strtoupper($s->status) }}
-    </span>
-</td>
+                            @php
+                                $statusColor = [
+                                    'Diajukan'   => 'text-warning',
+                                    'Diproses'   => 'text-primary',
+                                    'Ditolak'    => 'text-danger',
+                                    'Selesai'    => 'text-success',
+                                    'Dibatalkan' => 'text-secondary'
+                                ];
+                                $currentColor = $statusColor[$s->status] ?? 'text-muted';
+                            @endphp
+                            
+                            <span class="{{ $currentColor }} fw-bold px-2 py-1" style="font-size: 0.65rem; ">
+                                {{ strtoupper($s->status) }}
+                            </span>
+                        </td>
                         <td class="text-center">
-                            {{-- Ganti ke Detail dengan style outline dark --}}
                             <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
                                 Detail
                             </a>

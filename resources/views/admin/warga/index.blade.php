@@ -8,21 +8,21 @@
         <p class="text-muted small">Kelurahan Sambong, Kecamatan Batang, Kabupaten Batang.</p>
     </div>
 
-    {{-- CARD FILTER / PENCARIAN (Sesuai Gambar) --}}
+    {{-- CARD FILTER / PENCARIAN --}}
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form action="{{ route('admin.warga.index') }}" method="GET" class="d-flex gap-2">
-                    <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
-                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
-                    
-                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
-                        <i class="bi bi-search"></i>
-                    </button>
+                <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
+                       placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
+                
+                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                    <i class="bi bi-search"></i>
+                </button>
 
-                    @if(request('search'))
-                        <a href="{{ route('admin.warga.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
-                    @endif
-                </form>
+                @if(request('search'))
+                    <a href="{{ route('admin.warga.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                @endif
+            </form>
         </div>
     </div>
 
@@ -126,10 +126,10 @@
                             <div class="row g-3">
                                 <div class="col-md-4"><label class="small text-muted d-block">Jalan / Dusun</label><span class="fw-bold">{{ ucwords(strtolower($w->alamat_lengkap)) }}</span></div>
                                 <div class="col-md-4"><label class="small text-muted d-block">RT / RW</label><span class="fw-bold">{{ $w->rt }} / {{ $w->rw }}</span></div>
-                                <div class="col-md-4"><label class="small text-muted d-block">Kelurahan</label><span class="fw-bold">Sambong</span></div>
-                                <div class="col-md-4"><label class="small text-muted d-block">Kecamatan</label><span class="fw-bold">Batang</span></div>
-                                <div class="col-md-4"><label class="small text-muted d-block">Kabupaten</label><span class="fw-bold">Batang</span></div>
-                                <div class="col-md-4"><label class="small text-muted d-block">Provinsi</label><span class="fw-bold">Jawa Tengah</span></div>
+                                <div class="col-md-4"><label class="small text-muted d-block">Kelurahan</label><span class="fw-bold">{{ $w->kelurahan ?? 'Sambong' }}</span></div>
+                                <div class="col-md-4"><label class="small text-muted d-block">Kecamatan</label><span class="fw-bold">{{ $w->kecamatan ?? 'Batang' }}</span></div>
+                                <div class="col-md-4"><label class="small text-muted d-block">Kabupaten</label><span class="fw-bold">{{ $w->kabupaten ?? 'Batang' }}</span></div>
+                                <div class="col-md-4"><label class="small text-muted d-block">Provinsi</label><span class="fw-bold">{{ $w->provinsi ?? 'Jawa Tengah' }}</span></div>
                             </div>
                         </div>
                     </div>

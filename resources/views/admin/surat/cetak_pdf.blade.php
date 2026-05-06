@@ -18,7 +18,9 @@
 
     <div class="isi-surat">
         <center>
-            <h4 style="text-decoration: underline; margin-bottom: 0;">{{ strtoupper($surat->jenis_surat) }}</h4>
+            <h4 style="text-decoration: underline; margin-bottom: 0;">
+                {{ strtoupper($surat->jenisSurat->judul_cetak ?? $surat->jenisSurat->nama_jenis ?? 'SURAT KETERANGAN') }}
+            </h4>
             <p style="margin-top: 0;">Nomor: {{ $surat->nomor_surat ?? '.../..../2026' }}</p>
         </center>
 
@@ -33,10 +35,14 @@
     </div>
 
     <div class="ttd">
-        <p>Batang, {{ date('d F Y') }}</p>
-        <p>Mengetahui,</p>
+        <p>Batang, {{ \Carbon\Carbon::parse($surat->tanggal_surat_ttd)->translatedFormat('d F Y') ?? date('d F Y') }}</p>
+        <p>{{ $surat->pegawai->jabatan ?? 'Kepala Desa' }},</p>
         <br><br><br>
-        <p><strong>( Admin Sambong )</strong></p>
+        <p><strong>( {{ $surat->pegawai->nama_pegawai ?? 'Admin Sambong' }} )</strong></p>
     </div>
+
+    <script>
+        window.print();
+    </script>
 </body>
 </html>

@@ -24,8 +24,8 @@
                         
                         
 
-                        {{-- KHUSUS EDIT DATA DOMISILI USAHA --}}
-                        @if(Str::slug($surat->jenis_surat) == 'domisili-usaha' || $surat->jenis_surat == 'Domisili Usaha')
+                        {{-- KHUSUS EDIT DATA DOMISILI USAHA (Berdasarkan jenis_surat_id 4) --}}
+                        @if($surat->jenis_surat_id == 6)
                             <div class="p-4 border rounded-4 bg-light-subtle mb-4" style="border: 1px dashed #dee2e6 !important;">
                                 <h6 class="fw-bold text-dark mb-4"><i class="bi bi-shop me-2"></i>Data Usaha / Lembaga</h6>
                                 

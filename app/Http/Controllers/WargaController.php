@@ -24,8 +24,8 @@ class WargaController extends Controller
                                 ->whereIn('status', ['Ditolak', 'Dibatalkan'])->count(), 
         ];
 
-        // 5 Surat Terbaru
-        $terbaru = Surat::where('citizen_id', $citizen_id)
+        // 5 Surat Terbaru dengan relasi jenisSurat
+        $terbaru = Surat::with('jenisSurat')->where('citizen_id', $citizen_id)
                         ->orderBy('created_at', 'desc')
                         ->take(5)
                         ->get();
@@ -41,7 +41,7 @@ class WargaController extends Controller
     public function riwayatSurat(Request $request)
     {
         $citizen_id = session('warga_id');
-        $query = Surat::where('citizen_id', $citizen_id);
+        $query = Surat::with('jenisSurat')->where('citizen_id', $citizen_id);
 
         if ($request->status && $request->status != 'semua') {
             $query->where('status', $request->status);
@@ -53,7 +53,9 @@ class WargaController extends Controller
 
        if ($request->cari) {
     $query->where(function($q) use ($request) {
-        $q->where('jenis_surat', 'LIKE', '%' . $request->cari . '%')
+        $q->whereHas('jenisSurat', function($js) use ($request) {
+            $js->where('nama_jenis', 'LIKE', '%' . $request->cari . '%');
+          })
           ->orWhere('nomor_surat', 'LIKE', '%' . $request->cari . '%');
     });
 }
@@ -96,6 +98,10 @@ class WargaController extends Controller
             'alamat_lengkap' => $request->alamat_lengkap,
             'rt'             => $request->rt,
             'rw'             => $request->rw,
+            'kelurahan'      => $request->kelurahan,
+            'kecamatan'      => $request->kecamatan,
+            'kabupaten'      => $request->kabupaten,
+            'provinsi'       => $request->provinsi,
         ]);
 
         session([
@@ -115,7 +121,7 @@ class WargaController extends Controller
 
     public function showDetail($id)
 {
-    $surat = Surat::where('id', $id)
+    $surat = Surat::with('jenisSurat')->where('id', $id)
                   ->where('citizen_id', session('warga_id'))
                   ->firstOrFail();
     
@@ -150,7 +156,7 @@ class WargaController extends Controller
 
     public function edit($id)
     {
-        $surat = Surat::where('id', $id)
+        $surat = Surat::with('jenisSurat')->where('id', $id)
                       ->where('citizen_id', session('warga_id'))
                       ->where('status', 'Diajukan') 
                       ->firstOrFail();
@@ -160,7 +166,7 @@ class WargaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $surat = Surat::findOrFail($id);
+        $surat = Surat::with('jenisSurat')->findOrFail($id);
 
         $request->validate([
             'keperluan' => 'required|string|max:255',
@@ -175,7 +181,9 @@ class WargaController extends Controller
         $surat->keperluan = $request->keperluan;
         $surat->keterangan = $request->keterangan;
 
-        if (Str::slug($surat->jenis_surat) == 'domisili-usaha' || $surat->jenis_surat == 'Domisili Usaha') {
+        // Penyesuaian pengecekan jenis surat menggunakan relasi
+        $nama_jenis = $surat->jenisSurat->nama_jenis ?? '';
+        if (Str::slug($nama_jenis) == 'domisili-usaha' || $nama_jenis == 'Domisili Usaha') {
             $surat->nama_lembaga = $request->nama_lembaga;
             $surat->penanggung_jawab = $request->penanggung_jawab;
             $surat->jabatan_penanggung_jawab = $request->jabatan_penanggung_jawab;
@@ -231,7 +239,7 @@ class WargaController extends Controller
                                 ->whereIn('status', ['Ditolak', 'Dibatalkan'])->count(), // Gabungan KPI
         ];
 
-        $terbaru = Surat::where('citizen_id', $citizen_id)
+        $terbaru = Surat::with('jenisSurat')->where('citizen_id', $citizen_id)
                         ->orderBy('created_at', 'desc')
                         ->take(5)
                         ->get();

@@ -11,19 +11,19 @@
     @php $currentStatus = request('status', 'semua'); @endphp
     <a href="{{ route('admin.surat.riwayat', ['status' => 'semua', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'semua' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Semua Riwayat
+        Semua Riwayat
     </a>
     <a href="{{ route('admin.surat.riwayat', ['status' => 'Selesai', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Selesai' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Selesai
+        Selesai
     </a>
     <a href="{{ route('admin.surat.riwayat', ['status' => 'Ditolak', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Ditolak
+        Ditolak
     </a>
     <a href="{{ route('admin.surat.riwayat', ['status' => 'Dibatalkan', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
        class="btn btn-sm {{ $currentStatus == 'Dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-       Dibatalkan
+        Dibatalkan
     </a>
 </div>
 
@@ -57,7 +57,6 @@
         </div>
 
         <div class="table-responsive">
-            <!-- ... isi table tetap sama seperti kode Anda ... -->
             <table class="table table-hover table-custom align-middle mb-0">
                 <thead class="table-light">
                     <tr class="text-muted small text-uppercase" style="font-size: 0.7rem;">
@@ -81,7 +80,7 @@
                             <small class="text-muted">NIK: {{ $s->warga->nik }}</small>
                         </td>
                         <td>
-                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
+                            <div class="fw-medium text-dark text-uppercase small">{{ $s->jenisSurat->nama_jenis }}</div>
                             @if($s->status == 'Selesai' && $s->nomor_surat)
                                 <div class="mt-0">
                                     <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">

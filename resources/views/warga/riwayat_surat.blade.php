@@ -15,27 +15,27 @@
         <div class="d-flex overflow-auto pb-3 mb-4 flex-nowrap gap-2" style="scrollbar-width: none; -ms-overflow-style: none;">
             <a href="{{ route('warga.riwayat', ['status' => 'semua']) }}" 
                class="btn {{ request('status') == 'semua' || !request('status') ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-               Semua
+                Semua
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'diajukan']) }}" 
                class="btn {{ request('status') == 'diajukan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-               Diajukan
+                Diajukan
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'diproses']) }}" 
                class="btn {{ request('status') == 'diproses' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-               Diproses
+                Diproses
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'selesai']) }}" 
                class="btn {{ request('status') == 'selesai' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-               Selesai
+                Selesai
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'ditolak']) }}" 
                class="btn {{ request('status') == 'ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-               Ditolak
+                Ditolak
             </a>
              <a href="{{ route('warga.riwayat', ['status' => 'dibatalkan']) }}" 
                class="btn {{ request('status') == 'dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
-               Dibatalkan
+                Dibatalkan
             </a>
         </div>
 
@@ -89,7 +89,7 @@
                             <small class="text-muted">{{ $r->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
-                            <div class="fw-bold text-dark">{{ $r->jenis_surat }}</div>
+                            <div class="fw-bold text-dark">{{ $r->JenisSurat->nama_jenis }}</div>
                             @if(($r->status == 'Selesai' || $r->status == 'Diproses') && $r->nomor_surat)
                                 <div class="mt-0">
                                     <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">

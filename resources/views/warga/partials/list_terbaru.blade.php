@@ -13,7 +13,7 @@
             <tr onclick="window.location='{{ route('warga.surat.detail', $r->id) }}';" style="cursor: pointer;">
                 <td class="py-3">
                     <div class="fw-bold text-dark text-uppercase mb-1" style="font-size: 0.95rem;">
-                        {{ $r->jenis_surat }}
+                        {{ $r->jenisSurat->nama_jenis }}
                     </div>
                     
                     @if($r->status == 'Selesai' && $r->nomor_surat)

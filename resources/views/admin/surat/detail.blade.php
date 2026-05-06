@@ -84,11 +84,11 @@
                             </tr>
                             <tr>
                                 <td class="text-muted small">Kel / Kec</td>
-                                <td>: {{ ucwords(strtolower($surat->warga->kelurahan)) }} / {{ ucwords(strtolower($surat->warga->kecamatan)) }}</td>
+                                <td>: {{ ucwords(strtolower($surat->warga->kelurahan ?? 'Sambong')) }} / {{ ucwords(strtolower($surat->warga->kecamatan ?? 'Batang')) }}</td>
                             </tr>
                             <tr>
                                 <td class="text-muted small">Kab / Prov</td>
-                                <td>: {{ ucwords(strtolower($surat->warga->kabupaten)) }} / Jawa Tengah</td>
+                                <td>: {{ ucwords(strtolower($surat->warga->kabupaten ?? 'Batang')) }} / {{ ucwords(strtolower($surat->warga->provinsi ?? 'Jawa Tengah')) }}</td>
                             </tr>
                         </table>
                     </div>
@@ -102,10 +102,10 @@
                     <div class="bg-light p-3 rounded">
                         <div class="row mb-2">
                             <div class="col-sm-3 text-muted small">Jenis Surat</div>
-                            <div class="col-sm-9 fw-bold text-primary">{{ strtoupper($surat->jenis_surat) }}</div>
+                            <div class="col-sm-9 fw-bold text-primary">{{ strtoupper($surat->jenisSurat->nama_jenis) }}</div>
                         </div>
 
-                        @if(str_contains(strtoupper($surat->jenis_surat), 'DOMISILI USAHA'))
+                        @if(str_contains(strtoupper($surat->jenisSurat->nama_jenis), 'DOMISILI USAHA'))
                             <div class="row mb-2">
                                 <div class="col-sm-3 text-muted small">Nama Lembaga/Usaha</div>
                                 <div class="col-sm-9 fw-bold text-dark">{{ strtoupper($surat->nama_lembaga ?? '-') }}</div>
@@ -175,8 +175,9 @@
                     <form action="{{ route('admin.surat.proses', $surat->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Nomor Surat</label>
-                            <input type="text" name="nomor_surat" class="form-control" placeholder="Contoh: 145/{{ date('Y') }}/Kel.Sbg" required>
+                            <label class="form-label small fw-bold">Nomor Surat (Angka Sahaja)</label>
+                            <input type="text" name="nomor_surat" class="form-control" placeholder="Contoh: 001 atau 119" required>
+                            <div class="form-text" style="font-size: 0.7rem;">Sistem akan otomatis menambahkan /ROMAL/{{ date('Y') }}</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Tanggal Tanda Tangan</label>

@@ -3,46 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Surat;
+use App\Models\JenisSurat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class SuratController extends Controller
 {
-    private function getListSurat() {
-        return [
-            'skck' => 'Pengantar SKCK',
-            'pengantar-umum' => 'Pengantar Umum',
-            'keterangan-umum' => 'Keterangan Umum',
-            'keterangan-usaha' => 'Keterangan Usaha',
-            'keterangan-tidak-mampu' => 'Keterangan Tidak Mampu',
-            'domisili-usaha' => 'Domisili Usaha',
-            'domisili-tempat-tinggal' => 'Domisili Tempat Tinggal',
-        ];
-    }
-
     public function create($tipe)
     {
-        $list_surat = $this->getListSurat();
+        // Mencari jenis surat berdasarkan slug atau nama yang sesuai di database
+        // Kita asumsikan pencarian berdasarkan 'nama_jenis' yang di-slug-kan atau mencocokkan teks
+        $jenisSurat = JenisSurat::where('nama_jenis', 'LIKE', '%' . str_replace('-', ' ', $tipe) . '%')->first();
 
-        if (!isset($list_surat[$tipe])) {
+        if (!$jenisSurat) {
             return redirect()->route('warga.dashboard')->with('error', 'Jenis surat tidak valid.');
         }
 
-        $nama_surat = $list_surat[$tipe];
-        return view('warga.form_surat', compact('tipe', 'nama_surat'));
+        $nama_surat = $jenisSurat->nama_jenis;
+        $jenis_surat_id = $jenisSurat->id;
+
+        return view('warga.form_surat', compact('tipe', 'nama_surat', 'jenis_surat_id'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'tipe_slug' => 'required',
+            'jenis_surat_id' => 'required|exists:jenis_surat,id',
             'keperluan' => 'required',
             'scan_pengantar_rt' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'scan_ktp_kk' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
-        $list_surat = $this->getListSurat();
-        $nama_surat_asli = $list_surat[$request->tipe_slug] ?? 'Surat Umum';
 
         // Upload File
         $file_rt = $request->file('scan_pengantar_rt')->store('uploads/surat/rt', 'public');
@@ -51,7 +41,7 @@ class SuratController extends Controller
         // Simpan ke Database
         Surat::create([
             'citizen_id' => session('warga_id'),
-            'jenis_surat' => $nama_surat_asli,
+            'jenis_surat_id' => $request->jenis_surat_id,
             'keperluan' => $request->keperluan,
             'keterangan' => $request->keterangan,
             
