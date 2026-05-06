@@ -2,7 +2,7 @@
 
 @section('admin_content')
 
-{{-- 1. TAMPILAN RINGKASAN AKTIVITAS (Sesuai kode awal Anda) --}}
+{{-- 1. TAMPILAN RINGKASAN AKTIVITAS --}}
 @if(!request('filter'))
 <div class="mb-4">
     <h4 class="fw-bold text-dark">Ringkasan Aktivitas</h4>
@@ -35,7 +35,7 @@
     <div class="col-6 col-md-3">
         <div class="card card-custom stat-card bg-white h-100 p-3 shadow-sm border-0">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <div class="h6 text-muted mb-0 small">Ditolak/dibatalkan</div>
+                <div class="h6 text-muted mb-0 small">Ditolak/Dibatalkan</div>
                 <div class="icon-shape bg-light-danger text-danger rounded-pill px-2 py-1 small">
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
@@ -57,7 +57,7 @@
 </div>
 @endif
 
-{{-- 2. BAGIAN TABEL DATA (Sudah diselaraskan dengan halaman detail harian) --}}
+{{-- 2. BAGIAN TABEL DATA --}}
 <div class="card card-custom bg-white border-0 shadow-sm">
     <div class="card-body p-4">
         <div class="d-md-flex justify-content-between align-items-center mb-4">
@@ -72,7 +72,7 @@
                     @if(!request('filter') && !request('search'))
                         Menampilkan permohonan yang diajukan khusus hari ini.
                     @else
-                        Urutan berdasarkan waktu pengajuan terdahulu.
+                        Urutan berdasarkan waktu pengajuan terbaru.
                     @endif
                 </p>
             </div>
@@ -122,23 +122,17 @@
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             
-                            @if($s->status == 'Selesai' && $s->nomor_surat)
+                            @if(($s->status == 'Selesai' || $s->status == 'Diproses') && $s->nomor_surat)
                                 <div class="mt-0">
                                     <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
                                         <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
                                     </span>
                                 </div>
-                                 @elseif($s->status == 'Diproses' && $s->nomor_surat)
-                                <div class="mt-0">
-                                    <span class=" text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
-                                        <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
-                                    </span>
-                                </div>
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
-                                        <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
-                                * {{ $s->alasan_ditolak }}
-                            </small>    
+                                    <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                        * {{ $s->alasan_ditolak }}
+                                    </small>    
                                 </div>
                             @elseif($s->status == 'Dibatalkan')
                                 <div class="mt-0">
@@ -151,22 +145,25 @@
                             <small class="text-muted">{{ $s->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
-                            @php
-                                $statusClass = [
-                                    'Diajukan' => 'bg-light-warning text-warning border-warning',
-                                    'Diproses' => 'bg-light-primary text-primary border-primary',
-                                    'Ditolak'  => 'bg-light-danger text-danger border-danger',
-                                    'Selesai'  => 'bg-light-success text-success border-success'
-                                ];
-                                $currentClass = $statusClass[$s->status] ?? 'bg-light text-secondary';
-                            @endphp
-                            <span class="badge {{ $currentClass }} px-2 py-1" style="font-size: 0.65rem;">
-                                {{ strtoupper($s->status) }}
-                            </span>
-                        </td>
+    @php
+        $statusColor = [
+            'Diajukan'   => 'text-warning',
+            'Diproses'   => 'text-primary',
+            'Ditolak'    => 'text-danger',
+            'Selesai'    => 'text-success',
+            'Dibatalkan' => 'text-secondary'
+        ];
+        $currentColor = $statusColor[$s->status] ?? 'text-muted';
+    @endphp
+    
+    <span class="{{ $currentColor }} fw-bold px-2 py-1" style="font-size: 0.65rem; ">
+        {{ strtoupper($s->status) }}
+    </span>
+</td>
                         <td class="text-center">
-                            <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-dark px-3 rounded-pill" style="font-size: 0.75rem;">
-                                Periksa
+                            {{-- Ganti ke Detail dengan style outline dark --}}
+                            <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
+                                Detail
                             </a>
                         </td>
                     </tr>
@@ -202,9 +199,11 @@
     .bg-light-primary { background-color: #e3f2fd !important; border: 1px solid #0d6efd; }
     .bg-light-danger { background-color: #ffebee !important; border: 1px solid #dc3545; }
     .bg-light-success { background-color: #e8f5e9 !important; border: 1px solid #198754; }
+    .bg-light-secondary { background-color: #f8f9fa !important; border: 1px solid #6c757d; }
+    
     .stat-card { border-radius: 12px; }
     .table-custom thead th { padding: 15px 10px; background-color: #f8f9fa; }
-    /* Menambahkan style badge agar konsisten */
     .badge { border-width: 1px; border-style: solid; font-weight: 600; letter-spacing: 0.3px; }
+    .fst-italic { font-style: italic; }
 </style>
 @endsection

@@ -1,6 +1,30 @@
 @extends('layouts.admin')
 
 @section('admin_content')
+<style>
+    /* Mengunci ukuran wadah gambar agar seragam */
+    .img-container-custom {
+        width: 100%;
+        height: 250px; 
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    /* Memastikan gambar memenuhi kotak tanpa distorsi */
+    .img-preview-custom {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+</style>
+
 <div class="mb-4">
     <a href="javascript:void(0)" onclick="history.back()" class="text-decoration-none text-muted small">
         <i class="bi bi-arrow-left me-1"></i> Kembali ke Halaman Sebelumnya
@@ -120,16 +144,20 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <p class="small text-muted mb-2 text-center bg-light py-1 border">Scan Pengantar RT/RW</p>
-                        <div class="position-relative border rounded overflow-hidden">
-                            <img src="{{ asset('storage/'.$surat->scan_pengantar_rt) }}" class="img-fluid w-100" style="height: 200px; object-fit: cover;">
-                            <a href="{{ asset('storage/'.$surat->scan_pengantar_rt) }}" target="_blank" class="btn btn-sm btn-light position-absolute top-50 start-50 translate-middle shadow">Lihat Full</a>
+                        <div class="img-container-custom shadow-sm">
+                            <img src="{{ asset('storage/'.$surat->scan_pengantar_rt) }}" class="img-preview-custom">
+                            <button type="button" class="btn btn-sm btn-light position-absolute shadow" data-bs-toggle="modal" data-bs-target="#modalPreviewRT">
+                                <i class="bi bi-fullscreen"></i> Lihat Full
+                            </button>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <p class="small text-muted mb-2 text-center bg-light py-1 border">Scan KTP & KK</p>
-                        <div class="position-relative border rounded overflow-hidden">
-                            <img src="{{ asset('storage/'.$surat->scan_ktp_kk) }}" class="img-fluid w-100" style="height: 200px; object-fit: cover;">
-                            <a href="{{ asset('storage/'.$surat->scan_ktp_kk) }}" target="_blank" class="btn btn-sm btn-light position-absolute top-50 start-50 translate-middle shadow">Lihat Full</a>
+                        <div class="img-container-custom shadow-sm">
+                            <img src="{{ asset('storage/'.$surat->scan_ktp_kk) }}" class="img-preview-custom">
+                            <button type="button" class="btn btn-sm btn-light position-absolute shadow" data-bs-toggle="modal" data-bs-target="#modalPreviewKTP">
+                                <i class="bi bi-fullscreen"></i> Lihat Full
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -172,7 +200,6 @@
                         Tolak Pengajuan
                     </button>
 
-                    {{-- Form Tersembunyi untuk Tolak --}}
                     <form id="formTolak" action="{{ route('admin.surat.tolak', $surat->id) }}" method="POST" style="display: none;">
                         @csrf
                         <input type="hidden" name="alasan_ditolak" id="inputAlasanTolak">
@@ -184,7 +211,6 @@
                             <i class="bi bi-patch-check-fill text-success display-4 mb-3 d-block"></i>
                             <h6 class="fw-bold">Siap Cetak</h6>
                             <div class="badge bg-light text-dark border mb-4">Nomor: {{ $surat->nomor_surat }}</div>
-                            
                             <button onclick="printSurat()" class="btn btn-dark w-100 rounded-pill py-2 shadow mb-3">
                                 <i class="bi bi-printer me-2"></i> CETAK SEKARANG
                             </button>
@@ -194,13 +220,10 @@
                             <i class="bi bi-printer-fill text-primary display-4 mb-3 d-block"></i>
                             <h6 class="fw-bold">Surat Telah Dicetak</h6>
                             <div class="badge bg-light text-dark border mb-4">Nomor: {{ $surat->nomor_surat }}</div>
-
                             <button onclick="printSurat()" class="btn btn-outline-dark w-100 rounded-pill py-2 mb-3">
                                 <i class="bi bi-printer me-2"></i> CETAK ULANG
                             </button>
-
                             <hr>
-                            <p class="small text-muted mb-2">Klik selesai untuk memindahkan ke riwayat</p>
                             <form action="{{ route('admin.surat.selesai', $surat->id) }}" method="POST" onsubmit="clearCetakStatus()">
                                 @csrf
                                 <input type="hidden" name="status" value="Selesai">
@@ -233,26 +256,58 @@
                         </div>
                         <p class="text-muted small">Warga harus mengajukan ulang dengan berkas yang benar.</p>
                     </div>
+
+                @elseif($surat->status == 'Dibatalkan')
+                    <div class="text-center py-3">
+                        <i class="bi bi-dash-circle-fill text-secondary display-4 mb-3 d-block"></i>
+                        <h6 class="fw-bold text-secondary">Pengajuan Dibatalkan</h6>
+                        <p class="text-muted small mt-2">Dibatalkan oleh warga.</p>
+                    </div>
                 @endif
             </div>
         </div>
     </div>
 </div>
 
-<iframe id="printFrame" style="display:none;"></iframe>
+{{-- MODAL PREVIEWS --}}
+<div class="modal fade" id="modalPreviewRT" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 p-0 mb-2">
+                <h6 class="text-white mb-0">Preview Scan Pengantar RT/RW</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 text-center">
+                <img src="{{ asset('storage/'.$surat->scan_pengantar_rt) }}" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</div>
 
-{{-- Load SweetAlert2 dari CDN --}}
+<div class="modal fade" id="modalPreviewKTP" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 p-0 mb-2">
+                <h6 class="text-white mb-0">Preview Scan KTP & KK</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 text-center">
+                <img src="{{ asset('storage/'.$surat->scan_ktp_kk) }}" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</div>
+
+<iframe id="printFrame" style="display:none;"></iframe>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const suratId = "{{ $surat->id }}";
     const isPrinted = localStorage.getItem("printed_surat_" + suratId);
-    
     if (isPrinted === "true") {
         const sekarang = document.getElementById('wrapperCetakSekarang');
         const ulang = document.getElementById('wrapperCetakUlang');
-        
         if (sekarang && ulang) {
             sekarang.style.display = 'none';
             ulang.style.display = 'block';
@@ -268,9 +323,7 @@ function tolakSurat() {
         inputPlaceholder: 'Contoh: Berkas Scan KTP tidak jelas...',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Tolak',
-        cancelButtonText: 'Batal',
         inputValidator: (value) => {
             if (!value || value.length < 5) {
                 return 'Alasan harus diisi minimal 5 karakter!'
@@ -288,15 +341,12 @@ function printSurat() {
     const suratId = "{{ $surat->id }}";
     const frame = document.getElementById('printFrame');
     frame.src = "{{ route('admin.surat.cetak', $surat->id) }}";
-    
     frame.onload = function() {
         if(frame.getAttribute('src') !== "" && frame.getAttribute('src') !== "about:blank") {
             frame.contentWindow.print();
             localStorage.setItem("printed_surat_" + suratId, "true");
-            
             const sekarang = document.getElementById('wrapperCetakSekarang');
             const ulang = document.getElementById('wrapperCetakUlang');
-            
             if(sekarang && ulang) {
                 sekarang.style.display = 'none';
                 ulang.style.display = 'block';

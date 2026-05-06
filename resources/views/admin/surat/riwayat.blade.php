@@ -6,29 +6,58 @@
     <p class="text-muted small">Arsip permohonan dengan status <b>SELESAI</b>, <b>DITOLAK</b>, dan <b>DIBATALKAN</b>.</p>
 </div>
 
+<!-- Filter Status Kapsul (Riwayat) -->
+<div class="d-flex overflow-auto pb-3 mb-4 flex-nowrap gap-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+    @php $currentStatus = request('status', 'semua'); @endphp
+    <a href="{{ route('admin.surat.riwayat', ['status' => 'semua', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'semua' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+       Semua Riwayat
+    </a>
+    <a href="{{ route('admin.surat.riwayat', ['status' => 'Selesai', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Selesai' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+       Selesai
+    </a>
+    <a href="{{ route('admin.surat.riwayat', ['status' => 'Ditolak', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+       Ditolak
+    </a>
+    <a href="{{ route('admin.surat.riwayat', ['status' => 'Dibatalkan', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+       Dibatalkan
+    </a>
+</div>
+
 <div class="card card-custom bg-white border-0 shadow-sm">
     <div class="card-body p-4">
         <div class="d-md-flex justify-content-between align-items-center mb-4">
             <div>
                 <h5 class="fw-bold mb-1">Arsip Surat</h5>
+                <p class="text-muted small mb-0">Menampilkan data yang telah diproses final.</p>
             </div>
             <div class="mt-3 mt-md-0">
                 <form action="{{ route('admin.surat.riwayat') }}" method="GET" class="d-flex gap-2">
+                    <input type="hidden" name="status" value="{{ request('status', 'semua') }}">
+                    
+                    <!-- Filter Kalender -->
+                    <input type="date" name="tanggal" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
+                           value="{{ request('tanggal') }}">
+
                     <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
-                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
+                           placeholder="Cari NIK, Nama..." value="{{ request('search') }}" style="min-width: 200px;">
                     
                     <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
                         <i class="bi bi-search"></i>
                     </button>
 
-                    @if(request('search'))
-                        <a href="{{ route('admin.surat.riwayat') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @if(request('search') || request('tanggal') || (request('status') && request('status') != 'semua'))
+                        <a href="{{ route('admin.surat.riwayat') }}" class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none">Reset</a>
                     @endif
                 </form>
             </div>
         </div>
 
         <div class="table-responsive">
+            <!-- ... isi table tetap sama seperti kode Anda ... -->
             <table class="table table-hover table-custom align-middle mb-0">
                 <thead class="table-light">
                     <tr class="text-muted small text-uppercase" style="font-size: 0.7rem;">
@@ -45,7 +74,7 @@
                     @forelse($data as $index => $s)
                     <tr>
                         <td class="ps-4 fw-medium text-muted">
-                            {{ $data->firstItem() + $index }}
+                            {{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}
                         </td>
                         <td>
                             <div class="fw-bold text-dark">{{ $s->warga->nama_lengkap }}</div>
@@ -53,7 +82,6 @@
                         </td>
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
-                            
                             @if($s->status == 'Selesai' && $s->nomor_surat)
                                 <div class="mt-0">
                                     <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
@@ -62,9 +90,9 @@
                                 </div>
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
-                                        <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
-                                * {{ $s->alasan_ditolak }}
-                            </small>    
+                                    <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                        * {{ $s->alasan_ditolak }}
+                                    </small>    
                                 </div>
                             @elseif($s->status == 'Dibatalkan')
                                 <div class="mt-0">
@@ -77,7 +105,6 @@
                             <small class="text-muted">{{ $s->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
-                            {{-- Waktu Selesai/Batal/Tolak diambil dari updated_at --}}
                             <div class="fw-bold text-primary small">{{ $s->updated_at->format('d/m/Y') }}</div>
                             <small class="text-muted">{{ $s->updated_at->format('H:i') }} WIB</small>
                         </td>
@@ -107,21 +134,18 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-4">
-            {{ $data->links() }}
+
+        {{-- PAGINATION --}}
+        @if($data->hasPages())
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <div class="text-muted small">
+                Menampilkan <b>{{ $data->firstItem() }}</b> - <b>{{ $data->lastItem() }}</b> dari <b>{{ $data->total() }}</b> data
+            </div>
+            <nav class="custom-pagination">
+                {{ $data->appends(request()->query())->links('pagination::bootstrap-4') }}
+            </nav>
         </div>
+        @endif
     </div>
 </div>
-@endsection
-
-@section('styles')
-<style>
-    .bg-light-success { background-color: #e8f5e9 !important; border: 1px solid #198754; }
-    .bg-light-danger { background-color: #ffebee !important; border: 1px solid #dc3545; }
-    .bg-light-secondary { background-color: #f8f9fa !important; border: 1px solid #6c757d; }
-    .table-custom thead th { padding: 15px 10px; background-color: #f8f9fa; }
-    .table-custom tbody td { padding: 15px 10px; }
-    .badge { border-width: 1px; border-style: solid; font-weight: 600; letter-spacing: 0.3px; }
-    .italic { font-style: italic; }
-</style>
 @endsection

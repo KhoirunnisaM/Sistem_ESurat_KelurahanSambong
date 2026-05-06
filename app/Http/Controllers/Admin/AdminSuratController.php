@@ -54,17 +54,24 @@ $surat_terbaru = Surat::with('warga')
         $query->whereIn('status', ['Ditolak', 'Selesai']);
     }
 
-    // 2. Filter Pencarian (Fungsi Asli Tetap Ada)
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('jenis_surat', 'LIKE', "%$search%")
-              ->orWhereHas('warga', function($w) use ($search) {
-                  $w->where('nama_lengkap', 'LIKE', "%$search%")
-                    ->orWhere('nik', 'LIKE', "%$search%");
-              });
-        });
-    }
+    // Filter Status (Kapsul)
+if ($request->filled('status') && $request->status != 'semua') {
+    $query->where('status', $request->status);
+}
+
+// Pencarian Tunggal (Jenis, Nomor, Tanggal, Nama, NIK)
+if ($request->filled('search')) {
+    $search = $request->search;
+    $query->where(function($q) use ($search) {
+        $q->where('jenis_surat', 'LIKE', "%$search%")
+          ->orWhere('nomor_surat', 'LIKE', "%$search%")
+          ->orWhere('created_at', 'LIKE', "%$search%")
+          ->orWhereHas('warga', function($w) use ($search) {
+              $w->where('nama_lengkap', 'LIKE', "%$search%")
+                ->orWhere('nik', 'LIKE', "%$search%");
+          });
+    });
+}
 
     // 3. Urutan & Paginasi
     $surat_terbaru = $query->oldest()->paginate(10);
@@ -91,15 +98,26 @@ $surat_terbaru = Surat::with('warga')
         return view('admin.surat.detail', compact('surat', 'pegawai'));
     }
 
-    public function suratHariIni(Request $request)
+   public function suratHariIni(Request $request)
 {
     $query = Surat::with('warga')->whereDate('created_at', \Carbon\Carbon::today());
 
-    // Fitur Pencarian tetap berfungsi di halaman ini
+    // Filter Status (Kapsul)
+    if ($request->filled('status') && $request->status != 'semua') {
+        $query->where('status', $request->status);
+    }
+
+    // Filter Tanggal (Kalender) - Jika ingin mencari di hari ini tetap spesifik
+    if ($request->filled('tanggal')) {
+        $query->whereDate('created_at', $request->tanggal);
+    }
+
+    // Pencarian Tunggal
     if ($request->filled('search')) {
         $search = $request->search;
         $query->where(function($q) use ($search) {
             $q->where('jenis_surat', 'LIKE', "%$search%")
+              ->orWhere('nomor_surat', 'LIKE', "%$search%")
               ->orWhereHas('warga', function($w) use ($search) {
                   $w->where('nama_lengkap', 'LIKE', "%$search%")
                     ->orWhere('nik', 'LIKE', "%$search%");
@@ -107,8 +125,7 @@ $surat_terbaru = Surat::with('warga')
         });
     }
 
-    $data = $query->latest()->paginate(20);
-
+    $data = $query->latest()->paginate(200);
     return view('admin.surat.surat_hari_ini', compact('data'));
 }
 
@@ -118,18 +135,30 @@ public function suratMasuk(Request $request)
     $query = Surat::with('warga')
         ->whereIn('status', ['Diajukan', 'Diproses']);
 
-     if ($request->filled('search')) {
+    // Filter Status (Kapsul: Semua, Diajukan, Diproses)
+    if ($request->filled('status') && $request->status != 'semua') {
+        $query->where('status', $request->status);
+    }
+
+    // Filter Tanggal (Dari Input Kalender)
+    if ($request->filled('tanggal')) {
+        $query->whereDate('created_at', $request->tanggal);
+    }
+
+    // Pencarian Tunggal (Jenis, Nomor, Nama, NIK)
+    if ($request->filled('search')) {
         $search = $request->search;
         $query->where(function($q) use ($search) {
             $q->where('jenis_surat', 'LIKE', "%$search%")
-              ->orWhereHas('warga', function($w) use ($search) {
-                  $w->where('nama_lengkap', 'LIKE', "%$search%")
-                    ->orWhere('nik', 'LIKE', "%$search%");
-              });
+                ->orWhere('nomor_surat', 'LIKE', "%$search%")
+                ->orWhereHas('warga', function($w) use ($search) {
+                    $w->where('nama_lengkap', 'LIKE', "%$search%")
+                        ->orWhere('nik', 'LIKE', "%$search%");
+                });
         });
     }
 
-    $data = $query->latest()->paginate(20);
+    $data = $query->latest()->paginate(200);
     
     // Kita arahkan ke file khusus surat masuk
     return view('admin.surat.surat_masuk', compact('data'));
@@ -138,18 +167,35 @@ public function suratMasuk(Request $request)
 public function riwayatSurat(Request $request)
 {
     $search = $request->get('search');
+    $status = $request->get('status');
+    $tanggal = $request->get('tanggal'); // Ambil input tanggal
 
-    $data = Surat::with('warga')
-        ->whereIn('status', ['Selesai', 'Ditolak', 'Dibatalkan'])
-        ->when($search, function ($q) use ($search) {
+    $query = Surat::with('warga')
+        ->whereIn('status', ['Selesai', 'Ditolak', 'Dibatalkan']);
+
+    // Filter Status
+    if ($status && $status != 'semua') {
+        $query->where('status', $status);
+    }
+
+    // Filter Tanggal (Kalender)
+    if ($tanggal) {
+        $query->whereDate('created_at', $tanggal);
+    }
+
+    // Pencarian Tunggal
+    if ($search) {
+        $query->where(function($q) use ($search) {
             $q->where('jenis_surat', 'LIKE', "%$search%")
+              ->orWhere('nomor_surat', 'LIKE', "%$search%")
               ->orWhereHas('warga', function($w) use ($search) {
                   $w->where('nama_lengkap', 'LIKE', "%$search%")
                     ->orWhere('nik', 'LIKE', "%$search%");
-            });
-        })
-        ->orderBy('updated_at', 'desc') // Mengurutkan berdasarkan waktu perubahan status terbaru
-        ->paginate(20);
+              });
+        });
+    }
+
+    $data = $query->orderBy('updated_at', 'desc')->paginate(200);
 
     return view('admin.surat.riwayat', compact('data'));
 }

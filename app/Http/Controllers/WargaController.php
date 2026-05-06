@@ -51,11 +51,14 @@ class WargaController extends Controller
             $query->whereDate('created_at', $request->tanggal);
         }
 
-        if ($request->cari) {
-            $query->where('jenis_surat', 'LIKE', '%' . $request->cari . '%');
-        }
+       if ($request->cari) {
+    $query->where(function($q) use ($request) {
+        $q->where('jenis_surat', 'LIKE', '%' . $request->cari . '%')
+          ->orWhere('nomor_surat', 'LIKE', '%' . $request->cari . '%');
+    });
+}
 
-        $riwayat = $query->orderBy('created_at', 'desc')->get();
+        $riwayat = $query->orderBy('created_at', 'desc')->paginate(200);
 
         return view('warga.riwayat_surat', compact('riwayat'));
     }

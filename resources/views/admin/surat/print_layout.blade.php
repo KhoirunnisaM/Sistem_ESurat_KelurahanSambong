@@ -1,7 +1,23 @@
 @php
-    $judulSurat = strtoupper($surat->jenis_surat);
-    if($judulSurat == 'SURAT KETERANGAN UMUM') { $judulSurat = 'SURAT KETERANGAN'; }
-    if($judulSurat == 'SURAT PENGANTAR UMUM') { $judulSurat = 'SURAT PENGANTAR'; }
+    // Logika Judul Surat Custom
+    $jenisSuratRaw = strtoupper($surat->jenis_surat);
+    $judulSurat = $jenisSuratRaw; // Default jika tidak masuk kondisi di bawah
+
+    if ($jenisSuratRaw == 'SURAT KETERANGAN UMUM') {
+        $judulSurat = 'SURAT KETERANGAN';
+    } elseif ($jenisSuratRaw == 'SURAT KETERANGAN TIDAK MAMPU') {
+        $judulSurat = 'SURAT KETERANGAN TIDAK MAMPU';
+    } elseif ($jenisSuratRaw == 'SURAT KETERANGAN USAHA') {
+        $judulSurat = 'SURAT KETERANGAN USAHA';
+    } elseif ($jenisSuratRaw == 'PENGANTAR SKCK') {
+        $judulSurat = 'SURAT PENGANTAR CATATAN KEPOLISIAN';
+    } elseif ($jenisSuratRaw == 'PENGANTAR UMUM') {
+        $judulSurat = 'SURAT PENGANTAR';
+    } elseif ($jenisSuratRaw == 'KETERANGAN DOMISILI USAHA') {
+        $judulSurat = 'SURAT KETERANGAN DOMISILI USAHA';
+    } elseif ($jenisSuratRaw == 'DOM TEMPAT TINGGAL') {
+        $judulSurat = 'SURAT KETERANGAN DOMISILI TEMPAT TINGGAL';
+    }
 
     $jabatanAsli = $surat->pegawai->jabatan ?? 'LURAH';
     $namaPejabat = $surat->pegawai->nama_lengkap ?? '........................';
@@ -109,7 +125,6 @@
                     <tr>
                         <td>b. Tempat/Tgl Lahir</td>
                         <td>:</td>
-                        {{-- PERBAIKAN FORMAT TANGGAL TANPA JAM --}}
                         <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d - m - Y') }}</td>
                     </tr>
                     <tr><td>c. Agama</td><td>:</td><td>{{ $surat->warga->agama }}</td></tr>

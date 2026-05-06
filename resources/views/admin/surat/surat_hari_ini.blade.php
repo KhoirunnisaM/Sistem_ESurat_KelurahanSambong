@@ -6,7 +6,36 @@
         <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
     </a>
     <h4 class="fw-bold text-dark">Daftar Semua Surat Hari Ini</h4>
-    <p class="text-muted small">Menampilkan seluruh permohonan yang diajukan khusus hari ini, tanggal {{ \Carbon\Carbon::today()->format('d F Y') }}.</p>
+    <p class="text-muted small">Menampilkan seluruh permohonan yang diajukan khusus hari ini, tanggal {{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}.</p>
+</div>
+
+<!-- Filter Status Kapsul -->
+<div class="d-flex overflow-auto pb-3 mb-4 flex-nowrap gap-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+    @php $currentStatus = request('status', 'semua'); @endphp
+    <a href="{{ route('admin.surat.hari-ini', ['status' => 'semua', 'search' => request('search')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'semua' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
+       Semua
+    </a>
+    <a href="{{ route('admin.surat.hari-ini', ['status' => 'Diajukan', 'search' => request('search')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Diajukan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
+       Diajukan
+    </a>
+    <a href="{{ route('admin.surat.hari-ini', ['status' => 'Diproses', 'search' => request('search')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Diproses' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
+       Diproses
+    </a>
+    <a href="{{ route('admin.surat.hari-ini', ['status' => 'Selesai', 'search' => request('search')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Selesai' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
+       Selesai
+    </a>
+    <a href="{{ route('admin.surat.hari-ini', ['status' => 'Ditolak', 'search' => request('search')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
+       Ditolak
+    </a>
+    <a href="{{ route('admin.surat.hari-ini', ['status' => 'Dibatalkan', 'search' => request('search')]) }}" 
+       class="btn btn-sm {{ $currentStatus == 'Dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm text-nowrap">
+       Dibatalkan
+    </a>
 </div>
 
 <div class="card card-custom bg-white border-0 shadow-sm">
@@ -19,15 +48,17 @@
             
             <div class="mt-3 mt-md-0">
                 <form action="{{ route('admin.surat.hari-ini') }}" method="GET" class="d-flex gap-2">
+                    <input type="hidden" name="status" value="{{ request('status', 'semua') }}">
+                    
                     <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
-                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
+                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}" style="min-width: 200px;">
                     
                     <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
                         <i class="bi bi-search"></i>
                     </button>
 
-                    @if(request('search'))
-                        <a href="{{ route('admin.surat.hari-ini') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @if(request('search') || (request('status') && request('status') != 'semua'))
+                        <a href="{{ route('admin.surat.hari-ini') }}" class="btn btn-sm btn-outline-secondary rounded-pill text-decoration-none d-flex align-items-center px-3">Reset</a>
                     @endif
                 </form>
             </div>
@@ -49,11 +80,7 @@
                     @forelse($data as $index => $s)
                     <tr>
                         <td class="ps-4 fw-medium text-muted">
-                            @if(method_exists($data, 'firstItem'))
-                                {{ $data->firstItem() + $index }}
-                            @else
-                                {{ $index + 1 }}
-                            @endif
+                            {{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}
                         </td>
                         <td>
                             <div class="fw-bold text-dark">{{ $s->warga->nama_lengkap ?? 'User' }}</div>
@@ -62,13 +89,7 @@
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             
-                           @if($s->status == 'Selesai' && $s->nomor_surat)
-                                <div class="mt-0">
-                                    <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
-                                        <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
-                                    </span>
-                                </div>
-                                 @elseif($s->status == 'Diproses' && $s->nomor_surat)
+                           @if(($s->status == 'Selesai' || $s->status == 'Diproses') && $s->nomor_surat)
                                 <div class="mt-0">
                                     <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
                                         <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
@@ -76,9 +97,9 @@
                                 </div>
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
-                                        <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
-                                * {{ $s->alasan_ditolak }}
-                            </small>    
+                                    <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                        * {{ $s->alasan_ditolak }}
+                                    </small>    
                                 </div>
                             @elseif($s->status == 'Dibatalkan')
                                 <div class="mt-0">
@@ -91,51 +112,80 @@
                             <small class="text-muted">{{ $s->created_at->format('H:i') }} WIB</small>
                         </td>
                         <td>
-                            @php
-                                $statusClass = [
-                                    'Diajukan' => 'bg-light-warning text-warning border-warning',
-                                    'Diproses' => 'bg-light-primary text-primary border-primary',
-                                    'Ditolak'  => 'bg-light-danger text-danger border-danger',
-                                    'Selesai'  => 'bg-light-success text-success border-success'
-                                ];
-                                $currentClass = $statusClass[$s->status] ?? 'bg-light text-secondary';
-                            @endphp
-                            <span class="badge {{ $currentClass }} px-2 py-1" style="font-size: 0.65rem;">
-                                {{ strtoupper($s->status) }}
-                            </span>
-                        </td>
+    @php
+        $statusClass = [
+            'Diajukan'   => 'bg-light-warning text-warning border-warning',
+            'Diproses'   => 'bg-light-primary text-primary border-primary',
+            'Ditolak'    => 'bg-light-danger text-danger border-danger',
+            'Selesai'    => 'bg-light-success text-success border-success',
+            'Dibatalkan' => 'bg-light-secondary text-secondary border-secondary'
+        ];
+    @endphp
+    <span class="badge {{ $statusClass[$s->status] ?? 'bg-light text-secondary border-secondary' }} px-2 py-1" style="font-size: 0.65rem;">
+        {{ strtoupper($s->status) }}
+    </span>
+</td>
                         <td class="text-center">
-                            <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-dark px-3 rounded-pill" style="font-size: 0.75rem;">
-                                Periksa
+                            {{-- Aksi disesuaikan menjadi "Detail" dengan style outline dark --}}
+                            <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
+                                Detail
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat hari ini.</td>
+                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat ditemukan.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
         
-        <div class="mt-4 d-flex justify-content-center">
-            @if(method_exists($data, 'links'))
-                {{ $data->appends(request()->query())->links() }}
-            @endif
+        {{-- PAGINATION CUSTOM --}}
+        @if($data->hasPages())
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <div class="text-muted small">
+                Menampilkan <b>{{ $data->firstItem() }}</b> - <b>{{ $data->lastItem() }}</b> dari <b>{{ $data->total() }}</b> data
+            </div>
+            <nav class="custom-pagination">
+                {{ $data->appends(request()->query())->links('pagination::bootstrap-4') }}
+            </nav>
         </div>
+        @endif
     </div>
 </div>
 @endsection
 
 @section('styles')
 <style>
+    .overflow-auto::-webkit-scrollbar { display: none; }
+    
     .bg-light-warning { background-color: #fff8e1 !important; border: 1px solid #ffc107; }
     .bg-light-primary { background-color: #e3f2fd !important; border: 1px solid #0d6efd; }
-    .bg-light-danger { background-color: #ffebee !important; border: 1px solid #dc3545; }
     .bg-light-success { background-color: #e8f5e9 !important; border: 1px solid #198754; }
-    .table-custom thead th { padding: 15px 10px; background-color: #f8f9fa; }
-    .table-custom tbody td { padding: 15px 10px; }
+    .bg-light-danger { background-color: #ffebee !important; border: 1px solid #dc3545; }
+    .bg-light-secondary { background-color: #f8f9fa !important; border: 1px solid #6c757d; }
+    
+    .table-custom thead th { padding: 15px 10px; background-color: #f8f9fa; border-bottom: 2px solid #eee; }
+    .table-custom tbody td { padding: 15px 10px; border-bottom: 1px solid #f2f2f2; }
     .badge { border-width: 1px; border-style: solid; font-weight: 600; letter-spacing: 0.3px; }
+    .fst-italic { font-style: italic; }
+
+    .custom-pagination .pagination { margin-bottom: 0; gap: 5px; }
+    .custom-pagination .page-item .page-link {
+        border: none;
+        border-radius: 8px !important;
+        padding: 8px 16px;
+        color: #444;
+        font-weight: 500;
+        font-size: 0.85rem;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
+    }
+    .custom-pagination .page-item.active .page-link {
+        background-color: #198754; 
+        color: white;
+        box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
+    }
 </style>
 @endsection
