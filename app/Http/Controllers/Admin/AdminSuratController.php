@@ -27,7 +27,11 @@ class AdminSuratController extends Controller
     ];
 
     // Mengambil 5 surat terbaru untuk tabel dashboard
-    $surat_terbaru = Surat::with('warga')->latest()->take(5)->get();
+$surat_terbaru = Surat::with('warga')
+    ->whereDate('created_at', \Carbon\Carbon::today()) // Filter khusus hari ini
+    ->orderBy('created_at', 'desc')
+    ->take(7) // Limit untuk tampilan dashboard
+    ->get();
 
     return view('admin.dashboard', compact('stats', 'surat_terbaru'));
 }
@@ -114,11 +118,14 @@ public function suratMasuk(Request $request)
     $query = Surat::with('warga')
         ->whereIn('status', ['Diajukan', 'Diproses']);
 
-    if ($request->filled('search')) {
+     if ($request->filled('search')) {
         $search = $request->search;
-        $query->whereHas('warga', function($q) use ($search) {
-            $q->where('nama_lengkap', 'LIKE', "%$search%")
-              ->orWhere('nik', 'LIKE', "%$search%");
+        $query->where(function($q) use ($search) {
+            $q->where('jenis_surat', 'LIKE', "%$search%")
+              ->orWhereHas('warga', function($w) use ($search) {
+                  $w->where('nama_lengkap', 'LIKE', "%$search%")
+                    ->orWhere('nik', 'LIKE', "%$search%");
+              });
         });
     }
 
@@ -134,10 +141,11 @@ public function riwayatSurat(Request $request)
 
     $data = Surat::with('warga')
         ->whereIn('status', ['Selesai', 'Ditolak', 'Dibatalkan'])
-        ->when($search, function ($query) use ($search) {
-            $query->whereHas('warga', function ($q) use ($search) {
-                $q->where('nama_lengkap', 'LIKE', "%$search%")
-                  ->orWhere('nik', 'LIKE', "%$search%");
+        ->when($search, function ($q) use ($search) {
+            $q->where('jenis_surat', 'LIKE', "%$search%")
+              ->orWhereHas('warga', function($w) use ($search) {
+                  $w->where('nama_lengkap', 'LIKE', "%$search%")
+                    ->orWhere('nik', 'LIKE', "%$search%");
             });
         })
         ->orderBy('updated_at', 'desc') // Mengurutkan berdasarkan waktu perubahan status terbaru

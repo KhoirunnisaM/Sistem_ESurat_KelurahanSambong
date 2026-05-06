@@ -9,12 +9,13 @@ use App\Http\Controllers\Admin\AdminSuratController;
 use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\AdminWargaController;
 
+
+//WARGA
+
 // --- LANDING PAGE ---
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
-
-//WARGA
 
 // --- AUTHENTICATION WARGA ---
 Route::middleware(['guest'])->group(function () {
@@ -22,30 +23,23 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/register', [WargaAuthController::class, 'register'])->name('register.warga.store');
     Route::get('/login', [WargaAuthController::class, 'showLogin'])->name('login.warga');
     Route::post('/login', [WargaAuthController::class, 'login'])->name('login.warga.submit');
-    // Tambahkan di dalam group middleware warga_auth
+    
+    // API ini dipindahkan ke sini agar bisa diakses landing page jika perlu data realtime
     Route::get('/api/stats-realtime', [WargaController::class, 'getStatsRealtime'])->name('warga.stats.realtime');
 });
 
 // --- AUTHENTICATED ROUTES (Sudah Login) ---
 Route::middleware(['warga_auth'])->group(function () {
     
-    // Logika Logout
+    // Pastikan WargaAuthController@logout melakukan: return redirect()->route('landing');
     Route::post('/logout', [WargaAuthController::class, 'logout'])->name('logout.warga');
 
-    // 1. Dashboard Utama
     Route::get('/dashboard', [WargaController::class, 'dashboard'])->name('warga.dashboard');
-
-    // 2. Halaman Ajukan Surat (Pilihan Jenis Surat)
     Route::get('/ajukan-surat', [WargaController::class, 'ajukanSurat'])->name('warga.ajukan');
-
-    // 3. Halaman Riwayat Surat (Daftar Semua Surat)
     Route::get('/riwayat-surat', [WargaController::class, 'riwayatSurat'])->name('warga.riwayat');
-
-    // 4. Halaman Profil Lengkap
     Route::get('/profil-saya', [WargaController::class, 'profil'])->name('warga.profil');
     Route::put('/profile/update', [WargaController::class, 'updateProfile'])->name('warga.profile.update');
 
-    // --- MANAJEMEN SURAT (DETAIL, EDIT, BATAL) ---
     Route::prefix('warga/surat')->name('warga.surat.')->group(function() {
         Route::get('/detail/{id}', [WargaController::class, 'showDetail'])->name('detail');
         Route::get('/edit/{id}', [WargaController::class, 'edit'])->name('edit');
@@ -53,16 +47,9 @@ Route::middleware(['warga_auth'])->group(function () {
         Route::post('/batal/{id}', [WargaController::class, 'batalkan'])->name('batal');
     });
 
-    // --- PROSES FORM INPUT SURAT (LOGIC DARI SURATCONTROLLER) ---
     Route::get('/form-surat/{tipe}', [SuratController::class, 'create'])->name('surat.buat');
     Route::post('/simpan-surat', [SuratController::class, 'store'])->name('surat.store');
 });
-
-// Redirect root ke dashboard jika sudah login, atau ke login jika belum
-Route::get('/', function () {
-    return session()->has('warga_logged_in') ? redirect()->route('warga.dashboard') : redirect()->route('login.warga');
-});
-
 
 
 //ADMIN
@@ -100,18 +87,11 @@ Route::prefix('admin')->group(function () {
         Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('admin.pegawai.destroy');
 
         // 4. Manajemen Warga (Data Master Warga)
-        // 4. Manajemen Warga (Data Master Warga)
         Route::get('/warga', [AdminWargaController::class, 'index'])->name('admin.warga.index');
         Route::get('/warga/{id}', [AdminWargaController::class, 'show'])->name('admin.warga.show');
-        //Route::put('/warga/{id}', [AdminWargaController::class, 'update'])->name('admin.warga.update'); // Tambahkan ini untuk edit
-        //Route::delete('/warga/{id}', [AdminWargaController::class, 'destroy'])->name('admin.warga.destroy');
-        // 4. Manajemen Warga (Hanya Lihat dan Aktivasi)
-        // Rute khusus untuk mengubah status Aktif/Nonaktif
         Route::post('/warga/toggle-status/{id}', [AdminWargaController::class, 'toggleStatus'])->name('admin.warga.toggle-status');
 
-
         // 5. Fitur Cetak (Akan kita buat selanjutnya)
-        // Gunakan AdminSuratController sesuai nama class di file Controller Anda
         Route::post('admin/surat/{id}/proses', [AdminSuratController::class, 'proses'])->name('admin.surat.proses');
         Route::post('admin/surat/{id}/selesai', [AdminSuratController::class, 'selesai'])->name('admin.surat.selesai');
         Route::get('/surat/cetak/{id}', [AdminSuratController::class, 'cetak'])->name('admin.surat.cetak');
@@ -119,3 +99,5 @@ Route::prefix('admin')->group(function () {
     });
     
 });
+
+

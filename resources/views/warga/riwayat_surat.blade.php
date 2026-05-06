@@ -72,7 +72,7 @@
 
         <!-- Tabel Riwayat -->
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table table-hover table-custom align-middle mb-0">
                 <thead>
                     <tr class="text-muted small">
                         <th>TANGGAL</th>
@@ -84,19 +84,40 @@
                 <tbody>
                     @forelse($riwayat as $r)
                     <tr>
-                        <td class="small text-muted">{{ $r->created_at->format('d/m/Y, H:i') }}</td>
+                <td class="py-3">
+                    <div class="text-dark mb-0" style="font-size: 0.9rem;">{{ $r->created_at->format('d/m/Y') }}</div>
+                    <small class="text-muted">{{ $r->created_at->format('H:i') }} WIB</small>
+                </td>
                         <td>
                             <div class="fw-bold text-dark">{{ $r->jenis_surat }}</div>
+                        
                             <small class="text-muted d-md-none">{{ $r->created_at->format('d/m/Y, H:i') }}</small>
                             
-                            {{-- Tampilkan Alasan jika Ditolak oleh Admin --}}
-                            @if($r->status == 'Ditolak' && $r->alasan_ditolak)
+
+                             @if($r->status == 'Selesai' && $r->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $r->nomor_surat }}
+                                    </span>
+                                </div>
+                                 @elseif($r->status == 'Diproses' && $r->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $r->nomor_surat }}
+                                    </span>
+                                </div>
+                            @elseif($r->status == 'Ditolak' && $r->alasan_ditolak)
                                 <div class="mt-1">
-                                    <small class="text-danger d-block italic" style="font-size: 0.75rem;">
-                                        <strong>Alasan Ditolak:</strong> {{ $r->alasan_ditolak }}
-                                    </small>
+                                        <small class="text-danger d-block lh-sm fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                * {{ $r->alasan_ditolak }}
+                            </small>    
+                                </div>
+                            @elseif($r->status == 'Dibatalkan')
+                                <div class="mt-0">
+                                    <small class="text-muted fst-italic" style="font-size: 0.7rem;">* Dibatalkan oleh warga</small>
                                 </div>
                             @endif
+
                         </td>
                         <td>
                             @php

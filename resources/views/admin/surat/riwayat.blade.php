@@ -15,10 +15,15 @@
             <div class="mt-3 mt-md-0">
                 <form action="{{ route('admin.surat.riwayat') }}" method="GET" class="d-flex gap-2">
                     <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
-                           placeholder="Cari NIK atau Nama..." value="{{ request('search') }}">
+                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
+                    
                     <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
                         <i class="bi bi-search"></i>
                     </button>
+
+                    @if(request('search'))
+                        <a href="{{ route('admin.surat.riwayat') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @endif
                 </form>
             </div>
         </div>
@@ -50,22 +55,19 @@
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             
                             @if($s->status == 'Selesai' && $s->nomor_surat)
-                                <div class="mt-1">
-                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                <div class="mt-0">
+                                    <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
                                         <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
                                     </span>
                                 </div>
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
-                                    <div class="p-2 bg-light-danger rounded border-start border-3 border-danger" style="max-width: 250px;">
-                                        <small class="text-danger d-block fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">ALASAN DITOLAK:</small>
-                                        <small class="text-dark d-block lh-sm" style="font-size: 0.7rem;">
-                                            {{ $s->alasan_ditolak }}
-                                        </small>
-                                    </div>
+                                        <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                * {{ $s->alasan_ditolak }}
+                            </small>    
                                 </div>
                             @elseif($s->status == 'Dibatalkan')
-                                <div class="mt-1">
+                                <div class="mt-0">
                                     <small class="text-muted italic" style="font-size: 0.7rem;">* Dibatalkan oleh warga</small>
                                 </div>
                             @endif

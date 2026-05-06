@@ -78,18 +78,7 @@
             </div>
             
             <div class="mt-3 mt-md-0 d-flex gap-2">
-                <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2">
-                    @if(request('filter'))
-                        <input type="hidden" name="filter" value="{{ request('filter') }}">
-                        <select name="status" class="form-select form-select-sm border-0 bg-light rounded-pill px-3" onchange="this.form.submit()">
-                            <option value="">Semua Status</option>
-                            <option value="Diajukan" {{ request('status') == 'Diajukan' ? 'selected' : '' }}>Diajukan</option>
-                            <option value="Diproses" {{ request('status') == 'Diproses' ? 'selected' : '' }}>Diproses</option>
-                            <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="Ditolak" {{ request('status') == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
-                        </select>
-                    @endif
-
+                <form action="{{ route('admin.surat.hari-ini') }}" method="GET" class="d-flex gap-2">
                     <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
                            placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
                     
@@ -97,9 +86,8 @@
                         <i class="bi bi-search"></i>
                     </button>
 
-                    @if(request('search') || request('status'))
-                        <a href="{{ url()->current() . (request('filter') ? '?filter='.request('filter') : '') }}" 
-                           class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @if(request('search'))
+                        <a href="{{ route('admin.surat.hari-ini') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
                     @endif
                 </form>
             </div>
@@ -134,18 +122,27 @@
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             
-                            {{-- PENYELARASAN: Tampilkan Nomor Surat atau Alasan Penolakan --}}
-                            @if(in_array($s->status, ['Diproses', 'Selesai']) && $s->nomor_surat)
-                                <div class="mt-1">
-                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
-                                        <i class="bi bi-hash text-primary"></i> {{ $s->nomor_surat }}
+                            @if($s->status == 'Selesai' && $s->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
+                                    </span>
+                                </div>
+                                 @elseif($s->status == 'Diproses' && $s->nomor_surat)
+                                <div class="mt-0">
+                                    <span class=" text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
                                     </span>
                                 </div>
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
-                                    <small class="text-danger d-block lh-sm" style="font-size: 0.7rem; max-width: 220px;">
-                                        <i class="bi bi-exclamation-circle-fill"></i> <b>Alasan:</b> {{ $s->alasan_ditolak }}
-                                    </small>
+                                        <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                * {{ $s->alasan_ditolak }}
+                            </small>    
+                                </div>
+                            @elseif($s->status == 'Dibatalkan')
+                                <div class="mt-0">
+                                    <small class="text-muted fst-italic" style="font-size: 0.7rem;">* Dibatalkan oleh warga</small>
                                 </div>
                             @endif
                         </td>
@@ -175,7 +172,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada data surat yang tersedia.</td>
+                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat hari ini.</td>
                     </tr>
                     @endforelse
                 </tbody>

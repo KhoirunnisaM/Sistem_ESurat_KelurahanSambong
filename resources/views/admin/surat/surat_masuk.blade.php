@@ -15,10 +15,15 @@
             <div class="mt-3 mt-md-0">
                 <form action="{{ route('admin.surat.masuk') }}" method="GET" class="d-flex gap-2">
                     <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
-                           placeholder="Cari NIK atau Nama..." value="{{ request('search') }}">
+                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
+                    
                     <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
                         <i class="bi bi-search"></i>
                     </button>
+
+                    @if(request('search'))
+                        <a href="{{ route('admin.surat.masuk') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @endif
                 </form>
             </div>
         </div>
@@ -49,8 +54,8 @@
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             {{-- Logika Menampilkan Nomor Surat --}}
                             @if($s->status !== 'Diajukan' && $s->nomor_surat)
-                                <div class="mt-1">
-                                    <span class="badge bg-light text-dark border-0 p-0 small fw-normal" style="font-size: 0.7rem;">
+                                <div class="mt-0">
+                                    <span class="text-dark border-0 p-0 small fw-normal" style="font-size: 0.7rem;">
                                         <i class="bi bi-hash text-primary"></i> {{ $s->nomor_surat }}
                                     </span>
                                 </div>

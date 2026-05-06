@@ -2,10 +2,27 @@
 
 @section('admin_content')
 <div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-dark mb-1">Manajemen Data & Aktivasi Akun Warga</h4>
-            <p class="text-muted small">Kelurahan Sambong, Kecamatan Batang, Kabupaten Batang.</p>
+    {{-- JUDUL HALAMAN --}}
+    <div class="mb-4">
+        <h4 class="fw-bold text-dark mb-1">Manajemen Data & Aktivasi Akun Warga</h4>
+        <p class="text-muted small">Kelurahan Sambong, Kecamatan Batang, Kabupaten Batang.</p>
+    </div>
+
+    {{-- CARD FILTER / PENCARIAN (Sesuai Gambar) --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form action="{{ route('admin.warga.index') }}" method="GET" class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
+                           placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
+                    
+                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                        <i class="bi bi-search"></i>
+                    </button>
+
+                    @if(request('search'))
+                        <a href="{{ route('admin.warga.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @endif
+                </form>
         </div>
     </div>
 

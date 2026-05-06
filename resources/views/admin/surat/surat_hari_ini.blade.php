@@ -62,19 +62,27 @@
                         <td>
                             <div class="fw-medium text-dark text-uppercase small">{{ $s->jenis_surat }}</div>
                             
-                            {{-- Tampilkan Nomor Surat jika Diproses/Selesai --}}
-                            @if(in_array($s->status, ['Diproses', 'Selesai']) && $s->nomor_surat)
-                                <div class="mt-1">
-                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
-                                        <i class="bi bi-hash text-primary"></i> {{ $s->nomor_surat }}
+                           @if($s->status == 'Selesai' && $s->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
                                     </span>
                                 </div>
-                            {{-- Tampilkan Alasan Penolakan dari kolom alasan_ditolak --}}
+                                 @elseif($s->status == 'Diproses' && $s->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $s->nomor_surat }}
+                                    </span>
+                                </div>
                             @elseif($s->status == 'Ditolak' && $s->alasan_ditolak)
                                 <div class="mt-1">
-                                    <small class="text-danger d-block lh-sm" style="font-size: 0.7rem; max-width: 220px;">
-                                        <i class="bi bi-exclamation-circle-fill"></i> <b>Alasan:</b> {{ $s->alasan_ditolak }}
-                                    </small>
+                                        <small class="text-danger d-block fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                * {{ $s->alasan_ditolak }}
+                            </small>    
+                                </div>
+                            @elseif($s->status == 'Dibatalkan')
+                                <div class="mt-0">
+                                    <small class="text-muted fst-italic" style="font-size: 0.7rem;">* Dibatalkan oleh warga</small>
                                 </div>
                             @endif
                         </td>
@@ -104,7 +112,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat masuk untuk hari ini.</td>
+                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat hari ini.</td>
                     </tr>
                     @endforelse
                 </tbody>

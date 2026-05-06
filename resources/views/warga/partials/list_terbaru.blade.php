@@ -16,19 +16,29 @@
                         {{ $r->jenis_surat }}
                     </div>
                     
-                    @if($r->status == 'Selesai')
-                        <small class="text-primary fw-bold">
-                            <i class="bi bi-hash"></i> {{ $r->nomor_surat ?? '230 / V / 2026' }}
-                        </small>
-                    @endif
-
-                    @if($r->status == 'Ditolak' && $r->alasan_ditolak)
-                        <div class="d-flex align-items-center mt-1">
-                            <i class="bi bi-exclamation-circle-fill text-danger me-1" style="font-size: 0.85rem;"></i>
-                            <small class="text-danger fw-bold me-1" style="font-size: 0.8rem;">Alasan:</small>
-                            <small class="text-danger italic" style="font-size: 0.8rem;">{{ $r->alasan_ditolak }}</small>
-                        </div>
-                    @endif
+                    @if($r->status == 'Selesai' && $r->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $r->nomor_surat }}
+                                    </span>
+                                </div>
+                                @elseif($r->status == 'Diproses' && $r->nomor_surat)
+                                <div class="mt-0">
+                                    <span class="badge bg-light text-dark border-0 p-0 fw-normal" style="font-size: 0.7rem;">
+                                        <i class="bi bi-hash text-success"></i> {{ $r->nomor_surat }}
+                                    </span>
+                                </div>
+                            @elseif($r->status == 'Ditolak' && $r->alasan_ditolak)
+                                <div class="mt-1">
+                                        <small class="text-danger d-block lh-sm fst-italic" style="font-size: 0.7rem; max-width: 220px; opacity: 0.8;">
+                                * {{ $r->alasan_ditolak }}
+                            </small>    
+                                </div>
+                            @elseif($r->status == 'Dibatalkan')
+                                <div class="mt-0">
+                                    <small class="text-muted fst-italic" style="font-size: 0.7rem;">* Dibatalkan oleh warga</small>
+                                </div>
+                            @endif
                 </td>
                 
                 <td class="py-3">
