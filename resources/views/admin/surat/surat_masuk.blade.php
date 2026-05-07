@@ -10,15 +10,15 @@
 <div class="d-flex overflow-auto pb-3 mb-4 flex-nowrap gap-2" style="scrollbar-width: none; -ms-overflow-style: none;">
     @php $currentStatus = request('status', 'semua'); @endphp
     <a href="{{ route('admin.surat.masuk', ['status' => 'semua', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
-       class="btn btn-sm {{ $currentStatus == 'semua' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">
         Semua
     </a>
     <a href="{{ route('admin.surat.masuk', ['status' => 'Diajukan', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
-       class="btn btn-sm {{ $currentStatus == 'Diajukan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Diajukan' ? 'btn-warning text-white' : 'btn-outline-warning' }}">
         Diajukan
     </a>
     <a href="{{ route('admin.surat.masuk', ['status' => 'Diproses', 'search' => request('search'), 'tanggal' => request('tanggal')]) }}" 
-       class="btn btn-sm {{ $currentStatus == 'Diproses' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Diproses' ? 'btn-primary' : 'btn-outline-primary' }}">
         Diproses
     </a>
 </div>

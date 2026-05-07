@@ -28,14 +28,13 @@
     <style>
         @page { size: A4; margin: 0; }
         body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: black; margin: 0; padding: 0; }
-        .page { background: white; width: 210mm; min-height: 297mm; padding: 20mm 20mm 20mm 30mm; margin: auto; box-sizing: border-box; }
+        .page { background: white; width: 210mm; padding: 20mm 20mm 20mm 30mm; margin: auto; box-sizing: border-box; page-break-after: always; }
         .kop { text-align: center; position: relative; border-bottom: 4px solid black; padding-bottom: 2px; }
         .kop::after { content: ""; display: block; border-bottom: 1px solid black; margin-top: 2px; }
         .logo {
             position: absolute;
             left: 0;
             top: 0;
-            /* Menggunakan ukuran absolut dari referensi gambar Anda */
             width: 2.6cm; 
             height: 2.6cm;
             object-fit: contain;
@@ -47,8 +46,11 @@
         .judul-surat { font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-bottom: 0; }
         .nomor-surat { margin-top: 0; margin-bottom: 25px; }
         .isi { text-align: justify; }
-        .data-table { width: 100%; margin: 10px 0 10px 20px; border-collapse: collapse; }
-        .data-table td { vertical-align: top; padding: 2px 0; }
+        
+        /* Perbaikan Utama: Tambahkan table-layout fixed */
+        .data-table { width: 100%; margin: 10px 0 10px 20px; border-collapse: collapse; table-layout: fixed; }
+        .data-table td { vertical-align: top; padding: 2px 0; word-break: break-word; }
+        
         .penutup { text-indent: 45px; margin-top: 20px; }
         .ttd-container { margin-top: 40px; float: right; width: 300px; text-align: center; }
         .ttd-container p { margin: 0; line-height: 1.2; }
@@ -65,10 +67,7 @@
 <body onload="window.print();">
     <div class="page">
         <div class="kop">
-            {{-- Logo Dinamis dari Setting --}}
             <img src="{{ $profil && $profil->logo ? asset('storage/'.$profil->logo) : asset('assets/img/logo-batang.png') }}" class="logo">
-            
-            {{-- Header Dinamis dari Setting --}}
             <h2>{{ $profil->instansi_level_1 ?? 'Pemerintah Kabupaten Batang' }}</h2>
             <h2>{{ $profil->instansi_level_2 ?? 'Kecamatan Batang' }}</h2>
             <h1>{{ $profil->nama_lembaga ?? 'Kelurahan Sambong' }}</h1>
@@ -161,14 +160,15 @@
                         <td>{{ formatKbbi($surat->keperluan) }}</td>
                     </tr>
                     <tr>
-                        <td valign="top">j. Keterangan</td>
-                        <td valign="top">:</td>
-                        <td>{{ formatKbbi($surat->keterangan ?? 'Bahwa orang tersebut adalah warga Kelurahan Sambong dan berkelakuan baik.') }}</td>
+                        <td valign="top" style="width: 30%;">j. Keterangan</td>
+                        <td valign="top" style="width: 2%;">:</td>
+                        <td valign="top" style="width: 68%; text-align: justify; line-height: 1.5;">
+                            {{ $surat->keterangan ?? 'Bahwa orang tersebut adalah warga Kelurahan Sambong dan berkelakuan baik.' }}
+                        </td>
                     </tr>
                 </table>
             @endif
 
-            {{-- Kalimat Penutup Dinamis dari Setting Jenis Surat --}}
             <p class="penutup">
                 {{ $surat->jenisSurat->kalimat_penutup ?? 'Demikian Surat Keterangan ini dibuat untuk digunakan seperlunya dan bagi yang berkepentingan untuk menjadikan maklum.' }}
             </p>

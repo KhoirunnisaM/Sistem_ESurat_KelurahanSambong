@@ -72,53 +72,78 @@ class WargaController extends Controller
         return view('warga.profil', compact('warga'));
     }
 
-    public function updateProfile(Request $request)
-    {
-        $request->validate([
-            'nama_lengkap'   => 'required|string|max:255',
-            'pekerjaan'      => 'required|string|max:255',
-            'alamat_lengkap' => 'required|string',
-            'rt'             => 'required|numeric',
-            'rw'             => 'required|numeric',
-            'kelurahan'      => 'required|string|max:100',
-            'kecamatan'      => 'required|string|max:100',
-            'kabupaten'      => 'required|string|max:100',
-            'provinsi'       => 'required|string|max:100',
-        ]);
+public function updateProfile(Request $request)
+{
+    // 1. Ambil data warga berdasarkan session NIK saat ini
+    $nikLama = session('nik');
+    $warga = Warga::where('nik', $nikLama)->first();
 
-        $nik = session('nik');
-        $warga = Warga::where('nik', $nik)->first();
-
-        if (!$warga) {
-            return redirect()->back()->with('error', 'Data warga tidak ditemukan di database.');
-        }
-
-        $warga->update([
-            'nama_lengkap'   => $request->nama_lengkap,
-            'pekerjaan'      => $request->pekerjaan,
-            'alamat_lengkap' => $request->alamat_lengkap,
-            'rt'             => $request->rt,
-            'rw'             => $request->rw,
-            'kelurahan'      => $request->kelurahan,
-            'kecamatan'      => $request->kecamatan,
-            'kabupaten'      => $request->kabupaten,
-            'provinsi'       => $request->provinsi,
-        ]);
-
-        session([
-            'nama_lengkap'   => $request->nama_lengkap,
-            'pekerjaan'      => $request->pekerjaan,
-            'alamat_lengkap' => $request->alamat_lengkap,
-            'rt'             => $request->rt,
-            'rw'             => $request->rw,
-            'kelurahan'      => $request->kelurahan,
-            'kecamatan'      => $request->kecamatan,
-            'kabupaten'      => $request->kabupaten,
-            'provinsi'       => $request->provinsi,
-        ]);
-
-        return redirect()->back()->with('success', 'Profil berhasil disimpan ke database!');
+    if (!$warga) {
+        return redirect()->back()->with('error', 'Data warga tidak ditemukan.');
     }
+
+    // 2. Validasi dengan pengecualian ID unik untuk NIK
+    $request->validate([
+        'nama_lengkap'      => 'required|string|max:255',
+        'nik'               => 'required|numeric|digits:16|unique:warga,nik,' . $warga->id,
+        'no_kk'             => 'required|numeric|digits:16',
+        'tempat_lahir'      => 'required|string|max:255',
+        'tanggal_lahir'     => 'required|date',
+        'agama'             => 'required|string|max:50',
+        'jenis_kelamin'     => 'required|in:Laki-laki,Perempuan',
+        'status_perkawinan' => 'required|string',
+        'pekerjaan'         => 'required|string|max:255',
+        'alamat_lengkap'    => 'required|string',
+        'rt'                => 'required|numeric',
+        'rw'                => 'required|numeric',
+        'kelurahan'         => 'required|string|max:100',
+        'kecamatan'         => 'required|string|max:100',
+        'kabupaten'         => 'required|string|max:100',
+        'provinsi'          => 'required|string|max:100',
+    ]);
+
+    // 3. Update Database (Semua field yang diminta)
+    $warga->update([
+        'nama_lengkap'      => $request->nama_lengkap,
+        'nik'               => $request->nik,
+        'no_kk'             => $request->no_kk,
+        'tempat_lahir'      => $request->tempat_lahir,
+        'tanggal_lahir'     => $request->tanggal_lahir,
+        'agama'             => $request->agama,
+        'jenis_kelamin'     => $request->jenis_kelamin,
+        'status_perkawinan' => $request->status_perkawinan,
+        'pekerjaan'         => $request->pekerjaan,
+        'alamat_lengkap'    => $request->alamat_lengkap,
+        'rt'                => $request->rt,
+        'rw'                => $request->rw,
+        'kelurahan'         => $request->kelurahan,
+        'kecamatan'         => $request->kecamatan,
+        'kabupaten'         => $request->kabupaten,
+        'provinsi'          => $request->provinsi,
+    ]);
+
+    // 4. Update Session (Agar tampilan profil langsung berubah)
+    session([
+        'nama_lengkap'      => $request->nama_lengkap,
+        'nik'               => $request->nik,
+        'no_kk'             => $request->no_kk,
+        'tempat_lahir'      => $request->tempat_lahir,
+        'tanggal_lahir'     => $request->tanggal_lahir,
+        'agama'             => $request->agama,
+        'jenis_kelamin'     => $request->jenis_kelamin,
+        'status_perkawinan' => $request->status_perkawinan,
+        'pekerjaan'         => $request->pekerjaan,
+        'alamat_lengkap'    => $request->alamat_lengkap,
+        'rt'                => $request->rt,
+        'rw'                => $request->rw,
+        'kelurahan'         => $request->kelurahan,
+        'kecamatan'         => $request->kecamatan,
+        'kabupaten'         => $request->kabupaten,
+        'provinsi'          => $request->provinsi,
+    ]);
+
+    return redirect()->back()->with('success', 'Profil berhasil disimpan!');
+}
 
     public function showDetail($id)
 {

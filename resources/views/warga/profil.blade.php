@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Tambahkan SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-            <!-- Header Profil -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold text-dark mb-0">Profil Saya</h4>
                 <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     <i class="bi bi-pencil-square me-2"></i>Edit Profil
                 </button>
             </div>
-            
 
             <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 20px;">
-                <!-- Profile Header Banner -->
                 <div class="bg-success p-5 text-white text-center position-relative">
                     <div class="position-relative d-inline-block mb-3">
                         <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 100px; height: 100px;">
@@ -25,12 +21,14 @@
                         </div>
                     </div>
                     <h4 class="fw-bold mb-1">{{ session('nama_lengkap') }}</h4>
-                    <span class="badge bg-white text-success rounded-pill px-3">NIK: {{ session('nik') }}</span>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-white text-success rounded-pill px-3">NIK: {{ session('nik') }}</span>
+                        <span class="badge bg-success-subtle text-white border border-white rounded-pill px-3">KK: {{ session('no_kk') }}</span>
+                    </div>
                 </div>
 
                 <div class="card-body p-4 p-md-5">
                     <div class="row g-4">
-                        <!-- Informasi Pribadi -->
                         <div class="col-md-5 border-end">
                             <h6 class="fw-bold text-primary text-uppercase small mb-4">Informasi Pribadi</h6>
                             <div class="vstack gap-3">
@@ -38,12 +36,22 @@
                                     <label class="text-muted small d-block">Tempat, Tanggal Lahir</label>
                                     <span class="fw-semibold">
                                         {{ session('tempat_lahir') }}, 
-                                        {{ \Carbon\Carbon::parse(session('tanggal_lahir'))->translatedFormat('d F Y') }}
+                                        {{ session('tanggal_lahir') ? \Carbon\Carbon::parse(session('tanggal_lahir'))->translatedFormat('d F Y') : '-' }}
                                     </span>
                                 </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="text-muted small d-block">Jenis Kelamin</label>
+                                        <span class="fw-semibold">{{ session('jenis_kelamin') ?? '-' }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="text-muted small d-block">Agama</label>
+                                        <span class="fw-semibold">{{ session('agama') }}</span>
+                                    </div>
+                                </div>
                                 <div>
-                                    <label class="text-muted small d-block">Agama</label>
-                                    <span class="fw-semibold">{{ session('agama') }}</span>
+                                    <label class="text-muted small d-block">Status Perkawinan</label>
+                                    <span class="fw-semibold">{{ session('status_perkawinan') ?? '-' }}</span>
                                 </div>
                                 <div>
                                     <label class="text-muted small d-block">Pekerjaan</label>
@@ -52,17 +60,16 @@
                             </div>
                         </div>
 
-                        <!-- Alamat Domisili Lengkap -->
                         <div class="col-md-7 ps-md-4">
                             <h6 class="fw-bold text-primary text-uppercase small mb-4">Alamat Domisili</h6>
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="text-muted small d-block"> Dukuh / Alamat</label>
+                                    <label class="text-muted small d-block">Jalan / No. Rumah / Dukuh</label>
                                     <span class="fw-semibold">{{ session('alamat_lengkap') }}</span>
                                 </div>
                                 <div class="col-6">
                                     <label class="text-muted small d-block">RT / RW</label>
-                                    <span class="fw-semibold">{{ session('rt') }} / {{ session('rw') }}</span>
+                                    <span class="fw-semibold text-primary fw-bold">{{ session('rt') }} / {{ session('rw') }}</span>
                                 </div>
                                 <div class="col-6">
                                     <label class="text-muted small d-block">Kelurahan</label>
@@ -89,7 +96,6 @@
     </div>
 </div>
 
-<!-- Modal Edit Profil -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow" style="border-radius: 20px;">
@@ -102,47 +108,102 @@
                 @method('PUT')
                 <div class="modal-body p-4">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-dark">Nama Lengkap</label>
+                        <div class="col-12">
+                            <h6 class="fw-bold small text-muted text-uppercase">Identitas Diri</h6>
+                            <hr class="mt-1 mb-3 opacity-25">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Nama Lengkap</label>
                             <input type="text" name="nama_lengkap" class="form-control bg-light border-0" value="{{ session('nama_lengkap') }}" required>
                         </div>
+
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-dark">Pekerjaan</label>
+                            <label class="form-label">NIK</label>
+                            <input type="number" name="nik" class="form-control bg-light border-0" value="{{ session('nik') }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">No. Kartu Keluarga</label>
+                            <input type="number" name="no_kk" class="form-control bg-light border-0" value="{{ session('no_kk') }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tempat Lahir</label>
+                            <input type="text" name="tempat_lahir" class="form-control bg-light border-0" value="{{ session('tempat_lahir') }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" name="tanggal_lahir" class="form-control bg-light border-0" value="{{ session('tanggal_lahir') }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select name="jenis_kelamin" class="form-select bg-light border-0" required>
+                                <option value="Laki-laki" {{ session('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="Perempuan" {{ session('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Agama</label>
+                            <input type="text" name="agama" class="form-control bg-light border-0" value="{{ session('agama') }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Status Perkawinan</label>
+                            <select name="status_perkawinan" class="form-select bg-light border-0" required>
+                                <option value="Belum Kawin" {{ session('status_perkawinan') == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                                <option value="Kawin" {{ session('status_perkawinan') == 'Kawin' ? 'selected' : '' }}>Kawin</option>
+                                <option value="Cerai Hidup" {{ session('status_perkawinan') == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                                <option value="Cerai Mati" {{ session('status_perkawinan') == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Pekerjaan</label>
                             <input type="text" name="pekerjaan" class="form-control bg-light border-0" value="{{ session('pekerjaan') }}" required>
                         </div>
-                        
+
                         <div class="col-12 mt-4">
                             <h6 class="fw-bold small text-muted text-uppercase">Detail Alamat</h6>
                             <hr class="mt-1 mb-3 opacity-25">
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-dark">Jalan / No. Rumah / Dukuh</label>
+                            <label class="form-label">Jalan / No. Rumah / Dukuh</label>
                             <input type="text" name="alamat_lengkap" class="form-control bg-light border-0" value="{{ session('alamat_lengkap') }}" required>
                         </div>
+
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-dark">RT</label>
+                            <label class="form-label">RT</label>
                             <input type="number" name="rt" class="form-control bg-light border-0" value="{{ session('rt') }}" required>
                         </div>
+
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-dark">RW</label>
+                            <label class="form-label">RW</label>
                             <input type="number" name="rw" class="form-control bg-light border-0" value="{{ session('rw') }}" required>
                         </div>
+
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-dark">Kelurahan</label>
-                            <input type="text" name="kelurahan" class="form-control bg-light border-0" value="{{ session('kelurahan', 'Sambong') }}" required>
+                            <label class="form-label">Kelurahan</label>
+                            <input type="text" name="kelurahan" class="form-control bg-light border-0" value="{{ session('kelurahan') }}" required>
                         </div>
+
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-dark">Kecamatan</label>
-                            <input type="text" name="kecamatan" class="form-control bg-light border-0" value="{{ session('kecamatan', 'Batang') }}" required>
+                            <label class="form-label">Kecamatan</label>
+                            <input type="text" name="kecamatan" class="form-control bg-light border-0" value="{{ session('kecamatan') }}" required>
                         </div>
+
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-dark">Kabupaten</label>
-                            <input type="text" name="kabupaten" class="form-control bg-light border-0" value="{{ session('kabupaten', 'Batang') }}" required>
+                            <label class="form-label">Kabupaten</label>
+                            <input type="text" name="kabupaten" class="form-control bg-light border-0" value="{{ session('kabupaten') }}" required>
                         </div>
+
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-dark">Provinsi</label>
-                            <input type="text" name="provinsi" class="form-control bg-light border-0" value="{{ session('provinsi', 'Jawa Tengah') }}" required>
+                            <label class="form-label">Provinsi</label>
+                            <input type="text" name="provinsi" class="form-control bg-light border-0" value="{{ session('provinsi') }}" required>
                         </div>
                     </div>
                 </div>
@@ -155,7 +216,6 @@
     </div>
 </div>
 
-<!-- Script Alert & Validasi -->
 <script>
 document.getElementById('formUpdateProfile').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -192,12 +252,32 @@ document.getElementById('formUpdateProfile').addEventListener('submit', function
         showConfirmButton: false
     });
 @endif
+
+@if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "{{ session('error') }}"
+    });
+@endif
 </script>
 
 <style>
     body { background-color: #f8f9fa; }
-    label { letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; color: #adb5bd !important; font-size: 0.7rem; }
-    .form-control:focus { background-color: #fff !important; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); border: 1px solid #0d6efd !important; }
+    label.form-label { 
+        letter-spacing: 0.5px; 
+        text-transform: uppercase; 
+        font-weight: 700; 
+        color: #495057 !important; 
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .card-body label { color: #adb5bd !important; }
+    .form-control:focus, .form-select:focus { 
+        background-color: #fff !important; 
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); 
+        border: 1px solid #0d6efd !important; 
+    }
     .fw-semibold { color: #333; }
 </style>
 @endsection

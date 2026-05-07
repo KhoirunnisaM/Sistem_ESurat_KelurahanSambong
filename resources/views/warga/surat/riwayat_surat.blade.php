@@ -14,27 +14,27 @@
         <!-- Filter Status Kapsul -->
         <div class="d-flex overflow-auto pb-3 mb-4 flex-nowrap gap-2" style="scrollbar-width: none; -ms-overflow-style: none;">
             <a href="{{ route('warga.riwayat', ['status' => 'semua']) }}" 
-               class="btn {{ request('status') == 'semua' || !request('status') ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">
                 Semua
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'diajukan']) }}" 
-               class="btn {{ request('status') == 'diajukan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Diajukan' ? 'btn-warning text-white' : 'btn-outline-warning' }}">
                 Diajukan
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'diproses']) }}" 
-               class="btn {{ request('status') == 'diproses' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Diproses' ? 'btn-primary' : 'btn-outline-primary' }}">
                 Diproses
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'selesai']) }}" 
-               class="btn {{ request('status') == 'selesai' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Selesai' ? 'btn-success' : 'btn-outline-success' }}">
                 Selesai
             </a>
             <a href="{{ route('warga.riwayat', ['status' => 'ditolak']) }}" 
-               class="btn {{ request('status') == 'ditolak' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Ditolak' ? 'btn-danger' : 'btn-outline-danger' }}">
                 Ditolak
             </a>
              <a href="{{ route('warga.riwayat', ['status' => 'dibatalkan']) }}" 
-               class="btn {{ request('status') == 'dibatalkan' ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 fw-bold shadow-sm">
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Dibatalkan' ? 'btn-secondary' : 'btn-outline-secondary' }}">
                 Dibatalkan
             </a>
         </div>

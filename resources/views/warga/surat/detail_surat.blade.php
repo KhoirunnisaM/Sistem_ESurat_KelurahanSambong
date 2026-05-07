@@ -94,28 +94,70 @@
                 </div>
 
                 <div class="col-md-5">
-                    <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold mb-3">Status Pengajuan</h6>
-                            @php
-                                $status = strtolower($surat->status);
-                                $badgeColor = 'bg-secondary';
-                                if($status == 'diajukan') $badgeColor = 'bg-warning text-dark';
-                                elseif($status == 'diproses') $badgeColor = 'bg-info text-white';
-                                elseif($status == 'selesai') $badgeColor = 'bg-success text-white';
-                                elseif($status == 'ditolak') $badgeColor = 'bg-danger text-white';
-                            @endphp
-                            <div class="d-flex align-items-center p-3 {{ $badgeColor }} bg-opacity-10 rounded-4 border">
-                                <div class="rounded-circle {{ $badgeColor }} p-2 me-3">
-                                    <i class="bi bi-clock-history fs-5"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold">{{ strtoupper($status == 'ditolak' ? 'Dibatalkan' : $surat->status) }}</h6>
-                                    <small class="opacity-75">Diperbarui: {{ $surat->updated_at->format('d M Y, H:i') }}</small>
-                                </div>
-                            </div>
-                        </div>
+                   <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
+    <div class="card-body p-4">
+        <h6 class="fw-bold mb-3">Status Pengajuan</h6>
+        
+        @php
+            $status = strtolower($surat->status);
+            
+            // Konfigurasi warna berdasarkan status
+            $config = [
+                'diajukan'   => ['bg' => 'bg-warning',   'text' => 'text-dark',  'border' => 'border-warning'],
+                'diproses'   => ['bg' => 'bg-info',      'text' => 'text-white', 'border' => 'border-info'],
+                'selesai'    => ['bg' => 'bg-success',   'text' => 'text-white', 'border' => 'border-success'],
+                'ditolak'    => ['bg' => 'bg-danger',    'text' => 'text-white', 'border' => 'border-danger'],
+                'dibatalkan' => ['bg' => 'bg-secondary', 'text' => 'text-white', 'border' => 'border-secondary'],
+            ];
+
+            $c = $config[$status] ?? $config['diajukan'];
+        @endphp
+        
+        <div class="p-3 {{ $c['bg'] }} bg-opacity-10 rounded-4 border {{ $c['border'] }}">
+            <div class="d-flex align-items-start mb-3">
+                <div class="rounded-circle {{ $c['bg'] }} {{ $c['text'] }} p-2 me-3 shadow-sm">
+                    <i class="bi bi-clock-history fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold text-dark">{{ strtoupper($surat->status) }}</h6>
+                    <small class="text-muted d-block">Diperbarui: {{ $surat->updated_at->format('d M Y, H:i') }}</small>
+                </div>
+            </div>
+
+            @if($status == 'selesai' || $status == 'diproses' || $status == 'ditolak' || $status == 'dibatalkan')
+            <div class="bg-white rounded-3 p-3 border {{ $c['border'] }} shadow-sm">
+                
+                @if(($status == 'selesai' || $status == 'diproses') && $surat->nomor_surat)
+                    <div class="text-center py-1">
+                        <span class="text-muted small d-block mb-1">NOMOR SURAT:</span>
+                        <h6 class="fw-bold text-dark mb-0">{{ $surat->nomor_surat }}</h6>
                     </div>
+                @endif
+
+                @if($status == 'ditolak')
+                    <div class="mb-2">
+                        <label class="text-danger small fw-bold d-block mb-1">ALASAN PENOLAKAN:</label>
+                        <p class="text-dark small mb-2 lh-sm">{{ $surat->alasan_ditolak ?? 'Keterangan data salah atau tidak lengkap.' }}</p>
+                    </div>
+                    <div class="p-2 {{ $c['bg'] }} bg-opacity-10 rounded-2">
+                        <small class="text-danger fw-bold" style="font-size: 0.75rem;">
+                            Warga harus mengajukan ulang dengan berkas yang benar.
+                        </small>
+                    </div>
+                @endif
+
+                @if($status == 'dibatalkan')
+                    <div class="text-center py-2">
+                        <h6 class="fw-bold text-secondary mb-0">Dibatalkan oleh Warga</h6>
+                    </div>
+                @endif
+
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+
 
                     <div class="card border-0 shadow-sm" style="border-radius: 20px;">
                         <div class="card-body p-4">
@@ -214,5 +256,15 @@
     .bg-light-subtle { background-color: #fcfcfc; border: 1px dashed #dee2e6 !important; }
     .rounded-4 { border-radius: 1rem !important; }
     label { letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.7rem !important; font-weight: 700; }
+</style>
+
+
+<style>
+    /* Styling tambahan untuk menyesuaikan dengan gambar */
+    .bg-opacity-10 { --bs-bg-opacity: 0.1; }
+    .rounded-4 { border-radius: 1.25rem !important; }
+    .border-success { border-color: #198754 !important; }
+    .border-danger { border-color: #dc3545 !important; }
+    .border-secondary { border-color: #6c757d !important; }
 </style>
 @endsection
