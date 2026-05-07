@@ -126,9 +126,9 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
-                                Detail
-                            </a>
+                            <a href="{{ route('admin.surat.show', $s->id) }}?from=hari-ini" class="btn btn-sm btn-outline-dark px-3 rounded-pill">
+    Detail
+</a>
                         </td>
                     </tr>
                     @empty

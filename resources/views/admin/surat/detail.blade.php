@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 
 @section('admin_content')
@@ -26,9 +27,10 @@
 </style>
 
 <div class="mb-4">
-    <a href="javascript:void(0)" onclick="history.back()" class="text-decoration-none text-muted small">
-        <i class="bi bi-arrow-left me-1"></i> Kembali ke Halaman Sebelumnya
-    </a>
+    {{-- Tombol Kembali yang Pintar --}}
+<a href="{{ $backUrl }}" class="text-decoration-none text-muted small">
+    <i class="bi bi-arrow-left me-1"></i> Kembali
+</a>
 </div>
 
 <div class="row g-4">

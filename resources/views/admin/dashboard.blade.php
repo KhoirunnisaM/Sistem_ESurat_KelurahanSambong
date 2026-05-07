@@ -40,7 +40,7 @@
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
             </div>
-            <div class="h2 fw-bold text-dark mb-0">{{ $stats['ditolak'] ?? 0 }}</div>
+            <div class="h2 fw-bold text-dark mb-0">{{ ($stats['ditolak'] ?? 0) + ($stats['dibatalkan'] ?? 0) }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
@@ -78,7 +78,7 @@
             </div>
             
             <div class="mt-3 mt-md-0 d-flex gap-2">
-                <form action="{{ route('admin.surat.hari-ini') }}" method="GET" class="d-flex gap-2">
+                <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2">
                     <input type="text" name="search" class="form-control form-control-sm border-0 bg-light px-3 rounded-pill" 
                            placeholder="Cari NIK, Nama, Jenis..." value="{{ request('search') }}">
                     
@@ -86,11 +86,39 @@
                         <i class="bi bi-search"></i>
                     </button>
 
-                    @if(request('search'))
-                        <a href="{{ route('admin.surat.hari-ini') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
+                    @if(request('search') || request('status'))
+                        <a href="{{ url()->current() }}" class="btn btn-sm btn-outline-secondary rounded-pill">Reset</a>
                     @endif
                 </form>
             </div>
+        </div>
+
+        {{-- FILTER KAPSUL STATUS --}}
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="{{ request()->fullUrlWithQuery(['status' => null]) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">
+               Semua
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'Diajukan']) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Diajukan' ? 'btn-warning text-white' : 'btn-outline-warning' }}">
+               Diajukan
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'Diproses']) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Diproses' ? 'btn-primary' : 'btn-outline-primary' }}">
+               Diproses
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'Ditolak']) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Ditolak' ? 'btn-danger' : 'btn-outline-danger' }}">
+               Ditolak
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'Dibatalkan']) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Dibatalkan' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+               Dibatalkan
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'Selesai']) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ request('status') == 'Selesai' ? 'btn-success' : 'btn-outline-success' }}">
+               Selesai
+            </a>
         </div>
 
         <div class="table-responsive">
@@ -161,14 +189,14 @@
                             </span>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.surat.show', $s->id) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" style="font-size: 0.75rem;">
-                                Detail
-                            </a>
+                            <a href="{{ route('admin.surat.show', $s->id) }}?from=dashboard" class="btn btn-sm btn-outline-dark px-3 rounded-pill">
+      Detail
+</a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat hari ini.</td>
+                        <td colspan="6" class="text-center py-5 text-muted small">Tidak ada permohonan surat dengan kriteria tersebut.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -176,10 +204,13 @@
         </div>
         
         <div class="mt-4 text-center">
-            @if(!request('filter') && !request('search'))
-                <a href="{{ route('admin.surat.hari-ini') }}" class="btn btn-sm btn-outline-success rounded-pill px-4">
-                    Lihat Selengkapnya <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+            @if(!request('filter') && !request('search') && !request('status'))
+                {{-- Hanya tampilkan tombol jika ada halaman berikutnya (melebihi limit paginasi) --}}
+                @if(method_exists($surat_terbaru, 'hasMorePages') && $surat_terbaru->hasMorePages())
+                    <a href="{{ route('admin.surat.hari-ini', ['filter' => 'masuk']) }}" class="btn btn-sm btn-outline-success rounded-pill px-4">
+                        Lihat Selengkapnya <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                @endif
             @else
                 <div class="d-flex justify-content-center">
                     @if(method_exists($surat_terbaru, 'links'))

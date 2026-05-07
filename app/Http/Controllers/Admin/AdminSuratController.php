@@ -15,25 +15,38 @@ class AdminSuratController extends Controller
      * Menampilkan daftar semua pengajuan surat
      */
 
-    public function dashboard()
+    // Tambahkan Request $request di dalam kurung ini
+public function dashboard(Request $request) 
 {
-    // Mengambil statistik untuk kotak dashboard
     $stats = [
-        'diajukan' => Surat::where('status', 'Diajukan')->count(),
-        'diproses' => Surat::where('status', 'Diproses')->count(),
-        // Menggunakan whereIn untuk mengambil beberapa status sekaligus
-        'ditolak'  => Surat::whereIn('status', ['Ditolak', 'Dibatalkan'])->count(),
-        'selesai'  => Surat::where('status', 'Selesai')->count(),
+        'diajukan'  => Surat::where('status', 'Diajukan')->count(),
+        'diproses'  => Surat::where('status', 'Diproses')->count(),
+        'ditolak'   => Surat::where('status', 'Ditolak')->count(),
+        'selesai'   => Surat::where('status', 'Selesai')->count(),
+        'dibatalkan' => Surat::where('status', 'Dibatalkan')->count(),
     ];
 
-    // Mengambil 5 surat terbaru untuk tabel dashboard
-$surat_terbaru = Surat::with(['warga', 'jenisSurat'])
-    ->whereDate('created_at', \Carbon\Carbon::today()) // Filter khusus hari ini
-    ->orderBy('created_at', 'desc')
-    ->take(7) // Limit untuk tampilan dashboard
-    ->get();
+    $query = Surat::with(['warga', 'jenisSurat'])
+        ->whereDate('created_at', \Carbon\Carbon::today());
+
+    // Memproses filter status dari kapsul
+    if ($request->status) {
+        $query->where('status', $request->status);
+    }
+
+    // Memproses search
+    if ($request->search) {
+        $query->whereHas('warga', function($q) use ($request) {
+            $q->where('nama_lengkap', 'like', "%{$request->search}%")
+              ->orWhere('nik', 'like', "%{$request->search}%");
+        });
+    }
+
+    // Ubah angka 10 sesuai limit yang diinginkan untuk memicu tombol "Selengkapnya"
+    $surat_terbaru = $query->orderBy('created_at', 'desc')->paginate(20); 
 
     return view('admin.dashboard', compact('stats', 'surat_terbaru'));
+
 }
 
     public function index(Request $request)
@@ -92,13 +105,28 @@ if ($request->filled('search')) {
     /**
      * Menampilkan detail surat dan form validasi
      */
-    public function show($id)
-    {
-        $surat = Surat::with(['warga', 'jenisSurat'])->findOrFail($id);
-        $pegawai = Pegawai::all(); 
+    public function show(Request $request, $id)
+{
+    $pegawai = \App\Models\Pegawai::all();
+    $surat = Surat::findOrFail($id);
+    $origin = $request->query('from');
 
-        return view('admin.surat.detail', compact('surat', 'pegawai'));
+    // Tentukan URL kembali berdasarkan parameter 'from'
+    if ($origin == 'dashboard') {
+        $backUrl = route('admin.dashboard');
+    } elseif ($origin == 'riwayat') {
+        $backUrl = route('admin.surat.riwayat'); // Sesuaikan nama route riwayat Anda
+    } elseif ($origin == 'masuk') {
+        $backUrl = route('admin.surat.masuk');
+    } elseif ($origin == 'hari-ini') {
+        $backUrl = route('admin.surat.hari-ini');
+    } else {
+        // Fallback jika tidak ada parameter (misal langsung ketik URL)
+        $backUrl = route('admin.dashboard');
     }
+
+    return view('admin.surat.detail', compact('surat', 'backUrl' , 'pegawai'));
+}
 
    public function suratHariIni(Request $request)
 {
@@ -291,10 +319,13 @@ public function riwayatSurat(Request $request)
     {
         // Ambil data surat, warga, dan pegawai yang TTD
         $surat = Surat::with(['warga', 'pegawai', 'jenisSurat'])->findOrFail($id);
+    
+        $profil = \App\Models\SettingSurat::first(); 
 
         // Langsung return view agar menjadi halaman HTML yang memicu window.print()
-        return view('admin.surat.print_layout', compact('surat'));
+        return view('admin.surat.print_layout', compact('surat', 'profil'));
     }
+    
 
     /**
      * Menandai surat telah selesai

@@ -1,11 +1,13 @@
 @php
+    // Data Pengaturan Kop dari profil_desa
+    $profil = \App\Models\SettingSurat::first();
 
     $jabatanAsli = $surat->pegawai->jabatan ?? 'LURAH';
     $namaPejabat = $surat->pegawai->nama_lengkap ?? '........................';
     $nipPejabat = $surat->pegawai->nip ?? '........................';
     
     $isLurah = (strtoupper($jabatanAsli) == 'LURAH');
-    $displayJabatanKop = $isLurah ? "LURAH SAMBONG" : "a.n. LURAH SAMBONG";
+    $displayJabatanKop = $isLurah ? ($profil->nama_lembaga ?? "LURAH SAMBONG") : "a.n. ".($profil->nama_lembaga ?? "LURAH SAMBONG");
     $subJabatan = $isLurah ? "" : strtoupper($jabatanAsli);
 
     $alamatDefault = "Kelurahan Sambong, Kecamatan Batang, Kabupaten Batang, Provinsi Jawa Tengah";
@@ -29,12 +31,20 @@
         .page { background: white; width: 210mm; min-height: 297mm; padding: 20mm 20mm 20mm 30mm; margin: auto; box-sizing: border-box; }
         .kop { text-align: center; position: relative; border-bottom: 4px solid black; padding-bottom: 2px; }
         .kop::after { content: ""; display: block; border-bottom: 1px solid black; margin-top: 2px; }
-        .logo { position: absolute; left: 0; top: 0; width: 75px; }
-        .kop h2 { font-size: 14pt; margin: 0; font-weight: bold; text-transform: uppercase; }
-        .kop h1 { font-size: 16pt; margin: 0; font-weight: bold; text-transform: uppercase; }
+        .logo {
+            position: absolute;
+            left: 0;
+            top: 0;
+            /* Menggunakan ukuran absolut dari referensi gambar Anda */
+            width: 2.6cm; 
+            height: 2.6cm;
+            object-fit: contain;
+        }
+        .kop h2 { font-size: 12pt; margin: 0; font-weight: bold; text-transform: uppercase; }
+        .kop h1 { font-size: 18pt; margin: 0; font-weight: bold; text-transform: uppercase; }
         .kop p { font-size: 10pt; margin: 0; font-style: italic; }
         .nomor-wrapper { text-align: center; margin-top: 20px; }
-        .judul-surat { font-size: 13pt; font-weight: bold; text-transform: uppercase; margin-bottom: 0; }
+        .judul-surat { font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-bottom: 0; }
         .nomor-surat { margin-top: 0; margin-bottom: 25px; }
         .isi { text-align: justify; }
         .data-table { width: 100%; margin: 10px 0 10px 20px; border-collapse: collapse; }
@@ -55,25 +65,32 @@
 <body onload="window.print();">
     <div class="page">
         <div class="kop">
-            <img src="{{ asset('assets/img/logo-batang.png') }}" class="logo">
-            <h2>Pemerintah Kabupaten Batang</h2>
-            <h2>Kecamatan Batang</h2>
-            <h1>Kelurahan Sambong</h1>
-            <p>Jl. Kyai Sambong Nomor 12 Telp. 0285 – 392126 Batang 51212</p>
+            {{-- Logo Dinamis dari Setting --}}
+            <img src="{{ $profil && $profil->logo ? asset('storage/'.$profil->logo) : asset('assets/img/logo-batang.png') }}" class="logo">
+            
+            {{-- Header Dinamis dari Setting --}}
+            <h2>{{ $profil->instansi_level_1 ?? 'Pemerintah Kabupaten Batang' }}</h2>
+            <h2>{{ $profil->instansi_level_2 ?? 'Kecamatan Batang' }}</h2>
+            <h1>{{ $profil->nama_lembaga ?? 'Kelurahan Sambong' }}</h1>
+            <p>
+                {{ $profil->alamat_jalan ?? 'Jl. Kyai Sambong Nomor 12' }} 
+                Telp. {{ $profil->no_telp ?? '0285 – 392126' }} 
+                Batang {{ $profil->kode_pos ?? '51212' }}
+            </p>
         </div>
 
         <div class="nomor-wrapper">
-<p class="judul-surat">
-            {{-- Mengambil langsung dari field judul_cetak --}}
-            {{ $surat->jenisSurat->judul_cetak ?? $surat->jenisSurat->nama_jenis }}
-        </p>            <p class="nomor-surat">Nomor : {{ $surat->nomor_surat }}</p>
+            <p class="judul-surat">
+                {{ $surat->jenisSurat->judul_cetak ?? $surat->jenisSurat->nama_jenis }}
+            </p>
+            <p class="nomor-surat">Nomor : {{ $surat->nomor_surat }}</p>
         </div>
 
         <div class="isi">
             <p>Yang bertanda tangan di bawah ini :</p>
             <table class="data-table">
                 <tr><td width="30%">a. Nama</td><td width="2%">:</td><td class="nama-pejabat-isi">{{ $namaPejabat }}</td></tr>
-                <tr><td>b. Jabatan</td><td>:</td><td>{{ $jabatanAsli }} Sambong</td></tr>
+                <tr><td>b. Jabatan</td><td>:</td><td>{{ $jabatanAsli }} {{ ucwords(strtolower($profil->nama_lembaga ?? 'Sambong')) }}</td></tr>
             </table>
 
             <p>Dengan ini menerangkan bahwa :</p>
@@ -104,70 +121,56 @@
                 <p style="margin-top: 10px;">Benar-benar berdomisili di {{ $alamatLembagaFix }}.</p>
             @else
                 <table class="data-table">
-    {{-- Nama dengan format Bold dan Huruf Kapital --}}
-    <tr>
-        <td width="30%">a. N a m a</td>
-        <td width="2%">:</td>
-        <td style="font-weight: bold; text-transform: uppercase;">{{ $surat->warga->nama_lengkap }}</td>
-    </tr>
-
-    {{-- Tempat Tanggal Lahir --}}
-    <tr>
-        <td>b. Tempat lahir</td>
-        <td>:</td>
-        <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d - m - Y') }}</td>
-    </tr>
-
-    {{-- Agama dengan spasi antar karakter sesuai gambar --}}
-    <tr>
-        <td>c. A g a m a</td>
-        <td>:</td>
-        <td>{{ ucwords(strtolower($surat->warga->agama)) }}</td>
-    </tr>
-
-    {{-- Pekerjaan --}}
-    <tr>
-        <td>d. Pekerjaan</td>
-        <td>:</td>
-        <td>{{ ucwords(strtolower($surat->warga->pekerjaan)) }}</td>
-    </tr>
-
-    {{-- Alamat Lengkap sesuai format KTP (Multi-baris) --}}
-    <tr>
-        <td valign="top">e. Alamat di KTP</td>
-        <td valign="top">:</td>
-        <td>
-            {{ ucwords(strtolower($surat->warga->alamat_lengkap)) }} RT {{ $surat->warga->rt }} RW {{ $surat->warga->rw }}<br>
-            Kelurahan {{ ucwords(strtolower($surat->warga->kelurahan ?? 'Sambong')) }} Kecamatan {{ ucwords(strtolower($surat->warga->kecamatan ?? 'Batang')) }}<br>
-            Kabupaten {{ ucwords(strtolower($surat->warga->kabupaten ?? 'Batang')) }} Provinsi {{ ucwords(strtolower($surat->warga->provinsi ?? 'Jawa Tengah')) }}
-        </td>
-    </tr>
-
-    {{-- NIK / Surat Bukti Diri --}}
-    <tr>
-        <td>h. Surat Bukti diri</td>
-        <td>:</td>
-        <td>NIK. {{ $surat->warga->nik }}</td>
-    </tr>
-
-    {{-- Keperluan --}}
-    <tr>
-        <td>i. Keperluan</td>
-        <td>:</td>
-        <td>{{ formatKbbi($surat->keperluan) }}</td>
-    </tr>
-
-    {{-- Keterangan --}}
-    <tr>
-        <td valign="top">j. Keterangan</td>
-        <td valign="top">:</td>
-        <td>{{ formatKbbi($surat->keterangan ?? 'Bahwa orang tersebut adalah warga Kelurahan Sambong dan berkelakuan baik.') }}</td>
-    </tr>
-</table>
+                    <tr>
+                        <td width="30%">a. N a m a</td>
+                        <td width="2%">:</td>
+                        <td style="font-weight: bold; text-transform: uppercase;">{{ $surat->warga->nama_lengkap }}</td>
+                    </tr>
+                    <tr>
+                        <td>b. Tempat lahir</td>
+                        <td>:</td>
+                        <td>{{ ucwords(strtolower($surat->warga->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($surat->warga->tanggal_lahir)->format('d - m - Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td>c. A g a m a</td>
+                        <td>:</td>
+                        <td>{{ ucwords(strtolower($surat->warga->agama)) }}</td>
+                    </tr>
+                    <tr>
+                        <td>d. Pekerjaan</td>
+                        <td>:</td>
+                        <td>{{ ucwords(strtolower($surat->warga->pekerjaan)) }}</td>
+                    </tr>
+                    <tr>
+                        <td valign="top">e. Alamat di KTP</td>
+                        <td valign="top">:</td>
+                        <td>
+                            {{ ucwords(strtolower($surat->warga->alamat_lengkap)) }} RT {{ $surat->warga->rt }} RW {{ $surat->warga->rw }}<br>
+                            Kelurahan {{ ucwords(strtolower($surat->warga->kelurahan ?? 'Sambong')) }} Kecamatan {{ ucwords(strtolower($surat->warga->kecamatan ?? 'Batang')) }}<br>
+                            Kabupaten {{ ucwords(strtolower($surat->warga->kabupaten ?? 'Batang')) }} Provinsi {{ ucwords(strtolower($surat->warga->provinsi ?? 'Jawa Tengah')) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>h. Surat Bukti diri</td>
+                        <td>:</td>
+                        <td>NIK. {{ $surat->warga->nik }}</td>
+                    </tr>
+                    <tr>
+                        <td>i. Keperluan</td>
+                        <td>:</td>
+                        <td>{{ formatKbbi($surat->keperluan) }}</td>
+                    </tr>
+                    <tr>
+                        <td valign="top">j. Keterangan</td>
+                        <td valign="top">:</td>
+                        <td>{{ formatKbbi($surat->keterangan ?? 'Bahwa orang tersebut adalah warga Kelurahan Sambong dan berkelakuan baik.') }}</td>
+                    </tr>
+                </table>
             @endif
 
+            {{-- Kalimat Penutup Dinamis dari Setting Jenis Surat --}}
             <p class="penutup">
-                Demikian Surat Keterangan ini dibuat untuk digunakan seperlunya dan bagi yang berkepentingan untuk menjadikan maklum.
+                {{ $surat->jenisSurat->kalimat_penutup ?? 'Demikian Surat Keterangan ini dibuat untuk digunakan seperlunya dan bagi yang berkepentingan untuk menjadikan maklum.' }}
             </p>
         </div>
 

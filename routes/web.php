@@ -8,6 +8,10 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\AdminSuratController;
 use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\AdminWargaController;
+use App\Http\Controllers\Admin\SettingSuratController;
+use App\Http\Controllers\Admin\PengumumanController;
+use App\Http\Controllers\Warga\PengumumanWargaController;
+
 
 
 //WARGA
@@ -50,6 +54,11 @@ Route::middleware(['warga_auth'])->group(function () {
     Route::get('/form-surat/{tipe}', [SuratController::class, 'create'])->name('surat.buat');
     Route::post('/simpan-surat', [SuratController::class, 'store'])->name('surat.store');
 });
+Route::get('/pengumuman', [PengumumanWargaController::class, 'index'])->name('warga.pengumuman.index');
+Route::get('/pengumuman/{id}', [PengumumanWargaController::class, 'show'])->name('warga.pengumuman.show');
+
+
+
 
 
 //ADMIN
@@ -96,8 +105,23 @@ Route::prefix('admin')->group(function () {
         Route::post('admin/surat/{id}/selesai', [AdminSuratController::class, 'selesai'])->name('admin.surat.selesai');
         Route::get('/surat/cetak/{id}', [AdminSuratController::class, 'cetak'])->name('admin.surat.cetak');
         Route::post('/admin/surat/{id}/update-cetak', [SuratController::class, 'updateCetak'])->name('admin.surat.update-cetak');
-    });
-    
+
+        // 6. Fitur Setting Surat
+        Route::get('/setting', [SettingSuratController::class, 'index'])->name('admin.setting.index');
+        Route::post('/setting/profil', [SettingSuratController::class, 'updateProfil'])->name('admin.setting.updateProfil');
+        Route::post('/setting/penutup/{id}', [SettingSuratController::class, 'updatePenutup'])->name('admin.setting.updatePenutup');
+
+      });
+      Route::resource('pengumuman', PengumumanController::class)->names([
+    'index'   => 'admin.pengumuman.index',
+    'create'  => 'admin.pengumuman.create',
+    'store'   => 'admin.pengumuman.store',
+    'edit'    => 'admin.pengumuman.edit',
+    'update'  => 'admin.pengumuman.update',
+    'show'    => 'admin.pengumuman.show',
+    'destroy' => 'admin.pengumuman.destroy',
+]);
+
 });
 
 

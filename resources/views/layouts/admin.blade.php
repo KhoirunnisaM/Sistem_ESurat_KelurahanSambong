@@ -126,6 +126,14 @@
             <a href="{{ route('admin.warga.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.warga.*') ? 'active' : '' }}">
                 <i class="bi bi-person-badge"></i> Data Warga
             </a>
+
+            <a href="{{ route('admin.setting.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.setting.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-medical"></i> Template Surat
+            </a>
+
+            <a href="{{ route('admin.pengumuman.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
+                <i class="bi bi-megaphone"></i> Pengumuman
+            </a>
         </div>
     </div>
 
@@ -184,5 +192,5 @@
     document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', dateOptions);
 </script>
 @yield('scripts')
-</body>
 </html>
+</body>
