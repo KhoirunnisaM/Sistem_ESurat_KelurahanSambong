@@ -22,7 +22,7 @@ class SuratController extends Controller
         $nama_surat = $jenisSurat->nama_jenis;
         $jenis_surat_id = $jenisSurat->id;
 
-        return view('warga.form_surat', compact('tipe', 'nama_surat', 'jenis_surat_id'));
+        return view('warga.surat.form_surat', compact('tipe', 'nama_surat', 'jenis_surat_id'));
     }
 
     public function store(Request $request)

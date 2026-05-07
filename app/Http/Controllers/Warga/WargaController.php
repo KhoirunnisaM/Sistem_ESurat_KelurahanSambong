@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Warga;
 
+use App\Http\Controllers\Controller;
 use App\Models\Surat;
 use App\Models\Warga;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class WargaController extends Controller
 
     public function ajukanSurat()
     {
-        return view('warga.ajukan_surat');
+        return view('warga.surat.ajukan_surat');
     }
 
     public function riwayatSurat(Request $request)
@@ -62,7 +63,7 @@ class WargaController extends Controller
 
         $riwayat = $query->orderBy('created_at', 'desc')->paginate(200);
 
-        return view('warga.riwayat_surat', compact('riwayat'));
+        return view('warga.surat.riwayat_surat', compact('riwayat'));
     }
 
     public function profil()
@@ -151,7 +152,7 @@ class WargaController extends Controller
         'kabupaten'      => session('kabupaten'),
     ];
 
-    return view('warga.detail_surat', compact('surat', 'no_surat_format', 'warga'));
+    return view('warga.surat.detail_surat', compact('surat', 'no_surat_format', 'warga'));
 }
 
     public function edit($id)
@@ -161,7 +162,7 @@ class WargaController extends Controller
                       ->where('status', 'Diajukan') 
                       ->firstOrFail();
 
-        return view('warga.edit_surat', compact('surat'));
+        return view('warga.surat.edit_surat', compact('surat'));
     }
 
     public function update(Request $request, $id)

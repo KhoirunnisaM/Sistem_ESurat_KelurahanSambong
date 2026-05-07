@@ -4,7 +4,6 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <!-- Header & Action Buttons -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h4 class="fw-bold text-dark mb-1">Rincian Pengajuan</h4>
@@ -12,20 +11,18 @@
                 </div>
                 <div class="d-flex gap-2">
                    <a href="{{ session('url_asal_surat', route('warga.riwayat')) }}" class="btn btn-white bg-white border shadow-sm rounded-pill px-4">
-    <i class="bi bi-arrow-left me-2"></i>Kembali
-</a>
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </a>
                 </div>
             </div>
 
             <div class="row g-4">
-                <!-- Kolom Kiri: Detail Informasi -->
                 <div class="col-md-7">
                     <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 20px;">
                         <div class="card-header bg-white border-0 pt-4 px-4">
                             <h6 class="fw-bold mb-0"><i class="bi bi-person-lines-fill me-2 text-success"></i>Data Pemohon</h6>
                         </div>
                         <div class="card-body p-4">
-                            <!-- Informasi Utama -->
                             <div class="mb-4 text-center p-3 bg-light rounded-4">
                                 <h5 class="fw-bold text-dark mb-1">{{ strtoupper($warga['nama_lengkap']) }}</h5>
                                 <p class="text-muted small mb-0">NIK: {{ $warga['nik'] }}</p>
@@ -54,29 +51,28 @@
                                 </div>
                             </div>
 
-                            {{-- KHUSUS SURAT DOMISILI USAHA (Berdasarkan jenis_surat_id 4) --}}
-@if($surat->jenis_surat_id == 6)
-    <hr class="my-4 opacity-50">
-    <h6 class="fw-bold mb-3"><i class="bi bi-shop me-2 text-primary"></i>Detail Usaha / Lembaga</h6>
-    <div class="row g-3 p-3 border rounded-4 bg-light-subtle">
-        <div class="col-12">
-            <label class="text-muted small d-block">Nama Usaha/Lembaga</label>
-            <span class="fw-bold text-dark">{{ $surat->nama_lembaga ?? $surat->lembaga ?? '-' }}</span>
-        </div>
-        <div class="col-md-6">
-            <label class="text-muted small d-block">Penanggung Jawab</label>
-            <span class="fw-semibold">{{ $surat->penanggung_jawab ?? $surat->pimpinan ?? '-' }}</span>
-        </div>
-        <div class="col-md-6">
-            <label class="text-muted small d-block">Jabatan</label>
-            <span class="fw-semibold">{{ $surat->jabatan_penanggung_jawab ?? '-' }}</span>
-        </div>
-        <div class="col-12">
-            <label class="text-muted small d-block">Alamat Usaha</label>
-            <span class="fw-semibold small">{{ $surat->alamat_lembaga ?? $surat->lokasi ?? '-' }}</span>
-        </div>
-    </div>
-@endif
+                            @if($surat->jenis_surat_id == 6)
+                                <hr class="my-4 opacity-50">
+                                <h6 class="fw-bold mb-3"><i class="bi bi-shop me-2 text-primary"></i>Detail Usaha / Lembaga</h6>
+                                <div class="row g-3 p-3 border rounded-4 bg-light-subtle">
+                                    <div class="col-12">
+                                        <label class="text-muted small d-block">Nama Usaha/Lembaga</label>
+                                        <span class="fw-bold text-dark">{{ $surat->nama_lembaga ?? $surat->lembaga ?? '-' }}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small d-block">Penanggung Jawab</label>
+                                        <span class="fw-semibold">{{ $surat->penanggung_jawab ?? $surat->pimpinan ?? '-' }}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-muted small d-block">Jabatan</label>
+                                        <span class="fw-semibold">{{ $surat->jabatan_penanggung_jawab ?? '-' }}</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-muted small d-block">Alamat Usaha</label>
+                                        <span class="fw-semibold small">{{ $surat->alamat_lembaga ?? $surat->lokasi ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            @endif
 
                             <hr class="my-4 opacity-50">
 
@@ -97,7 +93,6 @@
                     </div>
                 </div>
 
-                <!-- Kolom Kanan: Status & Lampiran -->
                 <div class="col-md-5">
                     <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
                         <div class="card-body p-4">
@@ -136,7 +131,7 @@
                                             <span class="small fw-bold text-muted">Pengantar RT</span>
                                         </div>
                                         @if($surat->scan_pengantar_rt)
-                                            <button class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalRT">Lihat</button>
+                                            <button type="button" class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalRT">Lihat</button>
                                         @else
                                             <span class="badge bg-danger-subtle text-danger">Kosong</span>
                                         @endif
@@ -152,7 +147,7 @@
                                             <span class="small fw-bold text-muted">KK / KTP</span>
                                         </div>
                                         @if($surat->scan_ktp_kk)
-                                            <button class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalKK">Lihat</button>
+                                            <button type="button" class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalKK">Lihat</button>
                                         @else
                                             <span class="badge bg-danger-subtle text-danger">Kosong</span>
                                         @endif
@@ -179,27 +174,38 @@
     </div>
 </div>
 
-{{-- Modal Pratinjau Tetap Sama --}}
-@foreach(['RT' => $surat->scan_pengantar_rt, 'KK' => $surat->scan_ktp_kk] as $key => $file)
-    @if($file)
-    <div class="modal fade" id="modal{{ $key }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
-                <div class="modal-header border-0 px-4 pt-4">
-                    <h6 class="fw-bold mb-0">Pratinjau Dokumen {{ $key == 'RT' ? 'Pengantar RT' : 'KK/KTP' }}</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4 text-center">
-                    <img src="{{ asset('storage/' . str_replace('\\', '/', $file)) }}" class="img-fluid rounded-3 shadow-sm border">
-                </div>
-                <div class="modal-footer border-0 p-4">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-                </div>
+{{-- MODAL AREA --}}
+@if($surat->scan_pengantar_rt)
+<div class="modal fade" id="modalRT" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pratinjau Pengantar RT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ asset('storage/' . $surat->scan_pengantar_rt) }}" class="img-fluid">
             </div>
         </div>
     </div>
-    @endif
-@endforeach
+</div>
+@endif
+
+@if($surat->scan_ktp_kk)
+<div class="modal fade" id="modalKK" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pratinjau KK / KTP</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ asset('storage/' . $surat->scan_ktp_kk) }}" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 <style>
     body { background-color: #f8f9fa; }

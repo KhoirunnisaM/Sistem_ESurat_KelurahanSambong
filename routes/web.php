@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\WargaAuthController;
 use App\Http\Controllers\SuratController;
-use App\Http\Controllers\WargaController;
+use App\Http\Controllers\Warga\WargaController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\AdminSuratController;
 use App\Http\Controllers\Admin\PegawaiController;
