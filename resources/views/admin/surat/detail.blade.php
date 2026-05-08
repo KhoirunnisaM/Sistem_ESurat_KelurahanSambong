@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('admin_content')
@@ -27,11 +26,21 @@
 </style>
 
 <div class="mb-4">
-    {{-- Tombol Kembali yang Pintar --}}
-<a href="{{ $backUrl }}" class="text-decoration-none text-muted small">
-    <i class="bi bi-arrow-left me-1"></i> Kembali
-</a>
+    <a href="{{ $backUrl }}" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i> Kembali
+    </a>
 </div>
+
+{{-- ALERT KHUSUS JIKA STATUS DIBATALKAN --}}
+@if($surat->status == 'Dibatalkan')
+<div class="alert alert-secondary border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+    <i class="bi bi-exclamation-octagon-fill fs-4 me-3"></i>
+    <div>
+        <strong class="d-block">PENGAJUAN INI TELAH DIBATALKAN</strong>
+        <span class="small">Warga yang bersangkutan telah membatalkan pengajuan surat ini. Data ini kini hanya bersifat arsip.</span>
+    </div>
+</div>
+@endif
 
 <div class="row g-4">
     {{-- BAGIAN KIRI: DETAIL DATA --}}
@@ -41,7 +50,6 @@
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Detail Data Pengajuan Surat</h5>
                 
                 <div class="row">
-                    {{-- DATA PERSONAL WARGA --}}
                     <div class="col-md-6 border-end">
                         <h6 class="text-success fw-bold small mb-3 text-uppercase">Data Personal Warga</h6>
                         <table class="table table-sm table-borderless">
@@ -72,7 +80,6 @@
                         </table>
                     </div>
 
-                    {{-- ALAMAT KORESPONDENSI --}}
                     <div class="col-md-6">
                         <h6 class="text-success fw-bold small mb-3 text-uppercase">Alamat Korespondensi</h6>
                         <table class="table table-sm table-borderless">
@@ -98,7 +105,6 @@
 
                 <hr>
 
-                {{-- ISI & KEPERLUAN SURAT --}}
                 <div class="mt-3">
                     <h6 class="text-success fw-bold small mb-3 text-uppercase">Isi & Keperluan Surat</h6>
                     <div class="bg-light p-3 rounded">
@@ -141,7 +147,6 @@
 
                 <hr>
 
-                {{-- DOKUMEN LAMPIRAN --}}
                 <h6 class="fw-bold mb-3 small text-uppercase">Dokumen Lampiran (Verifikasi)</h6>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -178,8 +183,7 @@
                         @csrf
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Nomor Surat (Angka Sahaja)</label>
-                            <input type="text" name="nomor_surat" class="form-control" placeholder="Contoh: 001 atau 119" required>
-                            <div class="form-text" style="font-size: 0.7rem;">Sistem akan otomatis menambahkan /ROMAL/{{ date('Y') }}</div>
+                            <input type="text" name="nomor_surat" class="form-control" placeholder="Contoh: 001" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Tanggal Tanda Tangan</label>
@@ -257,14 +261,13 @@
                             <strong>Alasan Penolakan:</strong><br>
                             {{ $surat->alasan_ditolak }}
                         </div>
-                        <p class="text-muted small">Warga harus mengajukan ulang dengan berkas yang benar.</p>
                     </div>
 
                 @elseif($surat->status == 'Dibatalkan')
                     <div class="text-center py-3">
                         <i class="bi bi-dash-circle-fill text-secondary display-4 mb-3 d-block"></i>
-                        <h6 class="fw-bold text-secondary">Pengajuan Dibatalkan</h6>
-                        <p class="text-muted small mt-2">Dibatalkan oleh warga.</p>
+                        <h6 class="fw-bold text-secondary text-uppercase">Dibatalkan Warga</h6>
+                        <p class="text-muted small mt-2">Pengajuan ini tidak dapat diproses lebih lanjut.</p>
                     </div>
                 @endif
             </div>
@@ -306,6 +309,15 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    @if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "{{ session('error') }}",
+        confirmButtonColor: '#dc3545'
+    });
+    @endif
+    
     const suratId = "{{ $surat->id }}";
     const isPrinted = localStorage.getItem("printed_surat_" + suratId);
     if (isPrinted === "true") {

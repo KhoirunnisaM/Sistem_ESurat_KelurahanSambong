@@ -252,6 +252,10 @@ public function riwayatSurat(Request $request)
     ]);
 
     $surat = Surat::findOrFail($id);
+    
+    if ($surat->status == 'Dibatalkan') {
+        return redirect()->back()->with('error', 'Surat tidak bisa diproses karena sudah dibatalkan oleh warga.');
+    }
 
     // 1. Ambil bulan dan tahun dari tanggal_surat_ttd
     $bulanAngka = date('n', strtotime($request->tanggal_surat_ttd));
