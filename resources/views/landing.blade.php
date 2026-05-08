@@ -1,739 +1,767 @@
 @extends('layouts.app')
 
 @section('content')
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-    --green:     #2e7d4f;
-    --green-lt:  #3d9962;
-    --green-bg:  #f0f7f3;
-    --green-bd:  #c8e6d5;
-    --gray-900:  #1a1d23;
-    --gray-700:  #374151;
-    --gray-500:  #6b7280;
-    --gray-400:  #9ca3af;
-    --gray-300:  #d1d5db;
-    --gray-200:  #e5e7eb;
-    --gray-100:  #f3f4f6;
-    --gray-50:   #f9fafb;
-    --white:     #ffffff;
-    --font:      'Plus Jakarta Sans', sans-serif;
-    --r:         10px;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-html { scroll-behavior: smooth; }
-body {
-    font-family: var(--font);
-    color: var(--gray-700);
-    background: var(--white);
-    font-size: 14px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-}
-a { text-decoration: none; color: inherit; }
+:root{
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --line:#e5e7eb;
 
-/* ─── NAV ─── */
-.nav {
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-.nav-wrap {
-    max-width: 1080px;
-    margin: auto;
-    padding: 0 20px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.nav-logo { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; }
-.nav-title {
-    font-size: 13.5px;
-    font-weight: 700;
-    color: var(--gray-900);
-    line-height: 1.2;
-}
-.nav-title span { display: block; font-size: 11px; font-weight: 400; color: var(--gray-400); }
-.nav-divider { width: 1px; height: 24px; background: var(--gray-200); margin: 0 4px; }
-.nav-links { display: flex; align-items: center; gap: 2px; margin-left: 4px; }
-.nav-link {
-    font-size: 13px; font-weight: 500; color: var(--gray-500);
-    padding: 6px 12px; border-radius: 6px;
-    transition: color .15s, background .15s;
-}
-.nav-link:hover { color: var(--green); background: var(--green-bg); }
-.nav-auth { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.btn-login {
-    font-size: 13px; font-weight: 600; color: var(--green);
-    padding: 7px 16px; border-radius: 6px;
-    border: 1.5px solid var(--green);
-    transition: background .15s, color .15s;
-}
-.btn-login:hover { background: var(--green); color: var(--white); }
-.btn-register {
-    font-size: 13px; font-weight: 600; color: var(--white);
-    background: var(--green); padding: 7px 16px; border-radius: 6px;
-    border: 1.5px solid var(--green);
-    transition: background .15s;
-}
-.btn-register:hover { background: var(--green-lt); border-color: var(--green-lt); color: var(--white); }
-.nav-toggle {
-    display: none; margin-left: auto; background: none; border: none;
-    cursor: pointer; padding: 6px; color: var(--gray-700); font-size: 22px; line-height: 1;
-}
-.mobile-menu { display: none; background: var(--white); border-top: 1px solid var(--gray-200); padding: 12px 20px 16px; }
-.mobile-menu.open { display: block; }
-.mobile-menu a {
-    display: block; font-size: 14px; font-weight: 500; color: var(--gray-700);
-    padding: 10px 0; border-bottom: 1px solid var(--gray-100);
-}
-.mobile-menu a:last-child { border-bottom: none; }
-.mobile-auth { display: flex; gap: 8px; margin-top: 14px; }
-.mobile-auth a { flex: 1; text-align: center; padding: 10px !important; border-bottom: none !important; border-radius: 8px; font-weight: 600 !important; }
-.mobile-auth .m-login { border: 1.5px solid var(--green); color: var(--green) !important; }
-.mobile-auth .m-reg   { background: var(--green); color: var(--white) !important; }
+    --primary:#64796b;
+    --primary-dark:#4f6357;
+    --primary-light:#eef3f0;
 
-/* ─── HERO ─── */
-.hero {
-    background: linear-gradient(160deg, #1b4332 0%, #2d6a4f 55%, #3a8a5c 100%);
-    padding: 56px 20px 60px;
-}
-.hero-wrap {
-    max-width: 1080px; margin: auto;
-    display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: center;
-}
-.hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
-    color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 4px 12px; border-radius: 100px; margin-bottom: 20px;
-}
-.hero-title {
-    font-size: clamp(22px, 4vw, 34px); font-weight: 700; color: var(--white);
-    line-height: 1.25; margin-bottom: 14px; letter-spacing: -0.01em;
-}
-.hero-title span {
-    color: rgba(255,255,255,0.55); font-weight: 400; font-size: 0.7em;
-    display: block; margin-top: 4px; letter-spacing: 0;
-}
-.hero-desc {
-    font-size: 14px; color: rgba(255,255,255,0.58); line-height: 1.8;
-    max-width: 440px; margin-bottom: 28px; font-weight: 300;
-}
-.hero-stats { display: flex; gap: 24px; }
-.hero-stat-num { font-size: 22px; font-weight: 700; color: var(--white); line-height: 1; margin-bottom: 3px; }
-.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.45); }
-.hero-stat-div { width: 1px; background: rgba(255,255,255,0.15); }
+    --text:#111827;
+    --text-soft:#6b7280;
 
-/* login card */
-.login-card {
-    background: var(--white); border-radius: 14px;
-    padding: 28px 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-}
-.login-card-title { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
-.login-card-sub { font-size: 12.5px; color: var(--gray-400); margin-bottom: 20px; }
-.lc-stack { display: flex; flex-direction: column; gap: 9px; }
-.lc-primary {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 12px; background: var(--green); color: var(--white);
-    font-size: 13.5px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer;
-    transition: background .15s; font-family: var(--font);
-}
-.lc-primary:hover { background: var(--green-lt); color: var(--white); }
-.lc-secondary {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 11px; background: transparent; color: var(--gray-700);
-    font-size: 13px; font-weight: 600; border-radius: 8px; font-family: var(--font);
-    border: 1.5px solid var(--gray-200); cursor: pointer; transition: border-color .15s, color .15s;
-}
-.lc-secondary:hover { border-color: var(--gray-300); color: var(--gray-900); }
-.lc-wa {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 11px; background: transparent; color: #128C7E;
-    font-size: 13px; font-weight: 600; border-radius: 8px; font-family: var(--font);
-    border: 1.5px solid #b7ebd1; cursor: pointer;
-    transition: border-color .15s, background .15s;
-}
-.lc-wa:hover { background: #f0fff8; border-color: #25D366; }
-.lc-or {
-    text-align: center; font-size: 11.5px; color: var(--gray-400); position: relative;
-}
-.lc-or::before, .lc-or::after {
-    content: ''; position: absolute; top: 50%; width: 38%; height: 1px; background: var(--gray-200);
-}
-.lc-or::before { left: 0; } .lc-or::after { right: 0; }
+    --shadow-sm:0 6px 18px rgba(0,0,0,.04);
+    --shadow-md:0 14px 38px rgba(0,0,0,.06);
 
-/* ─── SECTION ─── */
-.section { padding: 64px 20px; }
-.section-alt { background: var(--gray-50); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); }
-.wrap { max-width: 1080px; margin: auto; }
-.sec-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--green); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-}
-.sec-title {
-    font-size: clamp(18px, 3vw, 26px); font-weight: 700; color: var(--gray-900);
-    line-height: 1.3; margin-bottom: 8px; letter-spacing: -0.01em;
-}
-.sec-sub { font-size: 13.5px; color: var(--gray-500); line-height: 1.75; font-weight: 300; }
-
-/* ─── VISI ─── */
-.visi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
-.visi-list { margin-top: 0; display: flex; flex-direction: column; gap: 10px; }
-.visi-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 14px 16px; background: var(--white);
-    border: 1px solid var(--gray-200); border-radius: var(--r);
-}
-.visi-dot {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--green-bg); display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
-}
-.visi-dot i { font-size: 14px; color: var(--green); }
-.visi-text { font-size: 13px; color: var(--gray-700); line-height: 1.65; }
-.visi-text strong { display: block; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
-
-/* ─── LAYANAN ─── */
-.layanan-header { margin-bottom: 28px; }
-.layanan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.svc {
-    background: var(--white); border: 1px solid var(--gray-200);
-    border-radius: var(--r); padding: 22px 20px;
-    transition: border-color .2s, box-shadow .2s, transform .2s;
-}
-.svc:hover { border-color: var(--green-bd); box-shadow: 0 4px 20px rgba(46,125,79,0.08); transform: translateY(-2px); }
-.svc-icon {
-    width: 38px; height: 38px; border-radius: 8px; background: var(--green-bg);
-    display: flex; align-items: center; justify-content: center; margin-bottom: 13px;
-}
-.svc-icon i { font-size: 19px; color: var(--green); }
-.svc-name { font-size: 13.5px; font-weight: 700; color: var(--gray-900); margin-bottom: 5px; }
-.svc-desc { font-size: 12.5px; color: var(--gray-500); line-height: 1.65; }
-.svc-tag {
-    display: inline-block; margin-top: 12px; font-size: 10.5px; font-weight: 600;
-    letter-spacing: 0.06em; text-transform: uppercase; color: var(--green);
-    background: var(--green-bg); padding: 2px 8px; border-radius: 100px;
+    --radius-xl:30px;
+    --radius-lg:22px;
+    --radius-md:18px;
 }
 
-/* ─── ALUR ─── */
-.alur-desktop {
-    display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 0; margin-top: 40px; position: relative;
-}
-.alur-step {
-    display: flex; flex-direction: column; align-items: center;
-    text-align: center; position: relative; padding: 0 8px;
-}
-.alur-step:not(:last-child)::after {
-    content: ''; position: absolute; top: 22px; right: -50%;
-    width: 100%; height: 1.5px; background: var(--gray-200); z-index: 0;
-}
-.alur-num {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--white); border: 2px solid var(--gray-200);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: var(--gray-900);
-    margin-bottom: 14px; position: relative; z-index: 1;
-    transition: border-color .2s, background .2s, color .2s;
-}
-.alur-step:hover .alur-num { border-color: var(--green); background: var(--green); color: var(--white); }
-.alur-icon {
-    width: 40px; height: 40px; border-radius: 8px; background: var(--gray-100);
-    display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
-    transition: background .2s;
-}
-.alur-step:hover .alur-icon { background: var(--green-bg); }
-.alur-icon i { font-size: 19px; color: var(--gray-500); transition: color .2s; }
-.alur-step:hover .alur-icon i { color: var(--green); }
-.alur-title { font-size: 12.5px; font-weight: 700; color: var(--gray-900); margin-bottom: 5px; }
-.alur-desc { font-size: 11.5px; color: var(--gray-500); line-height: 1.6; }
-
-.alur-mobile { display: none; flex-direction: column; gap: 0; margin-top: 32px; }
-.alur-m-step { display: flex; gap: 16px; padding: 0 0 28px 0; position: relative; }
-.alur-m-step:not(:last-child)::before {
-    content: ''; position: absolute; left: 19px; top: 44px; bottom: 0;
-    width: 1.5px; background: var(--gray-200);
-}
-.alur-m-num {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: var(--green-bg); border: 2px solid var(--green-bd);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: var(--green); flex-shrink: 0;
-}
-.alur-m-body { padding-top: 8px; }
-.alur-m-title { font-size: 13.5px; font-weight: 700; color: var(--gray-900); margin-bottom: 3px; }
-.alur-m-desc { font-size: 12.5px; color: var(--gray-500); line-height: 1.6; }
-
-/* ─── KONTAK ─── */
-.kontak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 36px; }
-.kontak-items { display: flex; flex-direction: column; gap: 12px; }
-.kontak-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 14px 16px; background: var(--white);
-    border: 1px solid var(--gray-200); border-radius: var(--r);
-}
-.kontak-icon {
-    width: 34px; height: 34px; border-radius: 7px; background: var(--green-bg);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.kontak-icon i { font-size: 15px; color: var(--green); }
-.kontak-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 2px; }
-.kontak-val { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
-
-.kontak-right { display: flex; flex-direction: column; gap: 14px; }
-.wa-btn {
-    display: flex; align-items: center; gap: 12px;
-    padding: 16px 18px; background: #f0fff8;
-    border: 1px solid #b7ebd1; border-radius: var(--r);
-    transition: background .15s, transform .15s;
-}
-.wa-btn:hover { background: #e0faf0; transform: translateY(-1px); }
-.wa-btn-icon {
-    width: 40px; height: 40px; border-radius: 8px; background: #25D366;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; color: var(--white); flex-shrink: 0;
-}
-.wa-btn-text strong { display: block; font-size: 13.5px; font-weight: 700; color: var(--gray-900); }
-.wa-btn-text span { font-size: 12px; color: var(--gray-500); }
-.wa-arrow { margin-left: auto; color: var(--gray-400); }
-
-.medsos-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
-.medsos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.medsos-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 14px; background: var(--white);
-    border: 1px solid var(--gray-200); border-radius: var(--r);
-    transition: border-color .15s, transform .15s;
-}
-.medsos-item:hover { border-color: var(--gray-300); transform: translateY(-1px); }
-.medsos-item i { font-size: 18px; flex-shrink: 0; }
-.medsos-text strong { display: block; font-size: 12.5px; font-weight: 700; color: var(--gray-900); }
-.medsos-text span { font-size: 11px; color: var(--gray-400); }
-
-/* ─── FOOTER ─── */
-.footer { background: var(--gray-900); padding: 20px; }
-.footer-wrap {
-    max-width: 1080px; margin: auto;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-}
-.footer-brand { display: flex; align-items: center; gap: 10px; }
-.footer-logo { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.45; }
-.footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
-.footer-links { display: flex; gap: 16px; }
-.footer-links a { font-size: 12px; color: rgba(255,255,255,0.3); transition: color .15s; }
-.footer-links a:hover { color: rgba(255,255,255,0.65); }
-
-/* ─── RESPONSIVE ─── */
-@media (max-width: 900px) {
-    .nav-links { display: none; }
-    .nav-auth  { display: none; }
-    .nav-toggle { display: block; }
-    .hero-wrap { grid-template-columns: 1fr; }
-    .login-card { max-width: 420px; }
-    .visi-grid { grid-template-columns: 1fr; gap: 28px; }
-    .layanan-grid { grid-template-columns: 1fr 1fr; }
-    .alur-desktop { display: none; }
-    .alur-mobile { display: flex; }
-    .kontak-grid { grid-template-columns: 1fr; gap: 28px; }
-}
-@media (max-width: 560px) {
-    .section { padding: 48px 16px; }
-    .hero { padding: 40px 16px 44px; }
-    .layanan-grid { grid-template-columns: 1fr; }
-    .medsos-grid { grid-template-columns: 1fr; }
-    .footer-wrap { flex-direction: column; align-items: flex-start; }
-    .hero-stats { gap: 16px; }
-    .nav-wrap { padding: 0 16px; }
-    .mobile-menu { padding: 10px 16px 14px; }
+html{
+    scroll-behavior:smooth;
 }
 
-@keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-.hero-wrap > * { animation: up .5s ease both; }
-.hero-wrap > *:first-child { animation-delay: .05s; }
-.hero-wrap > *:last-child  { animation-delay: .18s; }
+body{
+    font-family:'Inter',sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(100,121,107,.06), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(100,121,107,.05), transparent 28%),
+        var(--bg);
+    color:var(--text);
+}
+
+/* MAIN */
+.page{
+    width:100%;
+    min-height:100vh;
+    padding:24px;
+}
+
+.container-main{
+    width:100%;
+    max-width:1400px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:24px;
+    align-items:start;
+}
+
+/* HERO */
+.hero-card{
+    position:relative;
+    overflow:hidden;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:36px;
+    box-shadow:var(--shadow-md);
+    min-height:760px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.hero-card::before{
+    content:'';
+    position:absolute;
+    top:-140px;
+    right:-140px;
+    width:320px;
+    height:320px;
+    border-radius:50%;
+    background:rgba(100,121,107,.08);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    padding:42px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:70px;
+    gap:18px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo-icon{
+    width:72px;
+    height:72px;
+    border-radius:22px;
+    background:white;
+    border:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:var(--shadow-sm);
+    flex-shrink:0;
+}
+
+.logo-icon img{
+    width:46px;
+}
+
+.logo-text h4{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:3px;
+}
+
+.logo-text p{
+    font-size:13px;
+    color:var(--text-soft);
+}
+
+.hero-badge{
+    padding:10px 18px;
+    border-radius:999px;
+    background:var(--primary-light);
+    color:var(--primary-dark);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    white-space:nowrap;
+}
+
+.hero-title{
+    font-size:clamp(42px,6vw,76px);
+    line-height:1;
+    font-weight:800;
+    margin-bottom:24px;
+    max-width:650px;
+}
+
+.hero-title span{
+    color:var(--primary);
+}
+
+.hero-desc{
+    max-width:620px;
+    font-size:16px;
+    line-height:2;
+    color:var(--text-soft);
+    margin-bottom:38px;
+}
+
+/* BUTTONS */
+.hero-buttons{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+}
+
+.btn-main{
+    height:58px;
+    padding:0 28px;
+    border-radius:18px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-size:14px;
+    font-weight:700;
+    text-decoration:none;
+    transition:.25s ease;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:white;
+    border:1px solid var(--primary);
+}
+
+.btn-primary:hover{
+    background:var(--primary-dark);
+    transform:translateY(-2px);
+}
+
+.btn-secondary{
+    background:white;
+    border:1px solid var(--line);
+    color:var(--text);
+}
+
+.btn-secondary:hover{
+    border-color:rgba(100,121,107,.4);
+    color:var(--primary-dark);
+    transform:translateY(-2px);
+}
+
+/* BOTTOM INFO */
+.hero-bottom{
+    position:relative;
+    z-index:2;
+    padding:0 42px 42px;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.info-card{
+    background:white;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:var(--shadow-sm);
+}
+
+.info-icon{
+    width:50px;
+    height:50px;
+    border-radius:16px;
+    background:var(--primary-light);
+    color:var(--primary-dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    margin-bottom:16px;
+}
+
+.info-card h5{
+    font-size:15px;
+    margin-bottom:8px;
+}
+
+.info-card p{
+    font-size:13px;
+    line-height:1.8;
+    color:var(--text-soft);
+}
+
+/* RIGHT */
+.right-side{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+}
+
+/* SECTION */
+.section{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:32px;
+    overflow:hidden;
+    box-shadow:var(--shadow-md);
+}
+
+.section-header{
+    padding:28px 30px 20px;
+    border-bottom:1px solid var(--line);
+}
+
+.section-header h3{
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.section-header p{
+    font-size:14px;
+    line-height:1.8;
+    color:var(--text-soft);
+}
+
+/* FLOW */
+.flow-list{
+    padding:26px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.flow-item{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+    background:white;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:18px;
+}
+
+.flow-number{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    background:var(--primary-light);
+    color:var(--primary-dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    font-weight:800;
+    flex-shrink:0;
+}
+
+.flow-text h5{
+    font-size:15px;
+    margin-bottom:5px;
+}
+
+.flow-text p{
+    font-size:13px;
+    line-height:1.8;
+    color:var(--text-soft);
+}
+
+/* CONTACT */
+.contact-wrap{
+    padding:26px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.contact-item{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:18px;
+    border-radius:22px;
+    background:white;
+    border:1px solid var(--line);
+    text-decoration:none;
+    transition:.2s ease;
+}
+
+.contact-item:hover{
+    transform:translateY(-2px);
+    border-color:rgba(100,121,107,.35);
+}
+
+.contact-icon{
+    width:54px;
+    height:54px;
+    border-radius:18px;
+    background:var(--primary-light);
+    color:var(--primary-dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    flex-shrink:0;
+}
+
+.contact-info h5{
+    font-size:15px;
+    margin-bottom:5px;
+}
+
+.contact-info p{
+    font-size:13px;
+    color:var(--text-soft);
+}
+
+.socials{
+    display:flex;
+    gap:12px;
+    margin-top:8px;
+    flex-wrap:wrap;
+}
+
+.social-btn{
+    width:54px;
+    height:54px;
+    border-radius:18px;
+    border:1px solid var(--line);
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--primary-dark);
+    font-size:20px;
+    transition:.2s ease;
+}
+
+.social-btn:hover{
+    background:var(--primary-light);
+    border-color:rgba(100,121,107,.35);
+    transform:translateY(-2px);
+}
+
+/* FOOTER */
+.footer{
+    padding:0 30px 28px;
+    text-align:center;
+    font-size:12px;
+    color:var(--text-soft);
+    line-height:1.8;
+}
+
+/* TABLET */
+@media(max-width:1200px){
+
+    .container-main{
+        grid-template-columns:1fr;
+    }
+
+    .hero-card{
+        min-height:auto;
+    }
+
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+    .page{
+        padding:14px;
+    }
+
+    .hero-content{
+        padding:24px;
+    }
+
+    .hero-bottom{
+        padding:0 24px 24px;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        margin-bottom:40px;
+    }
+
+    .hero-title{
+        font-size:44px;
+    }
+
+    .hero-desc{
+        font-size:14px;
+    }
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .hero-buttons{
+        flex-direction:column;
+    }
+
+    .btn-main{
+        width:100%;
+    }
+
+    .section-header{
+        padding:22px 22px 18px;
+    }
+
+    .flow-list,
+    .contact-wrap{
+        padding:18px;
+    }
+
+}
+
+/* SMALL MOBILE */
+@media(max-width:480px){
+
+    .hero-title{
+        font-size:36px;
+    }
+
+    .logo{
+        align-items:flex-start;
+    }
+
+    .logo-icon{
+        width:64px;
+        height:64px;
+    }
+
+    .logo-icon img{
+        width:40px;
+    }
+
+    .section,
+    .hero-card{
+        border-radius:28px;
+    }
+
+}
 </style>
 
-{{-- NAV --}}
-<nav class="nav">
-    <div class="nav-wrap">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Logo_Kabupaten_Batang.png" alt="Logo" class="nav-logo">
-        <div class="nav-title">
-            Kelurahan Sambong
-            <span>Kabupaten Batang, Jawa Tengah</span>
-        </div>
-        <div class="nav-divider"></div>
-        <div class="nav-links">
-            <a href="#visi"    class="nav-link">Visi &amp; Misi</a>
-            <a href="#layanan" class="nav-link">Layanan</a>
-            <a href="#alur"    class="nav-link">Alur Pengajuan</a>
-            <a href="#kontak"  class="nav-link">Kontak</a>
-        </div>
-        <div class="nav-auth">
-            <a href="{{ route('login.warga') }}"    class="btn-login">Login</a>
-            <a href="{{ route('register.warga') }}" class="btn-register">Daftar</a>
-        </div>
-        <button class="nav-toggle" id="navToggle" aria-label="Menu">
-            <i class="bi bi-list"></i>
-        </button>
-    </div>
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="#visi">Visi &amp; Misi</a>
-        <a href="#layanan">Layanan</a>
-        <a href="#alur">Alur Pengajuan</a>
-        <a href="#kontak">Kontak</a>
-        <div class="mobile-auth">
-            <a href="{{ route('login.warga') }}"    class="m-login">Login</a>
-            <a href="{{ route('register.warga') }}" class="m-reg">Daftar</a>
-        </div>
-    </div>
-</nav>
+<div class="page">
 
-{{-- HERO --}}
-<section class="hero">
-    <div class="hero-wrap">
-        <div>
-            <div class="hero-eyebrow">
-                <i class="bi bi-shield-check" style="font-size:12px;"></i>
-                Sistem Informasi Pelayanan Digital
-            </div>
-            <h1 class="hero-title">
-                Sambong Online
-                <span>Kelurahan Sambong &mdash; Kabupaten Batang</span>
-            </h1>
-            <p class="hero-desc">
-                Platform pengajuan surat keterangan administrasi warga secara digital.
-                Mudah, cepat, transparan, dan tanpa biaya — langsung dari perangkat Anda.
-            </p>
-            <div class="hero-stats">
-                <div>
-                    <div class="hero-stat-num">24/7</div>
-                    <div class="hero-stat-label">Akses Kapan Saja</div>
+    <div class="container-main">
+
+        {{-- HERO --}}
+        <div class="hero-card">
+
+            <div class="hero-content">
+
+                <div class="topbar">
+
+                    <div class="logo">
+
+                        <div class="logo-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Logo_Kabupaten_Batang.png" alt="Logo">
+                        </div>
+
+                        <div class="logo-text">
+                            <h4>Sambong Online</h4>
+                            <p>Sistem Pelayanan Administrasi Digital</p>
+                        </div>
+
+                    </div>
+
+                    <div class="hero-badge">
+                        Kelurahan Sambong
+                    </div>
+
                 </div>
-                <div class="hero-stat-div"></div>
-                <div>
-                    <div class="hero-stat-num">5+</div>
-                    <div class="hero-stat-label">Jenis Layanan</div>
-                </div>
-                <div class="hero-stat-div"></div>
-                <div>
-                    <div class="hero-stat-num">Gratis</div>
-                    <div class="hero-stat-label">Tanpa Biaya Admin</div>
-                </div>
-            </div>
-        </div>
-        <div>
-            <div class="login-card">
-                <div class="login-card-title">Masuk ke Portal</div>
-                <div class="login-card-sub">Akses layanan surat administrasi warga</div>
-                <div class="lc-stack">
-                    <a href="{{ route('login.warga') }}" class="lc-primary">
-                        <i class="bi bi-box-arrow-in-right" style="font-size:15px;"></i>
+
+                <h1 class="hero-title">
+                    Pelayanan Surat <span>Lebih Modern</span> & Praktis
+                </h1>
+
+                <p class="hero-desc">
+                    Sistem administrasi digital yang memudahkan warga dalam
+                    melakukan pengajuan surat secara online melalui perangkat
+                    mobile maupun desktop dengan proses yang cepat dan efisien.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="{{ route('login.warga') }}" class="btn-main btn-primary">
+                        <i class="bi bi-box-arrow-in-right"></i>
                         Login Warga
                     </a>
-                    <div class="lc-or">atau</div>
-                    <a href="{{ route('register.warga') }}" class="lc-secondary">
-                        <i class="bi bi-person-plus" style="font-size:15px;color:var(--green);"></i>
-                        Buat Akun Baru
+
+                    <a href="{{ route('register.warga') }}" class="btn-main btn-secondary">
+                        <i class="bi bi-person-plus"></i>
+                        Registrasi
                     </a>
-                    <a href="https://wa.me/6287843836341" target="_blank" class="lc-wa">
-                        <i class="bi bi-whatsapp" style="font-size:15px;"></i>
-                        Bantuan via WhatsApp
+
+                </div>
+
+            </div>
+
+            <div class="hero-bottom">
+
+                <div class="info-grid">
+
+                    <div class="info-card">
+
+                        <div class="info-icon">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+
+                        <h5>Proses Cepat</h5>
+
+                        <p>
+                            Pengajuan surat dilakukan secara online tanpa harus datang langsung.
+                        </p>
+
+                    </div>
+
+                    <div class="info-card">
+
+                        <div class="info-icon">
+                            <i class="bi bi-phone"></i>
+                        </div>
+
+                        <h5>Mobile Friendly</h5>
+
+                        <p>
+                            Tampilan responsif dan nyaman digunakan di semua perangkat.
+                        </p>
+
+                    </div>
+
+                    <div class="info-card">
+
+                        <div class="info-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                        <h5>Transparan</h5>
+
+                        <p>
+                            Status pengajuan dapat dipantau langsung oleh warga secara realtime.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- RIGHT --}}
+        <div class="right-side">
+
+            {{-- ALUR --}}
+            <div class="section">
+
+                <div class="section-header">
+                    <h3>Alur Pengajuan Surat</h3>
+
+                    <p>
+                        Langkah pengajuan dibuat sederhana agar mudah dipahami oleh semua warga.
+                    </p>
+                </div>
+
+                <div class="flow-list">
+
+                    <div class="flow-item">
+
+                        <div class="flow-number">1</div>
+
+                        <div class="flow-text">
+                            <h5>Login / Register</h5>
+                            <p>Masuk menggunakan akun warga terlebih dahulu.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="flow-item">
+
+                        <div class="flow-number">2</div>
+
+                        <div class="flow-text">
+                            <h5>Pilih Jenis Surat</h5>
+                            <p>Pilih layanan surat sesuai kebutuhan administrasi.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="flow-item">
+
+                        <div class="flow-number">3</div>
+
+                        <div class="flow-text">
+                            <h5>Upload Dokumen</h5>
+                            <p>Lengkapi data dan unggah persyaratan yang dibutuhkan.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="flow-item">
+
+                        <div class="flow-number">4</div>
+
+                        <div class="flow-text">
+                            <h5>Verifikasi Admin</h5>
+                            <p>Petugas akan melakukan pengecekan data pengajuan.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="flow-item">
+
+                        <div class="flow-number">5</div>
+
+                        <div class="flow-text">
+                            <h5>Surat Selesai</h5>
+                            <p>Surat dapat diunduh atau diambil sesuai ketentuan.</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {{-- KONTAK --}}
+            <div class="section">
+
+                <div class="section-header">
+                    <h3>Kontak & Informasi</h3>
+
+                    <p>
+                        Hubungi admin apabila mengalami kendala saat menggunakan layanan.
+                    </p>
+                </div>
+
+                <div class="contact-wrap">
+
+                    <a href="https://wa.me/6287843836341" target="_blank" class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="bi bi-whatsapp"></i>
+                        </div>
+
+                        <div class="contact-info">
+                            <h5>WhatsApp</h5>
+                            <p>+62 878-4383-6341</p>
+                        </div>
+
                     </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-{{-- VISI & MISI --}}
-<section class="section section-alt" id="visi">
-    <div class="wrap">
-        <div class="visi-grid">
-            <div>
-                <div class="sec-label"><i class="bi bi-flag"></i> Visi &amp; Misi</div>
-                <h2 class="sec-title">Mewujudkan Pemerintahan yang Transparan dan Efisien</h2>
-                <p class="sec-sub">
-                    Sambong Online hadir sebagai wujud komitmen Kelurahan Sambong dalam memberikan
-                    pelayanan publik yang modern, terbuka, dan berorientasi pada kemudahan warga.
-                </p>
-            </div>
-            <div class="visi-list">
-                <div class="visi-item">
-                    <div class="visi-dot"><i class="bi bi-check-lg"></i></div>
-                    <div class="visi-text">
-                        <strong>Pelayanan Mudah &amp; Cepat</strong>
-                        Warga dapat mengajukan permohonan surat dari mana saja tanpa harus datang ke kantor terlebih dahulu.
-                    </div>
-                </div>
-                <div class="visi-item">
-                    <div class="visi-dot"><i class="bi bi-check-lg"></i></div>
-                    <div class="visi-text">
-                        <strong>Transparansi Proses</strong>
-                        Status permohonan dapat dipantau secara real-time oleh warga melalui portal ini.
-                    </div>
-                </div>
-                <div class="visi-item">
-                    <div class="visi-dot"><i class="bi bi-check-lg"></i></div>
-                    <div class="visi-text">
-                        <strong>Data Aman &amp; Terlindungi</strong>
-                        Seluruh data warga dikelola dengan standar keamanan yang terstandarisasi pemerintah daerah.
-                    </div>
-                </div>
-                <div class="visi-item">
-                    <div class="visi-dot"><i class="bi bi-check-lg"></i></div>
-                    <div class="visi-text">
-                        <strong>Tanpa Biaya Administrasi</strong>
-                        Semua layanan pengajuan surat pada platform ini sepenuhnya gratis untuk warga.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+                    <div class="contact-item">
 
-{{-- LAYANAN --}}
-<section class="section" id="layanan">
-    <div class="wrap">
-        <div class="layanan-header">
-            <div class="sec-label"><i class="bi bi-folder2-open"></i> Jenis Layanan</div>
-            <h2 class="sec-title">Layanan Surat yang Tersedia</h2>
-            <p class="sec-sub">Berbagai surat keterangan administrasi dapat diajukan secara online melalui portal ini.</p>
-        </div>
-        <div class="layanan-grid">
-            <div class="svc">
-                <div class="svc-icon"><i class="bi bi-shield-fill-check"></i></div>
-                <div class="svc-name">Pengantar SKCK</div>
-                <div class="svc-desc">Surat pengantar untuk pembuatan SKCK — syarat melamar kerja dan keperluan administratif lainnya.</div>
-                <span class="svc-tag">Kepolisian</span>
-            </div>
-            <div class="svc">
-                <div class="svc-icon"><i class="bi bi-shop"></i></div>
-                <div class="svc-name">Surat Keterangan Usaha</div>
-                <div class="svc-desc">Keterangan domisili usaha untuk keperluan perizinan, pembukaan rekening bisnis, dan legalitas usaha kecil.</div>
-                <span class="svc-tag">Usaha</span>
-            </div>
-            <div class="svc">
-                <div class="svc-icon"><i class="bi bi-person-vcard"></i></div>
-                <div class="svc-name">Pengurusan KTP / KK</div>
-                <div class="svc-desc">Surat pengantar administrasi kependudukan untuk pembuatan, penggantian, atau perubahan data KTP dan KK.</div>
-                <span class="svc-tag">Kependudukan</span>
-            </div>
-            <div class="svc">
-                <div class="svc-icon"><i class="bi bi-heart-pulse"></i></div>
-                <div class="svc-name">Registrasi Kematian</div>
-                <div class="svc-desc">Surat pengantar administrasi untuk pencatatan kematian dan pengurusan dokumen ahli waris.</div>
-                <span class="svc-tag">Kependudukan</span>
-            </div>
-            <div class="svc">
-                <div class="svc-icon"><i class="bi bi-file-earmark-text"></i></div>
-                <div class="svc-name">Surat Keterangan Umum</div>
-                <div class="svc-desc">Surat keterangan untuk beasiswa, melamar kerja, keperluan institusi pendidikan, dan lain-lain.</div>
-                <span class="svc-tag">Umum</span>
-            </div>
-            <div class="svc">
-                <div class="svc-icon"><i class="bi bi-journals"></i></div>
-                <div class="svc-name">Layanan Lainnya</div>
-                <div class="svc-desc">Surat pengantar dan keterangan lain sesuai kebutuhan administrasi warga. Konsultasikan ke petugas.</div>
-                <span class="svc-tag">Lainnya</span>
-            </div>
-        </div>
-    </div>
-</section>
+                        <div class="contact-icon">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
 
-{{-- ALUR --}}
-<section class="section section-alt" id="alur">
-    <div class="wrap">
-        <div class="sec-label"><i class="bi bi-diagram-3"></i> Alur Pengajuan</div>
-        <h2 class="sec-title">Alur Pengajuan Surat (Sederhana)</h2>
-        <p class="sec-sub">Ikuti langkah-langkah berikut untuk mengajukan surat keterangan secara online.</p>
+                        <div class="contact-info">
+                            <h5>Alamat Kelurahan</h5>
+                            <p>Kelurahan Sambong, Kabupaten Batang</p>
+                        </div>
 
-        {{-- Desktop --}}
-        <div class="alur-desktop">
-            <div class="alur-step">
-                <div class="alur-num">1</div>
-                <div class="alur-icon"><i class="bi bi-person-plus"></i></div>
-                <div class="alur-title">Daftar / Login</div>
-                <div class="alur-desc">Buat akun dengan NIK atau masuk jika sudah terdaftar.</div>
-            </div>
-            <div class="alur-step">
-                <div class="alur-num">2</div>
-                <div class="alur-icon"><i class="bi bi-card-checklist"></i></div>
-                <div class="alur-title">Pilih Layanan</div>
-                <div class="alur-desc">Pilih jenis surat yang diperlukan dari daftar layanan.</div>
-            </div>
-            <div class="alur-step">
-                <div class="alur-num">3</div>
-                <div class="alur-icon"><i class="bi bi-cloud-upload"></i></div>
-                <div class="alur-title">Unggah Dokumen</div>
-                <div class="alur-desc">Lengkapi formulir dan unggah dokumen persyaratan.</div>
-            </div>
-            <div class="alur-step">
-                <div class="alur-num">4</div>
-                <div class="alur-icon"><i class="bi bi-person-gear"></i></div>
-                <div class="alur-title">Verifikasi Petugas</div>
-                <div class="alur-desc">Admin kelurahan memverifikasi dan memproses permohonan.</div>
-            </div>
-            <div class="alur-step">
-                <div class="alur-num">5</div>
-                <div class="alur-icon"><i class="bi bi-file-earmark-check"></i></div>
-                <div class="alur-title">Surat Terbit</div>
-                <div class="alur-desc">Surat siap, Anda mendapat notifikasi untuk pengambilan.</div>
-            </div>
-        </div>
+                    </div>
 
-        {{-- Mobile --}}
-        <div class="alur-mobile">
-            <div class="alur-m-step">
-                <div class="alur-m-num">1</div>
-                <div class="alur-m-body">
-                    <div class="alur-m-title">Daftar / Login</div>
-                    <div class="alur-m-desc">Buat akun dengan NIK atau masuk jika sudah terdaftar.</div>
-                </div>
-            </div>
-            <div class="alur-m-step">
-                <div class="alur-m-num">2</div>
-                <div class="alur-m-body">
-                    <div class="alur-m-title">Pilih Layanan</div>
-                    <div class="alur-m-desc">Pilih jenis surat yang diperlukan dari daftar layanan.</div>
-                </div>
-            </div>
-            <div class="alur-m-step">
-                <div class="alur-m-num">3</div>
-                <div class="alur-m-body">
-                    <div class="alur-m-title">Unggah Dokumen</div>
-                    <div class="alur-m-desc">Lengkapi formulir dan unggah dokumen persyaratan.</div>
-                </div>
-            </div>
-            <div class="alur-m-step">
-                <div class="alur-m-num">4</div>
-                <div class="alur-m-body">
-                    <div class="alur-m-title">Verifikasi Petugas</div>
-                    <div class="alur-m-desc">Admin kelurahan memverifikasi dan memproses permohonan.</div>
-                </div>
-            </div>
-            <div class="alur-m-step">
-                <div class="alur-m-num">5</div>
-                <div class="alur-m-body">
-                    <div class="alur-m-title">Surat Terbit</div>
-                    <div class="alur-m-desc">Surat siap, Anda mendapat notifikasi untuk pengambilan.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+                    <div class="socials">
 
-{{-- KONTAK --}}
-<section class="section" id="kontak">
-    <div class="wrap">
-        <div class="sec-label"><i class="bi bi-headset"></i> Kontak &amp; Media Sosial</div>
-        <h2 class="sec-title">Hubungi Kami</h2>
-        <p class="sec-sub">Kami siap membantu warga. Kunjungi kantor atau hubungi lewat saluran berikut.</p>
-        <div class="kontak-grid">
-            <div class="kontak-items">
-                <div class="kontak-item">
-                    <div class="kontak-icon"><i class="bi bi-telephone-fill"></i></div>
-                    <div>
-                        <div class="kontak-label">Telepon</div>
-                        <div class="kontak-val">(0285) 392211 / 0878-4383-6341</div>
-                    </div>
-                </div>
-                <div class="kontak-item">
-                    <div class="kontak-icon"><i class="bi bi-envelope-fill"></i></div>
-                    <div>
-                        <div class="kontak-label">Email</div>
-                        <div class="kontak-val">kelurahan.sambong@batangkab.go.id</div>
-                    </div>
-                </div>
-                <div class="kontak-item">
-                    <div class="kontak-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                    <div>
-                        <div class="kontak-label">Alamat</div>
-                        <div class="kontak-val">Jl. Raya Sambong, Batang, Jawa Tengah</div>
-                    </div>
-                </div>
-                <div class="kontak-item">
-                    <div class="kontak-icon"><i class="bi bi-clock-fill"></i></div>
-                    <div>
-                        <div class="kontak-label">Jam Operasional</div>
-                        <div class="kontak-val">Senin – Jumat, 08.00 – 15.30 WIB</div>
-                    </div>
-                </div>
-            </div>
-            <div class="kontak-right">
-                <a href="https://wa.me/6287843836341" target="_blank" class="wa-btn">
-                    <div class="wa-btn-icon"><i class="bi bi-whatsapp"></i></div>
-                    <div class="wa-btn-text">
-                        <strong>Chat WhatsApp CS</strong>
-                        <span>Respons cepat di jam kerja</span>
-                    </div>
-                    <i class="bi bi-chevron-right wa-arrow"></i>
-                </a>
-                <div>
-                    <div class="medsos-label">Media Sosial Resmi</div>
-                    <div class="medsos-grid">
-                        <a href="#" class="medsos-item">
-                            <i class="bi bi-facebook" style="color:#1877f2;"></i>
-                            <div class="medsos-text"><strong>Facebook</strong><span>@KelSambong</span></div>
+                        <a href="#" class="social-btn">
+                            <i class="bi bi-instagram"></i>
                         </a>
-                        <a href="#" class="medsos-item">
-                            <i class="bi bi-instagram" style="color:#e1306c;"></i>
-                            <div class="medsos-text"><strong>Instagram</strong><span>@KelSambong</span></div>
+
+                        <a href="#" class="social-btn">
+                            <i class="bi bi-facebook"></i>
                         </a>
-                        <a href="#" class="medsos-item">
-                            <i class="bi bi-youtube" style="color:#ff0000;"></i>
-                            <div class="medsos-text"><strong>YouTube</strong><span>Kel. Sambong</span></div>
+
+                        <a href="#" class="social-btn">
+                            <i class="bi bi-tiktok"></i>
                         </a>
-                        <a href="#" class="medsos-item">
-                            <i class="bi bi-globe" style="color:var(--green);"></i>
-                            <div class="medsos-text"><strong>Website</strong><span>batangkab.go.id</span></div>
-                        </a>
+
                     </div>
+
                 </div>
+
+                <div class="footer">
+                    © {{ date('Y') }} Sambong Online — Sistem Pelayanan Administrasi Digital Kelurahan Sambong
+                </div>
+
             </div>
-        </div>
-    </div>
-</section>
 
-{{-- FOOTER --}}
-<footer class="footer">
-    <div class="footer-wrap">
-        <div class="footer-brand">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Logo_Kabupaten_Batang.png" alt="Logo" class="footer-logo">
-            <span class="footer-copy">&copy; {{ date('Y') }} Kelurahan Sambong &mdash; Kabupaten Batang, Jawa Tengah</span>
         </div>
-        <div class="footer-links">
-            <a href="#visi">Visi &amp; Misi</a>
-            <a href="#layanan">Layanan</a>
-            <a href="#alur">Alur</a>
-            <a href="#kontak">Kontak</a>
-        </div>
-    </div>
-</footer>
 
-<script>
-    const toggle = document.getElementById('navToggle');
-    const menu   = document.getElementById('mobileMenu');
-    toggle.addEventListener('click', () => {
-        menu.classList.toggle('open');
-        toggle.querySelector('i').className =
-            menu.classList.contains('open') ? 'bi bi-x-lg' : 'bi bi-list';
-    });
-    menu.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', () => {
-            menu.classList.remove('open');
-            toggle.querySelector('i').className = 'bi bi-list';
-        });
-    });
-</script>
+    </div>
+
+</div>
 
 @endsection

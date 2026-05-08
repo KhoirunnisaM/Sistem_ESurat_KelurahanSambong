@@ -4,13 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\WargaAuthController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\Warga\WargaController;
+use App\Http\Controllers\Warga\PengumumanWargaController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\AdminSuratController;
 use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\AdminWargaController;
 use App\Http\Controllers\Admin\SettingSuratController;
 use App\Http\Controllers\Admin\PengumumanController;
-use App\Http\Controllers\Warga\PengumumanWargaController;
 
 
 

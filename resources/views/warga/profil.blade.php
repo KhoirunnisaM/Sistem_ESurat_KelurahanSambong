@@ -98,21 +98,17 @@
 
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 px-4 pt-4">
                 <h5 class="fw-bold mb-0">Update Profil Lengkap</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="formUpdateProfile" action="{{ route('warga.profile.update') }}" method="POST" class="needs-validation" novalidate>
+            
+            <form id="formUpdateProfile" action="{{ route('warga.profile.update') }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body p-4">
                     <div class="row g-3">
-                        <div class="col-12">
-                            <h6 class="fw-bold small text-muted text-uppercase">Identitas Diri</h6>
-                            <hr class="mt-1 mb-3 opacity-25">
-                        </div>
-
                         <div class="col-md-12">
                             <label class="form-label">Nama Lengkap</label>
                             <input type="text" name="nama_lengkap" class="form-control bg-light border-0" value="{{ session('nama_lengkap') }}" required>
@@ -120,12 +116,12 @@
 
                         <div class="col-md-6">
                             <label class="form-label">NIK</label>
-                            <input type="number" name="nik" class="form-control bg-light border-0" value="{{ session('nik') }}" required>
+                            <input type="text" name="nik" class="form-control bg-light border-0" value="{{ session('nik') }}" maxlength="16" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">No. Kartu Keluarga</label>
-                            <input type="number" name="no_kk" class="form-control bg-light border-0" value="{{ session('no_kk') }}" required>
+                            <label class="form-label">No. KK</label>
+                            <input type="text" name="no_kk" class="form-control bg-light border-0" value="{{ session('no_kk') }}" maxlength="16" required>
                         </div>
 
                         <div class="col-md-6">
@@ -135,7 +131,9 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" class="form-control bg-light border-0" value="{{ session('tanggal_lahir') }}" required>
+                            {{-- Format Y-m-d sangat penting agar input date HTML5 mengenali nilainya --}}
+                            <input type="date" name="tanggal_lahir" class="form-control bg-light border-0" 
+                                   value="{{ session('tanggal_lahir') ? \Carbon\Carbon::parse(session('tanggal_lahir'))->format('Y-m-d') : '' }}" required>
                         </div>
 
                         <div class="col-md-6">
@@ -154,10 +152,11 @@
                         <div class="col-md-6">
                             <label class="form-label">Status Perkawinan</label>
                             <select name="status_perkawinan" class="form-select bg-light border-0" required>
-                                <option value="Belum Kawin" {{ session('status_perkawinan') == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
-                                <option value="Kawin" {{ session('status_perkawinan') == 'Kawin' ? 'selected' : '' }}>Kawin</option>
-                                <option value="Cerai Hidup" {{ session('status_perkawinan') == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                                <option value="Cerai Mati" {{ session('status_perkawinan') == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
+                                @php $sp = session('status_perkawinan'); @endphp
+                                <option value="Belum Kawin" {{ $sp == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                                <option value="Kawin" {{ $sp == 'Kawin' ? 'selected' : '' }}>Kawin</option>
+                                <option value="Cerai Hidup" {{ $sp == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                                <option value="Cerai Mati" {{ $sp == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
                             </select>
                         </div>
 
@@ -166,44 +165,44 @@
                             <input type="text" name="pekerjaan" class="form-control bg-light border-0" value="{{ session('pekerjaan') }}" required>
                         </div>
 
-                        <div class="col-12 mt-4">
-                            <h6 class="fw-bold small text-muted text-uppercase">Detail Alamat</h6>
-                            <hr class="mt-1 mb-3 opacity-25">
+                        <div class="col-12 mt-3">
+                            <h6 class="fw-bold small text-muted text-uppercase">Alamat</h6>
+                            <hr class="my-2 opacity-25">
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label">Jalan / No. Rumah / Dukuh</label>
+                            <label class="form-label">Alamat Lengkap</label>
                             <input type="text" name="alamat_lengkap" class="form-control bg-light border-0" value="{{ session('alamat_lengkap') }}" required>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">RT</label>
-                            <input type="number" name="rt" class="form-control bg-light border-0" value="{{ session('rt') }}" required>
+                            <input type="text" name="rt" class="form-control bg-light border-0" value="{{ session('rt') }}" required>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">RW</label>
-                            <input type="number" name="rw" class="form-control bg-light border-0" value="{{ session('rw') }}" required>
+                            <input type="text" name="rw" class="form-control bg-light border-0" value="{{ session('rw') }}" required>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Kelurahan</label>
-                            <input type="text" name="kelurahan" class="form-control bg-light border-0" value="{{ session('kelurahan') }}" required>
+                            <input type="text" name="kelurahan" class="form-control bg-light border-0" value="{{ session('kelurahan') ?? 'Sambong' }}" required>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label">Kecamatan</label>
-                            <input type="text" name="kecamatan" class="form-control bg-light border-0" value="{{ session('kecamatan') }}" required>
+                            <input type="text" name="kecamatan" class="form-control bg-light border-0" value="{{ session('kecamatan') ?? 'Batang' }}" required>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label">Kabupaten</label>
-                            <input type="text" name="kabupaten" class="form-control bg-light border-0" value="{{ session('kabupaten') }}" required>
+                            <input type="text" name="kabupaten" class="form-control bg-light border-0" value="{{ session('kabupaten') ?? 'Batang' }}" required>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label">Provinsi</label>
-                            <input type="text" name="provinsi" class="form-control bg-light border-0" value="{{ session('provinsi') }}" required>
+                            <input type="text" name="provinsi" class="form-control bg-light border-0" value="{{ session('provinsi') ?? 'Jawa Tengah' }}" required>
                         </div>
                     </div>
                 </div>
@@ -217,25 +216,24 @@
 </div>
 
 <script>
+// Logic SweetAlert & Validation
 document.getElementById('formUpdateProfile').addEventListener('submit', function(e) {
     e.preventDefault();
     const form = this;
 
     if (!form.checkValidity()) {
-        e.stopPropagation();
         form.classList.add('was-validated');
         return;
     }
 
     Swal.fire({
-        title: 'Konfirmasi Simpan',
-        text: "Apakah data profil yang Anda masukkan sudah benar?",
+        title: 'Simpan Perubahan?',
+        text: "Data profil akan diperbarui sesuai inputan Anda.",
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#198754',
-        cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Simpan!',
-        cancelButtonText: 'Cek Kembali',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             form.submit();
@@ -243,41 +241,19 @@ document.getElementById('formUpdateProfile').addEventListener('submit', function
     });
 });
 
+// Toast Sukses/Error
 @if(session('success'))
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: "{{ session('success') }}",
-        timer: 2000,
-        showConfirmButton: false
-    });
+    Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", timer: 3000, showConfirmButton: false });
 @endif
 
 @if(session('error'))
-    Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: "{{ session('error') }}"
-    });
+    Swal.fire({ icon: 'error', title: 'Gagal!', text: "{{ session('error') }}" });
 @endif
 </script>
 
 <style>
     body { background-color: #f8f9fa; }
-    label.form-label { 
-        letter-spacing: 0.5px; 
-        text-transform: uppercase; 
-        font-weight: 700; 
-        color: #495057 !important; 
-        font-size: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    .card-body label { color: #adb5bd !important; }
-    .form-control:focus, .form-select:focus { 
-        background-color: #fff !important; 
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); 
-        border: 1px solid #0d6efd !important; 
-    }
-    .fw-semibold { color: #333; }
+    label.form-label { font-size: 0.7rem; font-weight: 800; color: #6c757d; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .form-control:focus { background-color: #fff !important; border: 1px solid #0d6efd !important; box-shadow: none; }
 </style>
 @endsection
