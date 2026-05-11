@@ -7,8 +7,12 @@
     $nipPejabat = $surat->pegawai->nip ?? '........................';
     
     $isLurah = (strtoupper($jabatanAsli) == 'LURAH');
-    $displayJabatanKop = $isLurah ? ($profil->nama_lembaga ?? "LURAH SAMBONG") : "a.n. ".($profil->nama_lembaga ?? "LURAH SAMBONG");
-    $subJabatan = $isLurah ? "" : strtoupper($jabatanAsli);
+    
+    // Perubahan 1: Jika Lurah -> LURAH SAMBONG. Jika bukan -> a.n. LURAH SAMBONG
+    $displayJabatanKop = $isLurah ? "LURAH SAMBONG" : "a.n. LURAH SAMBONG";
+    
+    // Perubahan 2: Format jabatan untuk bagian identitas (misal: Sekretaris Lurah)
+    $jabatanLengkap = ucwords(strtolower($jabatanAsli)) . " Kelurahan Sambong";
 
     $alamatDefault = "Kelurahan Sambong, Kecamatan Batang, Kabupaten Batang, Provinsi Jawa Tengah";
     $alamatLembagaFix = $surat->alamat_lembaga ?? "Jl. Kyai Sambong, RT.00 / RW.00, " . $alamatDefault;
@@ -89,7 +93,7 @@
             <p>Yang bertanda tangan di bawah ini :</p>
             <table class="data-table">
                 <tr><td width="30%">a. Nama</td><td width="2%">:</td><td class="nama-pejabat-isi">{{ $namaPejabat }}</td></tr>
-                <tr><td>b. Jabatan</td><td>:</td><td>{{ $jabatanAsli }} {{ ucwords(strtolower($profil->nama_lembaga ?? 'Sambong')) }}</td></tr>
+                <tr><td>b. Jabatan</td><td>:</td><td>{{ $jabatanLengkap }}</td></tr>
             </table>
 
             <p>Dengan ini menerangkan bahwa :</p>
@@ -178,7 +182,7 @@
             <p>Batang, {{ \Carbon\Carbon::parse($surat->tanggal_surat_ttd)->translatedFormat('d F Y') }}</p> <br>
             <p>{{ $displayJabatanKop }}</p>
             @if(!$isLurah)
-                <p>{{ $subJabatan }}</p>
+                <p>{{ $jabatanAsli }}</p>
             @endif
             <div class="space"></div>
             <p class="nama-pejabat-ttd">{{ $namaPejabat }}</p>
