@@ -67,14 +67,26 @@ class WargaController extends Controller
     }
 
     public function profil()
-    {
-        $warga = (object) session()->all(); 
-        return view('warga.profil', compact('warga'));
+{
+    // 1. Ambil NIK dari session sebagai identitas utama
+    $nik = session('nik');
+
+    // 2. Ambil data segar langsung dari database
+    // Ini menjamin meskipun session dihapus/logout, data tetap sinkron dengan DB
+    $warga = Warga::where('nik', $nik)->first();
+
+    // 3. Cek jika data tidak ditemukan (misal session expire)
+    if (!$warga) {
+        // Hapus session jika ada sisa data tapi di DB tidak ada
+        session()->flush(); 
+        return redirect()->route('login')->with('error', 'Sesi berakhir atau data tidak ditemukan.');
     }
+
+    return view('warga.profil', compact('warga'));
+}
 
 public function updateProfile(Request $request)
 {
-    // Ambil data warga berdasarkan NIK di session
     $nikLama = session('nik');
     $warga = Warga::where('nik', $nikLama)->first();
 
@@ -82,54 +94,45 @@ public function updateProfile(Request $request)
         return redirect()->back()->with('error', 'Data tidak ditemukan.');
     }
 
-    // Validasi - Pastikan semua field ini terisi di form
+    // Validasi input
     $request->validate([
         'nama_lengkap'      => 'required|string|max:255',
         'nik'               => 'required|digits:16|unique:warga,nik,' . $warga->id,
         'no_kk'             => 'required|digits:16',
         'tempat_lahir'      => 'required|string',
-        'tanggal_lahir'     => 'required|date', // Ini yang menyebabkan error jika kosong
+        'tanggal_lahir'     => 'required|date',
         'agama'             => 'required',
         'jenis_kelamin'     => 'required',
         'status_perkawinan' => 'required',
         'pekerjaan'         => 'required',
         'alamat_lengkap'    => 'required',
-        'rt'                => 'required',
-        'rw'                => 'required',
+        'rt'                => 'required|max:5', // Tambahkan max agar tidak error SQL "data too long"
+        'rw'                => 'required|max:5',
         'kelurahan'         => 'required',
         'kecamatan'         => 'required',
         'kabupaten'         => 'required',
-        'provinsi'          => 'required', // Ini juga wajib
+        'provinsi'          => 'required',
     ]);
 
     try {
-        // Simpan ke Database
+        // 1. Update ke Database
         $warga->update($request->all());
 
-        // Update Session agar tampilan berubah
-        // Kita simpan satu per satu agar pasti masuk ke session
-        session([
-            'nama_lengkap'      => $request->nama_lengkap,
-            'nik'               => $request->nik,
-            'no_kk'             => $request->no_kk,
-            'tempat_lahir'      => $request->tempat_lahir,
-            'tanggal_lahir'     => $request->tanggal_lahir,
-            'agama'             => $request->agama,
-            'jenis_kelamin'     => $request->jenis_kelamin,
-            'status_perkawinan' => $request->status_perkawinan,
-            'pekerjaan'         => $request->pekerjaan,
-            'alamat_lengkap'    => $request->alamat_lengkap,
-            'rt'                => $request->rt,
-            'rw'                => $request->rw,
-            'kelurahan'         => $request->kelurahan,
-            'kecamatan'         => $request->kecamatan,
-            'kabupaten'         => $request->kabupaten,
-            'provinsi'          => $request->provinsi,
+        // 2. Update Session
+        // Jika user mengubah NIK-nya, session 'nik' juga harus diupdate agar 
+        // login berikutnya tidak error/kembali ke data lama.
+        $allData = $request->only([
+            'nama_lengkap', 'nik', 'no_kk', 'tempat_lahir', 'tanggal_lahir', 
+            'agama', 'jenis_kelamin', 'status_perkawinan', 'pekerjaan', 
+            'alamat_lengkap', 'rt', 'rw', 'kelurahan', 'kecamatan', 
+            'kabupaten', 'provinsi'
         ]);
+        
+        session($allData);
 
-        return redirect()->back()->with('success', 'Profil berhasil disimpan!');
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Gagal memperbarui: ' . $e->getMessage());
     }
 }
 

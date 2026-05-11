@@ -22,7 +22,7 @@ class AdminWargaController extends Controller
         }
 
         // withQueryString() penting agar filter tidak hilang saat ganti halaman pagination
-        $wargas = $query->latest()->paginate(10)->withQueryString();
+        $wargas = $query->latest()->paginate(200)->withQueryString();
         
         return view('admin.warga.index', compact('wargas'));
     }
