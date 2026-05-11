@@ -200,7 +200,7 @@
 
                             <div class="section-label">Alamat Domisili</div>
                             <div class="mb-3">
-                                <label class="form-label">Alamat Lengkap (Dukuh / Nama Jalan)</label>
+                                <label class="form-label">Alamat Lengkap</label>
                                 <textarea name="alamat_lengkap" class="form-control" rows="2" placeholder="Contoh: Sambong Pos No. 12">{{ old('alamat_lengkap') }}</textarea>
                             </div>
                             <div class="row g-3">

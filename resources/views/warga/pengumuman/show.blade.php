@@ -2,72 +2,144 @@
 
 @section('content')
 <style>
-    .notif-wrapper { max-width: 800px; margin: 0 auto; }
-    .notif-card { 
-        background: #fff; border: 1px solid #eef0f2; border-radius: 16px; 
-        overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
+    /* Card & Wrapper */
+    .notif-wrapper { 
+        max-width: 850px; 
+        margin: 0 auto; 
+        padding: 0 clamp(5px, 2vw, 15px); /* Padding samping dinamis */
     }
-    .notif-header { padding: 25px; border-bottom: 1px solid #f8f9fa; background: #fafbfc; }
+    .notif-card { 
+        background: #fff; 
+        border: 1px solid #e2e8f0; 
+        /* Radius card menyesuaikan layar */
+        border-radius: clamp(12px, 2.5vw, 24px); 
+        overflow: hidden; 
+        box-shadow: 0 10px 30px rgba(30, 77, 58, 0.03); 
+    }
+
+    /* Header Section */
+    .notif-header { 
+        padding: clamp(15px, 4vw, 30px); 
+        border-bottom: 1px solid #f1f5f9; 
+        background: #fafbfc; 
+    }
     .notif-avatar { 
-        width: 48px; height: 48px; background: #0a2e1a; color: #fff; 
-        border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;
+        /* Ukuran ikon utama yang fleksibel */
+        width: clamp(40px, 6vw, 54px); 
+        height: clamp(40px, 6vw, 54px); 
+        background: #1e4d3a; 
+        color: #fff; 
+        border-radius: clamp(8px, 1.5vw, 14px); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: clamp(16px, 2.5vw, 24px); /* Ukuran ikon di dalam avatar */
+        flex-shrink: 0;
     }
     .notif-tag { 
-        font-size: 11px; font-weight: 700; text-transform: uppercase; 
-        color: #166534; background: #dcfce7; padding: 4px 12px; border-radius: 50px; 
-        display: inline-block; margin-bottom: 10px;
+        font-size: clamp(9px, 0.8vw, 11px); 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        color: #1e4d3a; 
+        background: #e8f0ed; 
+        padding: 4px clamp(8px, 1vw, 12px); 
+        border-radius: 50px; 
+        display: inline-block; 
+        margin-bottom: 6px; 
+        letter-spacing: 0.5px;
     }
-    .notif-body { padding: 25px; min-height: 150px; }
-    .notif-text { color: #374151; line-height: 1.8; font-size: 16px; }
-    .notif-footer { padding: 20px 25px; background: #f8f9fa; border-top: 1px solid #f1f3f5; }
+
+    /* Body/Text Content */
+    .notif-body { 
+        padding: clamp(15px, 4vw, 30px); 
+        min-height: 150px; 
+    }
+    .notif-text { 
+        color: #334155; 
+        line-height: 1.8; 
+        /* Font isi pengumuman yang fluid */
+        font-size: clamp(0.9rem, 1.1vw, 1.05rem); 
+    }
+
+    /* Footer & Attachment */
+    .notif-footer { 
+        padding: clamp(15px, 4vw, 25px) clamp(15px, 4vw, 30px); 
+        background: #f8fafc; 
+        border-top: 1px solid #f1f5f9; 
+    }
     
-    /* Box Lampiran Modern */
     .attachment-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
+        background: #fff; 
+        border: 1px solid #e2e8f0; 
         border-radius: 12px;
-        padding: 15px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
+        padding: clamp(10px, 1.5vw, 15px); 
+        display: flex; 
+        align-items: center; 
+        gap: clamp(10px, 2vw, 15px); 
         transition: all 0.2s;
     }
-    .attachment-card:hover {
-        border-color: #16a34a;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+    
     .file-icon {
-        width: 45px; height: 45px; background: #f8fafc; color: #64748b;
-        border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;
+        /* Ikon lampiran mengecil di mobile */
+        width: clamp(36px, 5vw, 45px); 
+        height: clamp(36px, 5vw, 45px); 
+        background: #f1f5f9; 
+        color: #64748b;
+        border-radius: 10px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: clamp(16px, 2vw, 22px); 
+        flex-shrink: 0;
     }
-    .btn-action-group { display: flex; gap: 8px; }
+
+    /* Buttons */
     .btn-action {
-        padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
-        text-decoration: none; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        padding: clamp(6px, 1vw, 8px) clamp(10px, 1.5vw, 16px); 
+        border-radius: 8px; 
+        font-size: clamp(11px, 1vw, 13px); 
+        font-weight: 600;
+        text-decoration: none; 
+        transition: 0.2s; 
+        display: flex; 
+        align-items: center; 
+        gap: 6px;
     }
     .btn-view { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
-    .btn-view:hover { background: #e2e8f0; color: #1e293b; }
-    .btn-down { background: #16a34a; color: #fff; border: 1px solid #16a34a; }
-    .btn-down:hover { background: #15803d; color: #fff; }
+    .btn-down { background: #1e4d3a; color: #fff; border: 1px solid #1e4d3a; }
+
+    /* Mobile Optimization */
+    @media (max-width: 576px) {
+        .btn-action-group { 
+            width: 100%; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px; 
+            margin-top: clamp(10px, 3vw, 15px); 
+        }
+        .attachment-card { flex-wrap: wrap; }
+        .btn-action { justify-content: center; width: 100%; }
+        .notif-header { flex-direction: column; gap: 12px !important; }
+    }
 </style>
 
-<div class="container py-4">
+<div class="container py-2 py-md-4">
     <div class="notif-wrapper">
-        <div class="mb-4">
-            <a href="{{ route('warga.pengumuman.index') }}" class="text-muted text-decoration-none small d-inline-flex align-items-center">
-                <i class="bi bi-arrow-left me-2"></i> Kembali ke daftar pengumuman
+        <div class="mb-3 mb-md-4">
+            <a href="{{ route('warga.pengumuman.index') }}" class="text-muted text-decoration-none small d-inline-flex align-items-center fw-medium">
+                <i class="bi bi-arrow-left me-2"></i> Kembali ke daftar
             </a>
         </div>
 
         <div class="notif-card">
-            <div class="notif-header d-flex gap-3">
+            <div class="notif-header d-flex gap-3 align-items-start">
                 <div class="notif-avatar shadow-sm">
                     <i class="bi bi-megaphone-fill"></i>
                 </div>
                 <div>
                     <span class="notif-tag">Informasi Warga</span>
-                    <h4 class="fw-bold text-dark mb-1">{{ $pengumuman->judul }}</h4>
-                    <p class="text-muted small mb-0">
+                    <h4 class="fw-bold text-dark mb-1" style="font-size: clamp(1.1rem, 2.5vw, 1.5rem);">{{ $pengumuman->judul }}</h4>
+                    <p class="text-muted small mb-0" style="font-size: clamp(0.7rem, 0.9vw, 0.8rem);">
                         <i class="bi bi-calendar3 me-1"></i> {{ $pengumuman->created_at->translatedFormat('d M Y, H:i') }} WIB
                     </p>
                 </div>
@@ -81,29 +153,24 @@
 
             @if($pengumuman->lampiran)
             <div class="notif-footer">
-                <p class="small fw-bold text-muted mb-3 text-uppercase" style="letter-spacing: 0.5px;">Lampiran Dokumen</p>
+                <p class="fw-bold text-muted mb-3 text-uppercase" style="font-size: clamp(9px, 0.8vw, 10px); letter-spacing: 1px;">Lampiran Dokumen</p>
                 
                 @php
-                    $extension = pathinfo($pengumuman->lampiran, PATHINFO_EXTENSION);
-                    $ext = strtolower($extension);
+                    $ext = strtolower(pathinfo($pengumuman->lampiran, PATHINFO_EXTENSION));
                 @endphp
 
                 <div class="attachment-card">
                     <div class="file-icon">
-                        @if(in_array($ext, ['jpg', 'jpeg', 'png', 'webp']))
-                            <i class="bi bi-image"></i>
-                        @elseif($ext == 'pdf')
-                            <i class="bi bi-file-earmark-pdf"></i>
-                        @elseif(in_array($ext, ['doc', 'docx']))
-                            <i class="bi bi-file-earmark-word"></i>
-                        @else
-                            <i class="bi bi-file-earmark-text"></i>
+                        @if(in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) <i class="bi bi-image"></i>
+                        @elseif($ext == 'pdf') <i class="bi bi-file-earmark-pdf"></i>
+                        @elseif(in_array($ext, ['doc', 'docx'])) <i class="bi bi-file-earmark-word"></i>
+                        @else <i class="bi bi-file-earmark-text"></i>
                         @endif
                     </div>
                     
                     <div class="flex-grow-1 overflow-hidden">
-                        <div class="text-dark fw-bold small text-truncate">{{ basename($pengumuman->lampiran) }}</div>
-                        <div class="text-muted mt-1" style="font-size: 11px;">Berkas {{ strtoupper($ext) }}</div>
+                        <div class="text-dark fw-bold text-truncate" style="font-size: clamp(12px, 1.1vw, 14px);">{{ basename($pengumuman->lampiran) }}</div>
+                        <div class="text-muted mt-0" style="font-size: clamp(10px, 0.9vw, 11px);">Berkas {{ strtoupper($ext) }}</div>
                     </div>
 
                     <div class="btn-action-group">
@@ -120,7 +187,7 @@
         </div>
         
         <div class="mt-4 text-center">
-            <small class="text-muted">Gunakan tombol <strong>Buka</strong> untuk melihat pratinjau dokumen atau gambar.</small>
+            <small class="text-muted opacity-75" style="font-size: clamp(10px, 0.9vw, 12px);">Kelurahan Sambong - Layanan Mandiri Warga</small>
         </div>
     </div>
 </div>

@@ -92,7 +92,7 @@
         text-decoration: none;
     }
 
-    .btn-home-back {
+   .btn-home-back {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -100,7 +100,7 @@
         text-decoration: none;
         font-size: 0.85rem;
         margin-top: 2px;
-        padding: 1px 1px;
+        padding: 8px 16px;
         border-radius: 10px;
         transition: 0.2s;
     }
@@ -137,12 +137,14 @@
         </form>
 
         <div class="text-center mt-4 auth-footer">
-            <p class="small text-muted">Belum punya akun? <a href="{{ route('register.warga') }}">Daftar Disini</a>
-        </div>
-        <a href="/" class="btn-home-back">
-            <i class="bi bi-house-door"></i> Kembali ke Beranda
-         </a>   
-    </p>   
+    <p class="small text-muted">
+        Belum punya akun? <a href="{{ route('register.warga') }}" class="fw-bold" style="color: #1e4d3a;">Daftar Disini</a>
+    </p>
+
+    <a href="/" class="btn-home-back">
+        <i class="bi bi-house-door"></i> Kembali ke Beranda 
+    </a>  
+</div>
     </div>
     </div>
 </div>

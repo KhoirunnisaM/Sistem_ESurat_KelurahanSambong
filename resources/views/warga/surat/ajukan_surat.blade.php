@@ -1,50 +1,153 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Container utama yang fleksibel */
+    .surat-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 clamp(5px, 2vw, 15px);
+    }
 
-<div class="container py-4">
-    <!-- Header dengan Tombol Kembali -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    /* Header Styling */
+    .header-title {
+        font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+        color: #1e293b;
+    }
+    .header-subtitle {
+        font-size: clamp(0.75rem, 1vw, 0.85rem);
+        color: #64748b;
+    }
+
+    /* Card Styling yang konsisten dengan Pengumuman */
+    .card-surat {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: clamp(12px, 2vw, 18px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .card-surat:hover {
+        transform: translateY(-5px);
+        border-color: #1e4d3a;
+        box-shadow: 0 12px 25px rgba(30, 77, 58, 0.08);
+    }
+
+    /* Icon Box */
+    .icon-box {
+        width: clamp(45px, 5vw, 54px);
+        height: clamp(45px, 5vw, 54px);
+        background: #e8f0ed;
+        color: #1e4d3a;
+        border-radius: clamp(10px, 1.5vw, 14px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.25rem, 2vw, 1.6rem);
+        flex-shrink: 0;
+    }
+
+    /* Typography di dalam Card */
+    .surat-title {
+        font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+    .surat-desc {
+        font-size: clamp(0.8rem, 1vw, 0.875rem);
+        color: #64748b;
+        line-height: 1.6;
+        min-height: 3em; /* Menjaga konsistensi tinggi baris */
+    }
+
+    /* Tombol yang konsisten */
+    .btn-pilih {
+        background: transparent;
+        color: #1e4d3a;
+        border: 1.5px solid #1e4d3a;
+        border-radius: 50px;
+        font-size: clamp(0.8rem, 1vw, 0.9rem);
+        font-weight: 700;
+        padding: clamp(8px, 1.2vh, 10px) 20px;
+        transition: all 0.2s;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        margin-top: auto; /* Mendorong tombol ke bawah card */
+    }
+    .btn-pilih:hover {
+        background: #1e4d3a;
+        color: #ffffff !important;
+    }
+
+    .btn-kembali {
+        font-size: clamp(0.75rem, 1vw, 0.85rem);
+        border-radius: 50px;
+        padding: clamp(6px, 1vh, 10px) clamp(15px, 2vw, 25px);
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #64748b;
+        font-weight: 600;
+    }
+    .btn-kembali:hover {
+        background: #f8fafc;
+        color: #1e4d3a;
+    }
+
+    @media (max-width: 576px) {
+        .header-section { flex-direction: column; align-items: flex-start !important; gap: 15px; }
+        .btn-kembali { width: 100%; text-align: center; }
+    }
+</style>
+
+<div class="surat-container py-2 py-md-4">
+    <div class="header-section d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1">Pilih Jenis Surat</h4>
-            <p class="text-muted small mb-0">Silakan pilih jenis surat yang ingin Anda ajukan.</p>
+            <h4 class="fw-bold header-title mb-1">Pilih Jenis Surat</h4>
+            <p class="header-subtitle mb-0">Silakan pilih jenis surat yang ingin Anda ajukan sesuai keperluan.</p>
         </div>
-        <a href="{{ route('warga.dashboard') }}" class="btn btn-white bg-white border shadow-sm rounded-pill px-4">
-            <i class="bi bi-arrow-left me-2"></i>Kembali
+        <a href="{{ route('warga.dashboard') }}" class="btn btn-kembali shadow-sm d-inline-flex align-items-center">
+            <i class="bi bi-arrow-left me-2"></i> Kembali
         </a>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-3 g-md-4">
         @php
             $daftar_surat = [
-                ['icon' => 'bi-file-earmark-person', 'title' => 'Pengantar SKCK', 'slug' => 'skck', 'desc' => 'Untuk keperluan melamar pekerjaan/pendaftaran.'],
-                ['icon' => 'bi-envelope', 'title' => 'Pengantar Umum', 'slug' => 'pengantar-umum', 'desc' => 'Surat pengantar untuk berbagai keperluan umum.'],
-                ['icon' => 'bi-envelope-paper', 'title' => 'Keterangan Umum', 'slug' => 'keterangan-umum', 'desc' => 'Surat keterangan dari kelurahan.'],
-                ['icon' => 'bi-shop', 'title' => 'Keterangan Usaha', 'slug' => 'keterangan-usaha', 'desc' => 'Untuk keperluan izin atau bantuan usaha.'],
-                ['icon' => 'bi-wallet2', 'title' => 'Tidak Mampu (SKTM)', 'slug' => 'keterangan-tidak-mampu', 'desc' => 'Untuk keringanan biaya pendidikan/kesehatan.'],
-                ['icon' => 'bi-building-up', 'title' => 'Domisili Usaha', 'slug' => 'domisili-usaha', 'desc' => 'Keterangan tempat kedudukan usaha.'],
-                ['icon' => 'bi-house-heart', 'title' => 'Domisili Tinggal', 'slug' => 'domisili-tempat-tinggal', 'desc' => 'Keterangan tempat tinggal saat ini.'],
+                ['icon' => 'bi-file-earmark-person', 'title' => 'Pengantar SKCK', 'slug' => 'skck', 'desc' => 'Untuk keperluan melamar pekerjaan atau pendaftaran institusi.'],
+                ['icon' => 'bi-envelope', 'title' => 'Pengantar Umum', 'slug' => 'pengantar-umum', 'desc' => 'Surat pengantar standar untuk berbagai keperluan administrasi umum.'],
+                ['icon' => 'bi-envelope-paper', 'title' => 'Keterangan Umum', 'slug' => 'keterangan-umum', 'desc' => 'Surat keterangan resmi dari Kelurahan untuk warga setempat.'],
+                ['icon' => 'bi-shop', 'title' => 'Keterangan Usaha', 'slug' => 'keterangan-usaha', 'desc' => 'Diperlukan untuk pengajuan izin atau permohonan bantuan usaha.'],
+                ['icon' => 'bi-wallet2', 'title' => 'Tidak Mampu (SKTM)', 'slug' => 'keterangan-tidak-mampu', 'desc' => 'Untuk persyaratan keringanan biaya pendidikan atau kesehatan.'],
+                ['icon' => 'bi-building-up', 'title' => 'Domisili Usaha', 'slug' => 'domisili-usaha', 'desc' => 'Keterangan mengenai lokasi atau tempat kedudukan operasional usaha.'],
+                ['icon' => 'bi-house-heart', 'title' => 'Domisili Tinggal', 'slug' => 'domisili-tempat-tinggal', 'desc' => 'Keterangan tempat tinggal atau mukim saat ini di wilayah Kelurahan.'],
             ];
         @endphp
         
         @foreach($daftar_surat as $item)
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 transition-all hover-shadow" style="border-radius: 15px;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="bg-light-success text-success p-3 rounded-3 me-3" style="background-color: #e8f5e9;">
-                            <i class="bi {{ $item['icon'] }} fs-3"></i>
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <div class="card-surat">
+                <div class="card-body p-4 d-flex flex-column h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box me-3">
+                            <i class="bi {{ $item['icon'] }}"></i>
                         </div>
-                        <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1">{{ $item['title'] }}</h6>
-                            <p class="text-muted mb-0" style="font-size: 0.75rem;">Estimasi 1-2 hari kerja</p>
+                        <div class="overflow-hidden">
+                            <h6 class="fw-bold surat-title mb-0 text-truncate">{{ $item['title'] }}</h6>
+                            <span class="text-muted" style="font-size: clamp(0.65rem, 0.8vw, 0.75rem);">
+                                <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Estimasi 1-2 Hari
+                            </span>
                         </div>
                     </div>
-                    <p class="text-secondary mb-4" style="font-size: 0.85rem; min-height: 40px;">
+                    
+                    <p class="surat-desc mb-4">
                         {{ $item['desc'] }}
                     </p>
-                    <a href="{{ route('surat.buat', $item['slug']) }}" class="btn btn-outline-success w-100 rounded-pill fw-bold">
-                        Pilih Surat
+                    
+                    <a href="{{ route('surat.buat', $item['slug']) }}" class="btn-pilih">
+                        Pilih Jenis Surat
                     </a>
                 </div>
             </div>
@@ -52,18 +155,4 @@
         @endforeach
     </div>
 </div>
-
-<style>
-    .hover-shadow:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
-        border: 1px solid #198754 !important;
-    }
-    .transition-all { transition: all 0.3s ease; }
-    
-    .btn-white:hover {
-        background-color: #f8f9fa;
-        border-color: #dee2e6;
-    }
-</style>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Warga;
 use App\Http\Controllers\Controller;
 use App\Models\Surat;
 use App\Models\Warga;
+use App\Models\Pengumuman;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -25,13 +26,15 @@ class WargaController extends Controller
                                 ->whereIn('status', ['Ditolak', 'Dibatalkan'])->count(), 
         ];
 
+        $pengumuman = \App\Models\Pengumuman::orderBy('created_at', 'desc')->take(3)->get();
+
         // 5 Surat Terbaru dengan relasi jenisSurat
         $terbaru = Surat::with('jenisSurat')->where('citizen_id', $citizen_id)
                         ->orderBy('created_at', 'desc')
                         ->take(5)
                         ->get();
 
-        return view('warga.dashboard', compact('stats', 'terbaru'));
+        return view('warga.dashboard', compact('stats', 'terbaru', 'pengumuman'));
     }
 
     public function ajukanSurat()
@@ -201,13 +204,12 @@ public function updateProfile(Request $request)
         $surat->keterangan = $request->keterangan;
 
         // Penyesuaian pengecekan jenis surat menggunakan relasi
-        $nama_jenis = $surat->jenisSurat->nama_jenis ?? '';
-        if (Str::slug($nama_jenis) == 'domisili-usaha' || $nama_jenis == 'Domisili Usaha') {
-            $surat->nama_lembaga = $request->nama_lembaga;
-            $surat->penanggung_jawab = $request->penanggung_jawab;
-            $surat->jabatan_penanggung_jawab = $request->jabatan_penanggung_jawab;
-            $surat->alamat_lembaga = $request->alamat_lembaga;
-        }
+        if ($surat->jenis_surat_id == 6) {
+        $surat->nama_lembaga = $request->nama_lembaga;
+        $surat->penanggung_jawab = $request->penanggung_jawab;
+        $surat->jabatan_penanggung_jawab = $request->jabatan_penanggung_jawab;
+        $surat->alamat_lembaga = $request->alamat_lembaga;
+    }
 
         if ($request->hasFile('scan_pengantar_rt')) {
             if ($surat->scan_pengantar_rt && Storage::exists('public/' . $surat->scan_pengantar_rt)) {
