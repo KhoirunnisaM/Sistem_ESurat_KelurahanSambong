@@ -134,6 +134,16 @@
                     </div>
                 @endif
 
+                @if($status == 'selesai')
+            <div class="mt-3 p-2 bg-success-subtle text-success rounded-2 text-center border border-success-subtle">
+                <i class="bi bi-info-circle-fill me-1"></i>
+                <small class="fw-semibold">
+                  Surat dapat diambil di Kantor Pelayanan Kelurahan Sambong pada jam kerja 
+                  <br>(Senin - Kamis, 07.30 - 16.00 WIB <br> Jumat, 07.30 - 11.00 WIB)
+                </small>
+            </div>
+        @endif
+
                 @if($status == 'ditolak')
                     <div class="mb-2">
                         <label class="text-danger small fw-bold d-block mb-1">ALASAN PENOLAKAN:</label>
