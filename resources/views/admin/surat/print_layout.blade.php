@@ -47,7 +47,15 @@
         .kop h1 { font-size: 18pt; margin: 0; font-weight: bold; text-transform: uppercase; }
         .kop p { font-size: 10pt; margin: 0; font-style: italic; }
         .nomor-wrapper { text-align: center; margin-top: 20px; }
-        .judul-surat { font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-bottom: 0; }
+.judul-surat { 
+    font-size: 14pt; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    margin-bottom: 0;
+    display: inline-block; /* Agar garis bawah hanya sepanjang teks */
+    border-bottom: 2px solid black; /* Membuat garis hitam tebal */
+    line-height: 1.1; /* Mengatur kerapatan garis dengan teks */
+}
         .nomor-surat { margin-top: 0; margin-bottom: 25px; }
         .isi { text-align: justify; }
         
