@@ -188,7 +188,7 @@
                             @elseif($r->status == 'Ditolak' && $r->alasan_ditolak)
                                 <small class="text-danger d-block lh-sm fst-italic responsive-td-extra">* {{ $r->alasan_ditolak }}</small>
                             @elseif($r->status == 'Dibatalkan')
-                                <small class="text-muted fst-italic responsive-td-extra">* Dibatalkan</small>
+                                <small class="text-muted fst-italic responsive-td-extra">* Dibatalkan oleh warga</small>
                             @endif
                         </td>
                         <td class="py-3">

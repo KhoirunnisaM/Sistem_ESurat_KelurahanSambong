@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
     /* Konsistensi Warna & Font */
     :root { --hijau-keraton: #1e4d3a; --bg-light: #f8fafc; }
@@ -154,3 +156,45 @@
     </div>
 </div>
 @endsection
+{{-- Sisipkan di bagian bawah setelah @endsection --}}
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action*="update"]');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Tahan proses submit asli
+
+            Swal.fire({
+                title: 'Simpan Perubahan?',
+                text: "Pastikan data dan lampiran yang Anda masukkan sudah benar.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1e4d3a', // Warna hijau keraton Anda
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Periksa Kembali',
+                reverseButtons: true,
+                borderRadius: '1.25rem',
+                customClass: {
+                    popup: 'rounded-4 shadow-sm',
+                    confirmButton: 'btn-kirim px-4', // Menggunakan class CSS Anda
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan loading sebentar agar user tahu proses berjalan
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    form.submit(); // Lanjutkan kirim data
+                }
+            });
+        });
+    });
+</script>
+@endpush

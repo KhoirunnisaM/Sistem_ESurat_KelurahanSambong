@@ -7,6 +7,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -14,42 +15,66 @@
             --sidebar-color: #ced4da;
             --primary-green: #198754;
             --body-bg: #f4f7f6;
+            --sidebar-w: clamp(240px, 18vw, 280px);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--body-bg);
             overflow-x: hidden;
+            /* Font fleksibel: mengecil di mobile, membesar di desktop */
+            font-size: clamp(0.875rem, 0.95vw, 1rem);
         }
 
-        #wrapper { display: flex; width: 100%; align-items: stretch; }
-
-        /* Sidebar Styling */
-        #sidebar-wrapper {
+        #wrapper { 
+            display: flex; 
+            width: 100%; 
             min-height: 100vh;
-            width: 250px;
+        }
+
+        /* ─── SIDEBAR ─── */
+        #sidebar-wrapper {
+            width: var(--sidebar-w);
             background-color: var(--sidebar-bg);
-            transition: all .25s ease-out;
             position: fixed;
-            z-index: 1000;
+            top: 0; left: 0; bottom: 0;
+            z-index: 1050;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-100%); /* Default Tutup */
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.toggled #sidebar-wrapper {
+            transform: translateX(0);
         }
 
         #sidebar-wrapper .sidebar-heading {
-            padding: 1.5rem 1.25rem;
-            font-size: 1.2rem;
+            padding: clamp(1rem, 2vh, 1.5rem) 1.25rem;
+            font-size: clamp(1rem, 1.2vw, 1.15rem);
             border-bottom: 1px solid #2d3238;
+            color: #fff;
+        }
+
+        .menu-label {
+            color: #6c757d;
+            font-size: clamp(0.65rem, 0.7vw, 0.75rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1.5rem 1.25rem 0.5rem;
         }
 
         #sidebar-wrapper .list-group-item {
             background-color: transparent;
             color: var(--sidebar-color);
             border: none;
-            padding: 0.75rem 1.25rem;
-            transition: all 0.3s;
-            cursor: pointer;
+            padding: clamp(0.6rem, 1vh, 0.75rem) 1.25rem;
+            transition: 0.2s;
             display: flex;
             align-items: center;
             text-decoration: none;
+            font-size: clamp(0.85rem, 1vw, 0.9rem);
         }
 
         #sidebar-wrapper .list-group-item:hover,
@@ -60,96 +85,114 @@
         }
 
         #sidebar-wrapper .list-group-item i {
-            margin-right: 10px;
+            margin-right: 12px;
+            font-size: 1.1rem;
             width: 20px;
             text-align: center;
         }
 
-        /* Main Content Styling */
+        /* ─── CONTENT WRAPPER ─── */
         #page-content-wrapper {
-            margin-left: 250px;
-            width: calc(100% - 250px);
-            transition: all .25s ease-out;
-            min-height: 100vh;
+            width: 100%;
+            transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-left: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 992px) {
+            body.toggled #page-content-wrapper {
+                padding-left: var(--sidebar-w);
+            }
         }
 
         .navbar-admin {
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem clamp(1rem, 2vw, 1.5rem);
+            height: clamp(60px, 8vh, 70px);
             position: sticky;
             top: 0;
-            z-index: 999;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
         }
 
-        #wrapper.toggled #sidebar-wrapper { margin-left: -250px; }
-        #wrapper.toggled #page-content-wrapper { margin-left: 0; width: 100%; }
-
-        @media (max-width: 768px) {
-            #sidebar-wrapper { margin-left: -250px; }
-            #page-content-wrapper { margin-left: 0; width: 100%; }
-            #wrapper.toggled #sidebar-wrapper { margin-left: 0; }
+        .admin-main {
+            padding: clamp(1rem, 3vw, 2.5rem);
+            flex: 1;
         }
 
-        /* Custom scrollbar for sidebar */
-        #sidebar-wrapper::-webkit-scrollbar { width: 5px; }
+        /* ─── OVERLAY ─── */
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            z-index: 1040; display: none; backdrop-filter: blur(2px);
+        }
+        
+        @media (max-width: 991px) {
+            body.toggled .sidebar-overlay { display: block; }
+        }
+
+        #sidebar-wrapper::-webkit-scrollbar { width: 4px; }
         #sidebar-wrapper::-webkit-scrollbar-thumb { background: #333; }
+        
+        @media print { .no-print { display: none !important; } }
     </style>
     @yield('styles')
 </head>
 <body>
 
-<div class="d-flex" id="wrapper">
-    <div id="sidebar-wrapper">
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div id="wrapper">
+    <aside id="sidebar-wrapper">
         <div class="sidebar-heading fw-bold text-success text-center">
             <i class="bi bi-shield-check-fill me-2"></i>E-Surat Admin
         </div>
-        <div class="list-group list-group-flush mt-3">
-            <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+        
+        <div class="list-group list-group-flush overflow-auto">
+            <div class="menu-label">Menu Utama</div>
+            <a href="{{ route('admin.dashboard') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-
-            <a href="{{ route('admin.surat.masuk', ['filter' => 'masuk']) }}" class="list-group-item list-group-item-action {{ request('filter') == 'masuk' ? 'active' : '' }}">
+            <a href="{{ route('admin.surat.masuk', ['filter' => 'masuk']) }}" class="nav-item-link list-group-item {{ request('filter') == 'masuk' ? 'active' : '' }}">
                 <i class="bi bi-envelope-exclamation"></i> Surat Masuk
             </a>
-
-            <a href="{{ route('admin.surat.riwayat', ['filter' => 'riwayat']) }}" class="list-group-item list-group-item-action {{ request('filter') == 'riwayat' ? 'active' : '' }}">
+            <a href="{{ route('admin.surat.riwayat', ['filter' => 'riwayat']) }}" class="nav-item-link list-group-item {{ request('filter') == 'riwayat' ? 'active' : '' }}">
                 <i class="bi bi-clock-history"></i> Riwayat Surat
             </a>
-            
-            <div class="text-muted small px-3 mt-4 mb-2 text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Manajemen Data</div>
-            
-            <a href="{{ route('admin.pegawai.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.pegawai.index') ? 'active' : '' }}">
-                <i class="bi bi-people"></i> Data Pegawai & Staff
-            </a>
 
-            <a href="{{ route('admin.warga.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.warga.*') ? 'active' : '' }}">
+            <div class="menu-label">Manajemen Data</div>
+            <a href="{{ route('admin.pegawai.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.pegawai.index') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Pegawai & Staff
+            </a>
+            <a href="{{ route('admin.warga.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.warga.*') ? 'active' : '' }}">
                 <i class="bi bi-person-badge"></i> Data Warga
             </a>
 
-            <a href="{{ route('admin.setting.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.setting.*') ? 'active' : '' }}">
-                <i class="bi bi-file-earmark-medical"></i> Template Surat
-            </a>
-
-            <a href="{{ route('admin.pengumuman.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
+            <div class="menu-label">Informasi & Setelan</div>
+            <a href="{{ route('admin.pengumuman.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
                 <i class="bi bi-megaphone"></i> Pengumuman
             </a>
+            <a href="{{ route('admin.setting.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.setting.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-medical"></i> Template Surat
+            </a>
         </div>
-    </div>
+    </aside>
 
     <div id="page-content-wrapper">
-        <nav class="navbar navbar-expand-lg navbar-admin navbar-light">
-            <div class="container-fluid p-0">
-                <button class="btn btn-sm btn-light border no-print" id="menu-toggle">
-                    <i class="bi bi-justify"></i>
+        <nav class="navbar navbar-admin no-print">
+            <div class="container-fluid p-0 d-flex align-items-center">
+                <button class="btn btn-sm btn-light border px-2 px-md-3" id="menu-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-justify fs-5"></i>
                 </button>
                 
                 <div class="ms-auto d-flex align-items-center">
-                    <div class="text-muted small me-3 d-none d-md-block" id="current-date"></div>
+                    <div class="text-muted small me-3 d-none d-lg-block" id="current-date"></div>
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center fw-medium text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle fs-5 text-success me-2"></i>
-                            {{ auth()->guard('admin')->user()->username ?? 'Admin' }}
+                            <span class="d-none d-sm-inline">{{ auth()->guard('admin')->user()->username ?? 'Admin' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2">
                             <li>
@@ -166,7 +209,7 @@
             </div>
         </nav>
 
-        <div class="container-fluid p-4 p-md-5">
+        <main class="admin-main">
             @if(session('success'))
                 <div class="alert alert-success border-0 shadow-sm mb-4 alert-dismissible fade show">
                     <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -175,22 +218,27 @@
             @endif
             
             @yield('admin_content')
-        </div>
+        </main>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Toggle Sidebar
-    document.getElementById("menu-toggle").onclick = function(e) {
-        e.preventDefault();
-        document.getElementById("wrapper").classList.toggle("toggled");
-    };
+    // Fungsi Toggle Sidebar
+    function toggleSidebar() {
+        document.body.classList.toggle('toggled');
+    }
 
-    // Tanggal Hari Ini
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', dateOptions);
+    // Mengisi Tanggal Hari Ini
+    function updateDate() {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date();
+        const dateElem = document.getElementById('current-date');
+        if(dateElem) dateElem.innerText = today.toLocaleDateString('id-ID', options);
+    }
+
+    updateDate();
 </script>
 @yield('scripts')
-</html>
 </body>
+</html>

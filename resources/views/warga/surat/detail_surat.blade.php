@@ -210,10 +210,12 @@
                                 <a href="{{ route('warga.surat.edit', $surat->id) }}" class="btn btn-warning w-100 fw-bold rounded-pill">
                                     <i class="bi bi-pencil-square me-2"></i>Edit Data
                                 </a>
-                                <form action="{{ route('warga.surat.batal', $surat->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin?')">
-                                    @csrf
-                                    <button type="submit" class="btn btn-link text-danger w-100 btn-sm text-decoration-none fw-bold">Batalkan Pengajuan</button>
-                                </form>
+<form id="formBatal" action="{{ route('warga.surat.batal', $surat->id) }}" method="POST">
+    @csrf
+    <button type="submit" class="btn btn-link text-danger w-100 btn-sm text-decoration-none fw-bold">
+        Batalkan Pengajuan
+    </button>
+</form>         
                             </div>
                             @endif
                         </div>
@@ -270,3 +272,45 @@
     .border-secondary { border-color: #6c757d !important; }
 </style>
 @endsection
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formBatal = document.getElementById('formBatal');
+        
+        if (formBatal) {
+            formBatal.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Batalkan Pengajuan?',
+                    text: "Tindakan ini tidak dapat dibatalkan kembali.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545', // Warna merah danger
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Batalkan!',
+                    cancelButtonText: 'Tidak, Tetap Ajukan',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-4 shadow-sm',
+                        confirmButton: 'rounded-pill px-4',
+                        cancelButton: 'rounded-pill px-4'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Membatalkan...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        this.submit();
+                    }
+                });
+            });
+        }
+    });
+</script>
+@endpush

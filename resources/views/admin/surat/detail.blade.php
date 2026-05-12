@@ -113,7 +113,7 @@
                             <div class="col-sm-9 fw-bold text-primary">{{ strtoupper($surat->jenisSurat->nama_jenis) }}</div>
                         </div>
 
-                        @if(str_contains(strtoupper($surat->jenisSurat->nama_jenis), 'DOMISILI USAHA'))
+                            @if($surat->jenis_surat_id == 6)
                             <div class="row mb-2">
                                 <div class="col-sm-3 text-muted small">Nama Lembaga/Usaha</div>
                                 <div class="col-sm-9 fw-bold text-dark">{{ strtoupper($surat->nama_lembaga ?? '-') }}</div>

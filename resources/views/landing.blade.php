@@ -224,12 +224,7 @@
                 <p class="small opacity-75">Sistem Informasi Pelayanan Mandiri Pengajuan Surat Kelurahan Sambong, Kec. Batang, Kabupaten Batang.</p>
             </div>
             <div class="col-md-2 offset-md-1">
-                <h6 class="fw-bold mb-3">Tautan Cepat</h6>
-                <ul class="list-unstyled small opacity-75">
-                    <li class="mb-2"><a href="#alur" class="text-white text-decoration-none">Alur Prosedur</a></li>
-                    <li class="mb-2"><a href="#layanan" class="text-white text-decoration-none">Layanan</a></li>
-                    <li class="mb-2"><a href="#footer" class="text-white text-decoration-none">Tentang Kami</a></li>
-                </ul>
+               
             </div>
             <div class="col-md-3">
                 <h6 class="fw-bold mb-3">Kontak Resmi</h6>

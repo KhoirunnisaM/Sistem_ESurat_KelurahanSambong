@@ -237,5 +237,6 @@
 
     updateDate();
 </script>
+@stack('scripts')
 </body>
 </html>
