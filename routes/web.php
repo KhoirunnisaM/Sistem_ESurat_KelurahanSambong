@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\AdminWargaController;
 use App\Http\Controllers\Admin\SettingSuratController;
 use App\Http\Controllers\Admin\PengumumanController;
+use App\Http\Controllers\Admin\LaporanController;
 
 
 
@@ -110,6 +111,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/setting', [SettingSuratController::class, 'index'])->name('admin.setting.index');
         Route::post('/setting/profil', [SettingSuratController::class, 'updateProfil'])->name('admin.setting.updateProfil');
         Route::post('/setting/penutup/{id}', [SettingSuratController::class, 'updatePenutup'])->name('admin.setting.updatePenutup');
+
+        // 7. laporan
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+        Route::get('/laporan/preview', [LaporanController::class, 'preview'])->name('admin.laporan.preview');
+        Route::get('/laporan/export', [LaporanController::class, 'exportExcel'])->name('admin.laporan.export');
 
       });
       Route::resource('pengumuman', PengumumanController::class)->names([

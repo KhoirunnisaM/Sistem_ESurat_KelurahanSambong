@@ -169,6 +169,9 @@
             <a href="{{ route('admin.warga.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.warga.*') ? 'active' : '' }}">
                 <i class="bi bi-person-badge"></i> Data Warga
             </a>
+            <a href="{{ route('admin.laporan.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-bar-graph"></i> Laporan
+            </a>
 
             <div class="menu-label">Informasi & Setelan</div>
             <a href="{{ route('admin.pengumuman.index') }}" class="nav-item-link list-group-item {{ request()->routeIs('admin.pengumuman.*') ? 'active' : '' }}">
