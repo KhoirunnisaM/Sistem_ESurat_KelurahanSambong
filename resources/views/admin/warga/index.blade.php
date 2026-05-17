@@ -4,7 +4,7 @@
 <div id="realtime-container" class="container-fluid px-2 px-md-3">
     {{-- 1. HEADER HALAMAN --}}
     <div class="mb-4">
-        <h4 class="fw-bold text-dark responsive-title mb-1">Manajemen Data & Aktivasi Akun Warga</h4>
+        <h4 class="fw-bold text-dark responsive-title mb-1">Manajemen Data Warga</h4>
         <p class="text-muted small responsive-sub mb-0">Kelurahan Sambong, Kecamatan Batang, Kabupaten Batang.</p>
     </div>
 

@@ -5,7 +5,7 @@
     {{-- 1. HEADER HALAMAN --}}
     <div class="mb-4">
         <h4 class="fw-bold text-dark responsive-title">Daftar Surat Masuk</h4>
-        <p class="text-muted small responsive-sub">Menampilkan semua permohonan dengan status <b>DIAJUKAN</b> dan <b>DIPROSES</b>.</p>
+        <p class="text-muted small responsive-sub">Semua permohonan surat dengan status <b>DIAJUKAN</b> dan <b>DIPROSES</b>.</p>
     </div>
 
     {{-- 2. FILTER KAPSUL STATUS (Scrollable di Mobile) --}}

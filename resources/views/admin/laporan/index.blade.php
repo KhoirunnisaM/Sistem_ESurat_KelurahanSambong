@@ -9,7 +9,7 @@
                     <h4 class="fw-bold text-dark mb-1">
                         <i class="bi bi-file-earmark-bar-graph me-2 text-success"></i>Laporan Rekapitulasi
                     </h4>
-                    <p class="text-muted small mb-0">Kelola dan ekspor data surat yang telah selesai ke format Excel.</p>
+                    <p class="text-muted small mb-0">Kelola dan cetak data surat yang telah selesai ke format Excel.</p>
                 </div>
             </div>
 
