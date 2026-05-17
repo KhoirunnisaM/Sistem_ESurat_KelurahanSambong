@@ -109,7 +109,7 @@
         
         <div class="d-flex justify-content-between align-items-start mb-4 header-section">
             <div class="header-title">
-                <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">Semua Riwayat Pengajuan</h4>
+                <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">Riwayat Pengajuan</h4>
                 <p class="text-muted small mb-0 d-none d-sm-block">Daftar seluruh permohonan surat Anda</p>
             </div>
             <a href="{{ route('warga.dashboard') }}" class="btn btn-light bg-white border rounded-pill px-3 py-1 btn-kembali d-flex align-items-center shadow-sm">

@@ -188,8 +188,9 @@
                     
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center fw-medium text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <span class="d-inline-block me-1">{{ session('nama_lengkap') ?? 'Nama Warga' }}</span>
                             <i class="bi bi-person-circle fs-5 text-success me-2"></i>
-                            <span class="d-inline-block">{{ session('nama_lengkap') ?? 'Nama Warga' }}</span>
+
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2">
                             <li><a class="dropdown-item py-2" href="{{ route('warga.profil') }}"><i class="bi bi-person me-2"></i> Profil Saya</a></li>

@@ -106,7 +106,7 @@
     <div class="header-section d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold header-title mb-1">Pilih Jenis Surat</h4>
-            <p class="header-subtitle mb-0">Silakan pilih jenis surat yang ingin Anda ajukan sesuai keperluan.</p>
+            <p class="header-subtitle mb-0">Silakan pilih jenis surat sesuai kebutuhan.</p>
         </div>
         <a href="{{ route('warga.dashboard') }}" class="btn btn-kembali shadow-sm d-inline-flex align-items-center">
             <i class="bi bi-arrow-left me-2"></i> Kembali

@@ -1,6 +1,17 @@
-@extends('layouts.app')
-
-@section('content')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Mandiri Kelurahan Sambong</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
@@ -137,15 +148,13 @@
         </form>
 
         <div class="text-center mt-4 auth-footer">
-    <p class="small text-muted">
-        Belum punya akun? <a href="{{ route('register.warga') }}" class="fw-bold" style="color: #1e4d3a;">Daftar Disini</a>
-    </p>
+            <p class="small text-muted">
+                Belum punya akun? <a href="{{ route('register.warga') }}" class="fw-bold" style="color: #1e4d3a;">Daftar Disini</a>
+            </p>
 
-    <a href="/" class="btn-home-back">
-        <i class="bi bi-house-door"></i> Kembali ke Beranda 
-    </a>  
-</div>
+            <a href="/" class="btn-home-back">
+                <i class="bi bi-house-door"></i> Kembali ke Beranda 
+            </a>  
+        </div>
     </div>
-    </div>
 </div>
-@endsection

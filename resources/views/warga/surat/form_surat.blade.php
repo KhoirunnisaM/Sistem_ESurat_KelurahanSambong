@@ -167,7 +167,7 @@
                             <div class="upload-area">
                                 <label class="form-label d-block small">Scan KTP & KK (JPG/PNG)</label>
                                 <input type="file" name="scan_ktp_kk" class="form-control form-control-sm mb-2" required>
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Gabungkan KTP & KK dalam satu gambar.</small>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Pilih salah satu (KK/KTP).</small>
                             </div>
                         </div>
                     </div>

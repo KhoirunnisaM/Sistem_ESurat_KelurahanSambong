@@ -4,10 +4,8 @@
 <div class="container-fluid px-3 px-md-4 py-4">
     {{-- Header Section --}}
     <div class="mb-4">
-        <h4 class="fw-bold mb-1 text-dark responsive-title">Halo, {{ session('nama_lengkap') }}!</h4>
-        <p class="text-muted small responsive-sub">
-            NIK: {{ session('nik') }} | Kelurahan Sambong, RT {{ session('rt') }}/RW {{ session('rw') }}
-        </p>
+        <h4 class="fw-bold mb-1 text-dark responsive-title">Selamat Datang, {{ session('nama_lengkap') }}!</h4>
+       <p>Ringkasan Aktivitas Pengajuan Surat</p>
     </div>
 
     {{-- Statistik Cards --}}
